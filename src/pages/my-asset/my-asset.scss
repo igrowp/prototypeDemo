@@ -1,0 +1,43 @@
+page-my-asset {
+    #title {
+        border-left: 1px solid white;
+    }
+    #content {
+        background-size: 100%;
+        background-image: url(./../assets/imgs/background.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    #list_content {
+        height: 100%;
+        padding: 2% 3% 2% 3%;
+    }
+    #list,
+    #list_scroll {
+        height: 100%;
+    }
+    #list_label {
+        padding-left: 3%;
+    }
+    #list-item-head {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #000;
+    }
+    #list-item-bottom {
+        font-size: 1rem;
+        font-weight: 400;
+        margin-top: 1%;
+    }
+    #list_row_right {
+        margin-right: 3%;
+    }
+    #noData {
+        padding-top: 20%;
+        text-align: center;
+        width: 100%;
+    }
+    #noData img {
+        width: 150px;
+    }
+}

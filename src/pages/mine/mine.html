@@ -1,0 +1,31 @@
+<ion-header>
+    <ion-navbar color="title">
+        <ion-buttons left style="width:50px">
+            <!-- <button ion-button icon-only style="font-size:16px">
+        <ion-icon name="ios-arrow-back"></ion-icon>
+      </button> -->
+        </ion-buttons>
+        <ion-title style="text-align:center">我的资产</ion-title>
+        <ion-buttons right style="width:50px">
+            <!-- <button ion-button style="padding-left:10px;padding-right:10px;margin-right:5px;border:1px solid white" color="light">
+        确定
+      </button> -->
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content id="content">
+    <ion-content id="content">
+        <button ion-button (click)="actionSheet()">上传</button>
+        <button ion-button (click)="takePhoto()">本地</button>
+
+
+        <ion-avatar style="text-align: center; ">
+            <img [src]="profilePicture" style="margin: 5px auto;border-radius: 5% ;max-width: 70%; max-height: 30%" />
+        </ion-avatar>
+
+        <p>{{photos}}</p>
+
+    </ion-content>
+</ion-content>

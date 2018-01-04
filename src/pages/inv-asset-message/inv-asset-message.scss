@@ -1,0 +1,98 @@
+page-inv-asset-message {
+    #title {
+        border-left: 1px solid white;
+    }
+    #btn_submit {
+        font-size: 1.7rem;
+        margin-right: 10%;
+        border: 1px solid white;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    #segment {
+        font-size: 2rem;
+    }
+    #th {
+        font-size: 2rem;
+        color: #9A9A9A;
+        font-weight: 600;
+    }
+    #td {
+        font-size: 1.8rem;
+        // text-align: right;
+        font-weight: 600;
+        padding-right: 2%;
+        text-align: right;
+    }
+    #select {
+        font-size: 2rem;
+        color: #9A9A9A;
+        font-weight: 600;
+    }
+    #td-select {
+        font-size: 1.8rem;
+        padding-right: 2%
+    }
+    #input_content {
+        padding: 0px;
+        margin: 0px;
+        font-size: 2rem;
+        color: #9A9A9A;
+        font-weight: 600;
+    }
+    #td_input {
+        text-align: right;
+        border-style: none;
+        background-color: #fff;
+        font-size: 1.8rem;
+        width: 90%;
+    }
+    #th_p {
+        font-size: 2rem;
+        color: #9A9A9A;
+        font-weight: 600;
+        float: left;
+    }
+    #td_p {
+        float: right;
+        text-align: right;
+        font-size: 1.8rem;
+    }
+    #th_img {
+        font-size: 2rem;
+        color: #9A9A9A;
+        font-weight: 600;
+        float: left;
+        margin-top: 10px;
+    }
+    #imgs_content {
+        text-align: center;
+        float: right;
+        width: 50px;
+        height: 50px;
+        margin-left: 5px;
+        margin-right: 5px;
+        border-radius: 10px;
+    }
+    #imgs {
+        max-width: 50px;
+        max-height: 50px;
+    }
+    #imgs_add {
+        margin-top: 6px;
+        // padding-left: 7px;
+        width: 36px;
+        height: 36px;
+    }
+    #td_input_reason {
+        // border-style: none;
+        margin-left: 5%;
+        padding: 5px;
+        margin-top: 15px;
+        border-style: none;
+        border: 1px solid #9A9A9A;
+        background-color: #fff;
+        font-size: 1.8rem;
+        width: 90%;
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "prototypeDemo",
+    "app_id": "",
+    "type": "ionic-angular",
+    "integrations": {
+        "cordova": {}
+    },
+    "proxies": [{
+        "path": "/ionicApp",
+        "proxyUrl": "http://10.88.133.45:8080/ionicApp"
+    }]
+}

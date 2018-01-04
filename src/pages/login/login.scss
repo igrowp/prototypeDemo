@@ -1,0 +1,62 @@
+page-login {
+    ion-content {
+        width: 100%;
+        height: 100%;
+    }
+    .border-radius {
+        border-radius: 5px;
+        padding: 5px;
+        border: 1px solid #ddd;
+    }
+    #content {
+        background-image: url(./../assets/imgs/bgLogin.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+    }
+    #login_content {
+        position: absolute;
+        margin-left: 33.5%;
+        margin-top: 17.5%;
+        width: 33%;
+        height: 40%;
+    }
+    #username {
+        outline: none;
+        border: none;
+        background: transparent;
+        margin-left: 23%;
+        margin-top: 18%;
+        padding-left: 5%;
+        font-size: 1.5rem;
+        width: 67%;
+        height: 13%;
+    }
+    #password {
+        outline: none;
+        border: none;
+        background: transparent;
+        margin-left: 23%;
+        margin-top: 9%;
+        font-size: 1.5rem;
+        padding-left: 5%;
+        width: 67%;
+        height: 13%;
+    }
+    #button {
+        margin-left: 25%;
+        margin-top: 8%;
+        border-radius: 10px;
+        font-size: 1.5rem;
+        width: 50%;
+        height: 15%;
+    }
+    #block {
+        background-image: url(./../assets/imgs/bgLoginNull.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+    }
+}

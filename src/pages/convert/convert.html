@@ -1,0 +1,51 @@
+<ion-header>
+    <ion-navbar color="title">
+        <ion-title style="border-left: 1px solid white;">资产领用</ion-title>
+        <!-- <ion-buttons right style="width:20%">
+            <button ion-button (click)="scanTwoDimensionCode()" style="font-size:1.5rem;padding-left:10px;padding-right:10px;margin-right:5px;border:1px solid white">二维码</button>
+            <button ion-button (click)="scanRFID()" style="font-size:1.5rem;padding-left:10px;padding-right:10px;margin-right:5px;border:1px solid white">RFID</button>
+            <button ion-button (click)="signature()" style="font-size:1.5rem;padding-left:10px;padding-right:10px;margin-right:5px;border:1px solid white" color="light">
+        签字
+      </button>
+        </ion-buttons> -->
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content id="content">
+    <div id="list_content" *ngIf="workerType==1">
+        <ion-list id="list">
+            <ion-scroll id="list_scroll" scrollY="true">
+                <ion-item *ngFor="let item of dataTable">
+                    <ion-label id="list_label">
+                        <p id="list-item-head">{{item.assetName}} [{{item.selfNumber}}] </p>
+                        <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+                    </ion-label>
+
+                    <button id="list_row_right" ion-button item-end (click)="trans(item)" *ngIf="item.isTrans=='0'||item.isTrans==null" color="danger">确认</button>
+                    <button id="list_row_right" ion-button item-end (click)="signature()" *ngIf="item.isTrans=='1'" color="danger">待签字</button>
+                    <button id="list_row_right" ion-button outline item-end icon-only (click)="showAlert('该资产已经确认!')" *ngIf="item.isTrans=='2'" style="border:0px;"><ion-icon name="checkmark" style="padding-right:10px;font-size:2rem"></ion-icon> </button>
+                </ion-item>
+
+            </ion-scroll>
+        </ion-list>
+
+    </div>
+
+    <div id="list_content" *ngIf="workerType==0">
+        <ion-list id="list">
+            <ion-scroll id="list_scroll" scrollY="true">
+                <ion-item *ngFor="let item of dataTable">
+                    <ion-label id="list_label">
+                        <p id="list-item-head">{{item.assetName}} [{{item.selfNumber}}] </p>
+                        <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+                    </ion-label>
+                    <button id="list_row_right" ion-button item-end (click)="signature()" *ngIf="item.isTrans=='1'" color="danger">待签字</button>
+                    <button id="list_row_right" ion-button outline item-end icon-only (click)="showAlert('该资产已经确认!')" *ngIf="item.isTrans=='2'" style="border:0px;"><ion-icon name="checkmark" style="padding-right:10px;font-size:2rem"></ion-icon> </button>
+                </ion-item>
+
+            </ion-scroll>
+        </ion-list>
+
+    </div>
+</ion-content>

@@ -1,0 +1,77 @@
+page-inventory {
+    #title {
+        border-left: 1px solid white;
+    }
+    #title_icon {
+        font-size: 2rem;
+        height: 80%;
+        margin-right: 5%;
+    }
+    #content {
+        background-size: 100%;
+        background-image: url(./../assets/imgs/background.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    #list_content {
+        height: 100%;
+        padding: 2% 3% 2% 3%;
+    }
+    #list,
+    #list_scroll {
+        height: 100%;
+    }
+    #list_label {
+        padding-left: 3%;
+    }
+    #list-item-head {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #000;
+    }
+    #list-item-bottom {
+        font-size: 1rem;
+        font-weight: 400;
+        margin-top: 1%;
+    }
+    #list_row_right {
+        margin-right: 3%;
+    }
+    #list_row_button {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 1.4rem;
+        height: 60%;
+    }
+    #list_row_img {
+        margin-right: 3%;
+        padding-right: 10px;
+        font-size: 3rem;
+    }
+    #noData {
+        padding-top: 20%;
+        text-align: center;
+        width: 100%;
+    }
+    #noData img {
+        width: 150px;
+    }
+    #fab_two {
+        background-image: url(./../assets/imgs/two_blue.png);
+        background-size: 80%;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+    #fab_rfid {
+        background-image: url(./../assets/imgs/rfid_2.png);
+        background-size: 80%;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+    #fab_signature {
+        background-image: url(./../assets/imgs/signature.png);
+        background-size: 80%;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+}

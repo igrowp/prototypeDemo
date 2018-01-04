@@ -1,0 +1,77 @@
+<ion-header>
+    <ion-navbar color="title">
+        <ion-title id="title">资产盘点</ion-title>
+        <ion-buttons right>
+            <button ion-button icon-only (click)="doSearch()">
+        <ion-icon name="search"></ion-icon> </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content id="content">
+    <div style="height: 100%">
+        <!-- 搜索框 -->
+        <ion-toolbar id="searchbar" style="display:none;padding:0xp;margin:0px;">
+            <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+        </ion-toolbar>
+        <ion-card>
+                <ion-card-content>
+                    <ion-card-title style="padding:0px;margin:0px;">
+                        {{invNotice.title}}
+                    </ion-card-title>
+                    <ion-item>
+                        <!-- <h2>内容：{{invNotice.content}}</h2> -->
+                        <h2>截至时间：{{finishTime}}</h2>
+                    </ion-item>
+                </ion-card-content>
+            </ion-card>
+
+        <div id="list_content">
+            <ion-list id="list" *ngIf="isHaveData==true">
+                
+                <!-- <ion-scroll id="list_scroll" scrollY="true"> -->
+                <ion-item *ngFor="let item of dataTable">
+                    <ion-label id="list_label">
+                        <p id="list-item-head">{{item.assetName}} [{{item.selfNumber}}] </p>
+                        <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+                    </ion-label>
+
+                    <button id="list_row_right" ion-button item-end (click)="scan(item)" *ngIf="item.isChecked=='0'" color="danger">盘点</button>
+                    <button id="list_row_right" ion-button item-end (click)="signature()" *ngIf="item.isChecked=='1'">待签字</button>
+                    <ion-icon id="list_row_img" (click)="reScan(item)" *ngIf="item.isChecked=='2'" item-end name="checkmark"></ion-icon>
+                    <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" style="height:20px;" />
+                    <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" style="height:20px;" />
+
+                </ion-item>
+
+                <!-- </ion-scroll> -->
+                <!-- 底部刷新  -->
+                <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="80px" style="background-color:transparent">
+                    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="数据加载中...">
+                    </ion-infinite-scroll-content>
+                </ion-infinite-scroll>
+            </ion-list>
+            <div id="noData" *ngIf="isHaveData==false">
+                <img src="./assets/imgs/noData.png">
+                <h2>没有资产数据......</h2>
+            </div>
+        </div>
+    </div>
+    <!-- <ion-refresher (ionRefresh)="doRefresh($event)" threshold="80px">
+        <ion-refresher-content pullingText="下拉刷新" refreshingSpinner="bubbles" refreshingText="玩儿命加载中...">
+        </ion-refresher-content>
+    </ion-refresher> -->
+
+
+    <ion-fab bottom right #fab>
+        <button ion-fab><ion-icon name="add"></ion-icon></button>
+        <ion-fab-list side="top">
+            <button ion-fab Large (click)="scanTwoDimensionCode(fab)" id="fab_two"></button>
+            <button ion-fab Large (click)="scanrfid(fab)" id="fab_rfid"></button>
+        </ion-fab-list>
+        <ion-fab-list side="left">
+            <button ion-fab Large (click)="signature(fab)" id="fab_signature"></button>
+        </ion-fab-list>
+    </ion-fab>
+</ion-content>

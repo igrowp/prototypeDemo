@@ -1,0 +1,83 @@
+<ion-header>
+    <ion-navbar color="title">
+        <ion-title id="title">资产发放</ion-title>
+        <ion-buttons right style="width:20%">
+                <button ion-button (click)="handleClean()" id="btn_submit" color="light">
+            清空
+          </button>
+            </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content #granting_content padding style="background-color:#F7F6F6">
+    <!-- <button ion-button (click)="clean()">清除</button> -->
+    <!-- <ion-card>
+      <ion-card-header style="padding-top:0px;padding-bottom:0px;">
+          <ion-item style="padding-left:0px;">
+              <h2>资产发放</h2>
+              <p *ngIf="cvtNotice.workOrderNumber"> 发料单号：{{cvtNotice.workOrderNumber}}</p>
+          </ion-item>
+      </ion-card-header>
+  </ion-card> -->
+    
+
+    <ion-list>
+        <ion-list-header>
+            <h2 class="bold">发放列表 ({{sentQuantity}}/{{totalQuantity}})</h2>
+        </ion-list-header>
+        <ion-item *ngFor="let item of noticeSubArray" (click)="handleMenu(item)">
+            <!-- <ion-checkbox [(ngModel)]="cucumber" (ionChange)="updateCucumber()"></ion-checkbox> -->
+            <!-- <ion-checkbox></ion-checkbox> -->
+            <ion-label>
+                <h2>{{item.assetName}}[{{item.specModel}}]</h2>
+                <p>数量：({{item.residualQuantity}}/{{item.sentQuantity}})</p>
+            </ion-label>
+            <ion-note item-end *ngIf="(item.quantity-item.residualQuantity)!=0">
+                    已选：{{item.quantity-item.residualQuantity}}
+                  </ion-note>
+            <ion-icon name="ios-arrow-dropright" item-end ></ion-icon>
+        </ion-item>
+
+    </ion-list>
+</ion-content>
+
+
+<ion-footer>
+        <ion-buttons start>
+            <button ion-button icon-end full (click)="navToBind()">
+                    已选资产({{cvtNonReceives.length}})
+            </button>
+        </ion-buttons>
+</ion-footer>
+
+<ion-menu [content]="granting_content" id="grantingMenu" side="right">
+    <ion-header>
+        <ion-navbar color="title">
+            <ion-buttons end>
+                <button ion-button icon-only (click)="handleCloseMenu()">
+                    <ion-icon name="md-close"></ion-icon>
+                </button>
+            </ion-buttons>
+            <ion-title>资产详情</ion-title>
+        </ion-navbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+            <ion-item *ngFor="let asset of assets">
+                <ion-checkbox *ngIf="asset.receivePerson!=null&&asset.receivePerson!=''" disabled="true" [(ngModel)]="checked"></ion-checkbox>
+                <ion-checkbox *ngIf="asset.receivePerson==null||asset.receivePerson==''" #check [(ngModel)]="asset.isChecked"  (ionChange)="handleCheckBox(asset,check)"></ion-checkbox>
+                <ion-label>
+                    <h2>{{asset.assetName}}</h2>
+                    <p>规格型号：{{asset.specModel}}</p>
+                    <p *ngIf="asset.receiveName!=null">领用人：{{asset.receiveName}}</p>
+                </ion-label>
+                <!-- <img src="./assets/imgs/scan.png" style="height:20px;" (click)="handleBindScan(asset)" item-end>
+                <img src="./assets/imgs/hand.png" style="height:20px;" (click)="handleBindInput(asset)" item-end> -->
+            </ion-item>
+            <!-- <ion-item>
+                <button ion-button full round (click)="handleCloseMenu()">确定</button>
+            </ion-item> -->
+        </ion-list>
+
+    </ion-content>
+</ion-menu>
+

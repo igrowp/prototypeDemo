@@ -1,0 +1,70 @@
+<ion-header>
+    <ion-navbar color="title">
+        <ion-title style="border-left: 1px solid white;">资产绑定</ion-title>
+    </ion-navbar>
+  </ion-header>
+
+<ion-content #grantingBind_content style="background-color:#F7F6F6">
+    <!-- <ion-card>
+        <ion-card-content>
+            <ion-card-title style="padding:0px;margin:0px;">
+                {{asset.assetName}}
+            </ion-card-title>
+            <p>规格型号：{{asset.specModel}}</p>
+        </ion-card-content>
+    </ion-card> -->
+    <ion-list>
+        <ion-list-header>
+            <h2 class="bold">领用人信息</h2>
+        </ion-list-header>
+        <ion-item>
+            <h2> 领用人：{{receivePerson}}</h2>
+            <img item-end src="./assets/imgs/hand.png" (click)="handleBindInput()"/>
+            <img item-end src="./assets/imgs/scan.png" (click)="handleBindScan()"/>
+        </ion-item>
+    </ion-list>
+    <ion-list  style="margin-top:10%;">
+        <ion-list-header>
+            <h2 class="bold">已选资产</h2>
+        </ion-list-header>
+            <ion-item *ngFor="let asset of cvtNonReceives">
+                <ion-label>
+                    <h2>{{asset.assetName}}</h2>
+                    <p>规格型号：{{asset.specModel}}</p>
+                </ion-label>
+                <ion-icon item-end name="md-close" (click)="handleRemove(asset)"></ion-icon>
+            </ion-item>
+    </ion-list>
+</ion-content>
+<ion-footer>
+    <ion-buttons *ngIf="receivePerson==''">
+        <button ion-button full color="danger" (click)="handleSignatureNoManager()">
+            签名确认
+        </button>
+    </ion-buttons>
+    <ion-buttons *ngIf="receivePerson!=''">
+        <button ion-button full (click)="handleSignature()">
+            签名确认
+        </button>
+    </ion-buttons>
+</ion-footer>
+
+<ion-menu [content]="grantingBind_content" id="grantingSelectPerson" side="right">
+    <ion-header>
+        <ion-navbar color="title">
+            <ion-toolbar>
+                <ion-searchbar placeholder="搜索" (ionInput)="filterItems($event)"></ion-searchbar>
+            </ion-toolbar>
+        </ion-navbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+                <ion-item *ngFor="let item of items" (click)="close(item)">
+                    {{ item.userName}} / {{item.workerNumber}}
+                </ion-item>
+            <ion-item *ngIf="items!=null&&items.length==0">
+                没有搜索到该结果
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-menu>

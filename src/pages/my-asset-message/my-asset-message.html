@@ -1,0 +1,144 @@
+<ion-header>
+    <ion-navbar color="title">
+        <ion-title id="title">资产信息</ion-title>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content padding #sele_content>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                资产名称：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.assetName}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                规格型号：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.assetType}}
+            </ion-col>
+        </ion-row>
+
+    </ion-item>
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                车牌井号：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.licenseplatWellno}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                出厂日期：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.manufactureDate}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                投产日期：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.productionTime}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                尚可使用月数：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage" *ngIf="fixedAsset.remainingLife!=0">
+                {{fixedAsset.remainingLife}}个月
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage" *ngIf="fixedAsset.remainingLife==0">
+                无
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                计量单位：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.unit}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                单台数量：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.singleQuantity}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                复合数量：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.complexQuantity}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                产权证号:
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.certificateNumber}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                资产原值：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.originalValue}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+
+    <ion-item>
+        <ion-row>
+            <ion-col col-6 id="th" class="fixedMessage">
+                资产净值：
+            </ion-col>
+            <ion-col col-6 id="td" class="fixedMessage">
+                {{fixedAsset.netWorth}}
+            </ion-col>
+        </ion-row>
+    </ion-item>
+</ion-content>

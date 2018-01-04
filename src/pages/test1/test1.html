@@ -1,0 +1,67 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            Upload
+        </ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+    <ion-item>
+        <ion-row>
+            <ion-col col-6>
+                <button ion-button color="danger" type="button" full round large (click)="getNotice()">
+          <ion-icon name="camera"></ion-icon>
+        </button>
+            </ion-col>
+            <ion-col col-6>
+                <button ion-button color="secondary" type="button" full round large (click)="selectPhoto()">
+          <ion-icon name="image"></ion-icon>
+        </button>
+            </ion-col>
+        </ion-row>
+    </ion-item>
+    <ion-item>
+        <button ion-button (click)="add()">添加</button>
+        <button ion-button (click)="uploadTest()">上传</button>
+    </ion-item>
+    <ion-item *ngIf="error">
+        <strong>{{error}}</strong>
+    </ion-item>
+
+    <!-- <ion-item>
+        <ion-row>
+            <ion-col *ngFor="let item of files" col-2>
+                <img id="imgs" [src]="item" />
+            </ion-col>
+            <ion-col col-2>
+                <img id="imgs" style="border:1px dashed #000;" src="./assets/imgs/add.png" />
+            </ion-col>
+        </ion-row>
+
+    </ion-item> -->
+
+    <ion-item>
+        <div id="imgs_content" *ngFor="let item of files">
+            <img id="imgs" (click)="isDeleteImg(item)" [src]="item" />
+        </div>
+        <div id="imgs_content" *ngIf="files.length<3" style="border: 1px dashed #000;">
+            <img id="imgs_add" (click)="add()" src="./assets/imgs/add.png" />
+        </div>
+    </ion-item>
+    <ion-item>
+        <img *ngIf="files.length" class="img-responsive" [src]="files[0]" />
+    </ion-item>
+
+    <ion-item (click)="changeManager($event)">
+        <h3 id="th_p">保管人:</h3>
+        <h3 id="td_p">{{manager}}</h3>
+    </ion-item>
+
+    <ion-item (click)="changeOrg($event)">
+        <h3 id="th_p">使用单位:</h3>
+        <h3 id="td_p">{{useOrgName}}</h3>
+    </ion-item>
+
+</ion-content>
