@@ -17,6 +17,7 @@ import { PubContanst } from '../../providers/entity/constant.provider';
   selector: 'page-signature',
   templateUrl: 'signature.html',
 })
+
 export class SignaturePage {
   //转产
   private cvtNotice: CvtNonNotice;
