@@ -1,9 +1,11 @@
 import { FixedAsset } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AlertController, InfiniteScroll, IonicPage, NavController, LoadingController,NavParams, Platform } from 'ionic-angular';
 import { ChangeDetectorRef } from '@angular/core';
+import { Content } from 'ionic-angular/components/content/content';
+declare let ReadRFID: any;
 
 /**
  * 我的资产页面
@@ -15,6 +17,7 @@ import { ChangeDetectorRef } from '@angular/core';
   templateUrl: 'my-asset.html',
 })
 export class MyAssetPage {
+  @ViewChild(Content) content:Content;
 
 
   public dataTable:Array<FixedAsset>=new Array<FixedAsset>();
@@ -22,44 +25,44 @@ export class MyAssetPage {
   private pageSize=20;
   private workerNumber="";
   public isHaveData;   //判断是否有数据
+  private selectedIndex; //记录点击盘点的资产索引号
 
   constructor(public navCtrl: NavController,
-            private alertCtrl:AlertController,
-          private platform:Platform,
-          private barcodeScanner:BarcodeScanner,
-          private cd:ChangeDetectorRef,
-          private loadingCtrl:LoadingController,
-          private navParams:NavParams,
-          private assetService:AssetService
-        ) {
-          this.pageIndex=1;
-          this.workerNumber=this.navParams.get("workerNumber");
-  }
-
-
-  ionViewDidEnter(){
-    // let loading=this.loadingCtrl.create({
-    //   spinner:'bubbles',
-    //   content:'正在加载中，请稍候！',
-    //   duration:10000
-    // });
-    //  loading.present();
-
-     this.pageIndex=1;
-     this.dataTable=new Array<FixedAsset>();
-    this.assetService.queryAssetsFormFixedByPage(this.pageSize,this.pageIndex,this.workerNumber).then((data)=>{
-      for(var i=0;i<data.length;i++){
+    private alertCtrl: AlertController,
+    private platform: Platform,
+    private barcodeScanner: BarcodeScanner,
+    private cd: ChangeDetectorRef,
+    private loadingCtrl: LoadingController,
+    private navParams: NavParams,
+    private assetService: AssetService
+  ) {
+    this.pageIndex = 1;
+    this.workerNumber = this.navParams.get("workerNumber");
+    this.dataTable = new Array<FixedAsset>();
+    this.assetService.queryAssetsFormFixedByPage(this.pageSize, this.pageIndex, this.workerNumber).then((data) => {
+      for (var i = 0; i < data.length; i++) {
         this.dataTable.push(data[i]);
       }
       this.pageIndex++;
       // loading.dismiss();
-      if(data.length==0){
+      if (data.length == 0) {
         //说明没有数据
-        this.isHaveData=false;
-      }else{
-        this.isHaveData=true;
+        this.isHaveData = false;
+      } else {
+        this.isHaveData = true;
       }
     })
+  }
+
+
+  ionViewDidEnter(){
+    if (this.selectedIndex) {
+      this.assetService.queryAssetFromFixedById(this.dataTable[this.selectedIndex].assetId).then((data) => {
+        if (data) {
+          this.dataTable[this.selectedIndex].isChecked = data.isChecked;
+        }
+      })
+    }
   }
 
   //盘点
@@ -101,7 +104,7 @@ export class MyAssetPage {
   }
 
   //重新绑定
-  reBind(item,isBind){
+  reBind(item,i){
     const alert=this.alertCtrl.create({
       title:'提示',
       message:'该资产已绑定二维码，是否重新绑定？',
@@ -113,12 +116,86 @@ export class MyAssetPage {
         {
           text:'确定',
           handler:()=>{
-            this.bind(item,isBind);
+            this.bind(item,i);
           }
         }
       ]
     });
     alert.present();
+  }
+
+  //重新绑定
+  reBindRFID(item){
+    const alert=this.alertCtrl.create({
+      title:'提示',
+      message:'该资产已绑定RFID，是否重新绑定？',
+      buttons:[
+        {
+          text:'取消',
+          role:'cancel',
+        },
+        {
+          text:'确定',
+          handler:()=>{
+            this.bindRFID(item);
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  bindRFID(item){
+    let id=item.assetId;
+    let code="fffff";
+    let loading=this.loadingCtrl.create({
+      content:"正在从服务器获取数据..."
+    })
+    loading.present();
+    
+    // ReadRFID.connect((success)=>{
+      ReadRFID.start((success)=>{
+        loading.dismiss();
+        var code=success;
+        if(code!=""){
+          this.assetService.queryAssetFromFixedByRFID(code).then((data)=>{
+            if(data!=null){
+              this.showAlert("请求失败！已经存在该RFID，请重新选择!");
+              return;
+            }else{
+              this.assetService.queryAssetFromFixedById(id).then((asset)=>{
+                if(asset==null){
+                  this.showAlert("不存在该资产，请确认资产编号！")
+                  return;
+                }
+                if(asset.rfid==""||asset.rfid==null){
+                  asset.rfid=code;
+                  this.assetService.updateToFixed(asset).then((data)=>{
+                    //判断资产清点记录中是否有该资产，有的话进行更新
+                    this.showAlert("RFID绑定成功！");
+                  })
+                }else{
+                  asset.rfid=code;
+                  this.assetService.updateToFixed(asset).then((data)=>{
+                    //判断资产清点记录中是否有该资产，有的话进行更新
+                    this.showAlert("RFID重新绑定成功！");
+                  })
+                }
+              })
+            }
+          });
+        }else{
+          //二维码为空
+          return;
+        }
+        // ReadRFID.disconnect();
+        // ReadRFID.release();
+      },(error)=>{
+        alert("启动失败"+error)
+      })
+    // },(err)=>{
+    //   alert("连接失败"+err);
+    // });
   }
 
   showAlert(msg:String){
@@ -129,16 +206,17 @@ export class MyAssetPage {
     }).present();
   }
 ////////////////搜索////////////////
+  isHiddenSearch=true;
   /**
    * 显示搜索窗体
    */
   doSearch(){
-    let searchbar=document.getElementById("searchbar");
-    if(searchbar.style.display=="none"){
-      searchbar.style.display="inline";
-    }
-    else{
-      searchbar.style.display="none";
+    this.content.scrollToTop(0);
+    if(this.content.scrollTop<50){
+      //开闭
+      this.isHiddenSearch=!this.isHiddenSearch;
+    }else if(this.isHiddenSearch==true){
+      this.isHiddenSearch=false;
     }
   }
 
@@ -183,7 +261,8 @@ export class MyAssetPage {
 
   ////////////////搜索END////////////////
   
-  bind(item,isBind){
+  bind(item,index){
+    this.selectedIndex=index;
     let id=item.assetId;
     let code="fffff";
     this.barcodeScanner.scan().then((data)=>{
@@ -220,21 +299,6 @@ export class MyAssetPage {
           return;
         }
         })
-       
-      if(isBind==false){   //对于新绑定的资产，绑定二维码后会重新刷新页面
-        console.log("执行了false");
-        //加载数据
-        
-    for(var i=1;i<=this.pageIndex;i++){
-      this.assetService.queryAssetsFormFixedByPage(this.pageSize,i,this.workerNumber).then((data)=>{
-        this.dataTable=new Array<FixedAsset>();
-        for(var j=0;j<data.length;j++){
-          this.dataTable.push(data[j]);
-        }
-      })
-    }
-        this.cd.detach();
-      }
   }
 
    //  上拉加载向服务获取数据

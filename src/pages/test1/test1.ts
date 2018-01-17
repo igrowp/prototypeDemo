@@ -1,12 +1,6 @@
-import { OrgInfo } from './../../providers/entity/entity.provider';
-import { ConvertService } from './../../providers/service/convert.service';
-import { File,FileEntry } from '@ionic-native/file';
-import { ForkJoinObservable } from 'rxjs/observable/ForkJoinObservable';
 import { Camera } from '@ionic-native/camera';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component} from '@angular/core';
 import {
-    ActionSheetController,
-    AlertController,
     App,
     IonicPage,
     NavController,
@@ -14,9 +8,9 @@ import {
     PopoverController,
     ViewController,
 } from 'ionic-angular';
-import {LoadingController, Loading, ToastController} from "ionic-angular";
-import {Observable} from "rxjs";
+import {Loading} from "ionic-angular";
 import { Http, Headers, RequestOptions } from '@angular/http';
+import { DBService } from '../../providers/storage/db.service';
 
 
 
@@ -36,24 +30,34 @@ import { Http, Headers, RequestOptions } from '@angular/http';
 export class Test1Page {
   public myPhotoURL: any;
   public error: string;
-  private loading: Loading;
   public files:Array<string>=new Array<string>();
   public useOrgName="所属地点";
   public manager;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
       public camera:Camera,
-      private actionSheetCtrl:ActionSheetController,
-       private readonly toastCtrl: ToastController,
-     private readonly loadingCtrl: LoadingController,
-     private file:File,
      public viewCtrl: ViewController,
       public appCtrl: App,
      private http:Http,
      public popoverCtrl:PopoverController,
-     private alertCtrl:AlertController,
-     private convertService:ConvertService
+     private dbService:DBService
     ) {
+  }
+  create(){
+    this.dbService.onCreate();
+
+  }
+  deleteDb(){
+    this.dbService.deleteDB();
+  }
+  openDb(){
+    this.dbService.openDB();
+  }
+  closeDb(){
+    this.dbService.closeDB();
+  }
+  upgradeDb(){
+    this.dbService.onUpgrade();
   }
 
   Local_URL:String="http://10.88.133.45:8080/ionicApp";
@@ -70,7 +74,7 @@ export class Test1Page {
     }
     return new Promise((resolve,reject)=>{
       this.http.post(this.Local_URL+"/inv/getInvNoticeByOrg",obj,options)
-        .map(res=>res.json)
+        .map(res=>res.json())
         .subscribe((data)=>{
           resolve(data);   
           console.log(data);   

@@ -15,7 +15,9 @@ import { IonicPage, LoadingController, NavController, NavParams, ViewController 
   templateUrl: 'popup.html',
 })
 export class PopupPage {
+  public hidden=false;
   public message:string="";
+  public messageSub="";
 
   constructor(public navCtrl: NavController,
     public loadingCtrl:LoadingController,
@@ -40,10 +42,14 @@ export class PopupPage {
         this.viewCtrl.dismiss();
       },(error)=>{
         this.message="同步失败,请检查网络是否通畅!";
+        this.hidden=true;
+        this.messageSub=error;
         loading.dismiss();
       })
      },(error)=>{
       this.message="同步失败,请检查网络是否通畅!";
+      this.hidden=true;
+      this.messageSub=error;
       loading.dismiss();
     })
 

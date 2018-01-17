@@ -19,16 +19,35 @@
             <canvas id="canvas"></canvas>
         </div>
         <div class="signature-pad--footer">
-            <div class="description">请在上面签名</div>
+            <h4 class="description">请在上面签名</h4>
         </div>
 
-        <div class="signature-pad--actions">
+        <!-- <div class="signature-pad--actions">
             <div>
                 <button ion-button color="primary" id="clear">清除</button>
                 <button ion-button color="primary" id="undo">撤销</button>
             </div>
             <button ion-button color="primary" id="save-png" (click)="save()">保存</button>
-        </div>
+
+        </div> -->
+        <ion-grid>
+            <ion-row>
+                <ion-col col-6>
+                    <button large full round ion-button color="primary" id="clear">清除</button>
+                </ion-col>
+                <ion-col col-6>
+                    <button large full round ion-button color="primary" id="undo">撤销</button>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-6>
+                    <button large full round ion-button color="primary" id="save-png" (click)="handleBack()">返回</button>
+                </ion-col>
+                <ion-col col-6>
+                    <button large full round ion-button color="primary" id="save-png" (click)="save()">保存</button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
 
     </div>
 </ion-content>

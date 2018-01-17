@@ -12,8 +12,8 @@
 <ion-content id="content">
     <div style="height: 100%">
         <!-- 搜索框 -->
-        <ion-toolbar id="searchbar" style="display:none;padding:0xp;margin:0px;">
-            <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+        <ion-toolbar id="searchbar" color="title" [hidden]="judge">
+            <ion-searchbar  placeholder="搜索" (ionInput)="getItems($event)"></ion-searchbar>
         </ion-toolbar>
         <ion-card>
                 <ion-card-content>
@@ -31,17 +31,17 @@
             <ion-list id="list" *ngIf="isHaveData==true">
                 
                 <!-- <ion-scroll id="list_scroll" scrollY="true"> -->
-                <ion-item *ngFor="let item of dataTable">
+                <ion-item *ngFor="let item of dataTable;let i = index">
                     <ion-label id="list_label">
                         <p id="list-item-head">{{item.assetName}} [{{item.selfNumber}}] </p>
                         <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
                     </ion-label>
-
-                    <button id="list_row_right" ion-button item-end (click)="scan(item)" *ngIf="item.isChecked=='0'" color="danger">盘点</button>
-                    <button id="list_row_right" ion-button item-end (click)="signature()" *ngIf="item.isChecked=='1'">待签字</button>
-                    <ion-icon id="list_row_img" (click)="reScan(item)" *ngIf="item.isChecked=='2'" item-end name="checkmark"></ion-icon>
                     <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" style="height:20px;" />
                     <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" style="height:20px;" />
+                    <button id="list_row_right" ion-button item-end (click)="scan(item,i)" *ngIf="item.isChecked=='0'" color="danger">盘点</button>
+                    <button id="list_row_right" ion-button item-end (click)="scan(item,i)" *ngIf="item.isChecked=='1'">待签字</button>
+                    <ion-icon id="list_row_img" (click)="reScan(item,i)" *ngIf="item.isChecked=='2'" item-end name="checkmark"></ion-icon>
+                    
 
                 </ion-item>
 
@@ -67,11 +67,12 @@
     <ion-fab bottom right #fab>
         <button ion-fab><ion-icon name="add"></ion-icon></button>
         <ion-fab-list side="top">
+            <button ion-fab Large (click)="signature(fab)" id="fab_signature"></button>
             <button ion-fab Large (click)="scanTwoDimensionCode(fab)" id="fab_two"></button>
             <button ion-fab Large (click)="scanrfid(fab)" id="fab_rfid"></button>
         </ion-fab-list>
-        <ion-fab-list side="left">
-            <button ion-fab Large (click)="signature(fab)" id="fab_signature"></button>
-        </ion-fab-list>
+        <!-- <ion-fab-list side="left">
+            
+        </ion-fab-list> -->
     </ion-fab>
 </ion-content>

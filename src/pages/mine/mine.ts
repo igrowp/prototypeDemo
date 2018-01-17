@@ -2,9 +2,9 @@ import { ActionSheetController } from 'ionic-angular';
 import { AssetService } from './../../providers/service/asset.service';
 import { Component } from '@angular/core';
 import {Camera,CameraOptions} from "@ionic-native/camera";
-import { AlertController, IonicPage, NavController, Platform } from 'ionic-angular';
+import { IonicPage, NavController } from 'ionic-angular';
 import { ImagePicker } from '@ionic-native/image-picker';
-import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 
 @IonicPage()
 @Component({
@@ -19,7 +19,6 @@ export class MinePage {
   profilePicture: any="./assets/imgs/inv.png";
 
   constructor(public navCtrl: NavController,
-          private platform:Platform,
           private assetService:AssetService,
           private actionSheetCtrl:ActionSheetController,
           private camera:Camera,
@@ -217,38 +216,38 @@ this.camera.getPicture(this.options).then((imageData) => {
 
 
 
-   // 上传图片
-  private uploadImg(path: string) {
-    if(!path) {
-      return;
-    }
-    alert("进入方法");
+  //  // 上传图片
+  // private uploadImg(path: string) {
+  //   if(!path) {
+  //     return;
+  //   }
+  //   alert("进入方法");
 
-    var fileTransfer:FileTransferObject = this.transfer.create();
+  //   var fileTransfer:FileTransferObject = this.transfer.create();
 
-    let options: any;
-    options = {
-      fileKey: this.upload.fileKey,
-      headers: this.upload.headers,
-      params: this.upload.params
-    };
-    fileTransfer.upload(path, this.upload.url, options)
-      .then((data) => {
-        if(this.upload.success) {
-          this.upload.success(JSON.parse(data.response));
-          alert("上传成功");
-        }else{
-          alert("上传失败");
-        }
+  //   let options: any;
+  //   options = {
+  //     fileKey: this.upload.fileKey,
+  //     headers: this.upload.headers,
+  //     params: this.upload.params
+  //   };
+  //   fileTransfer.upload(path, this.upload.url, options)
+  //     .then((data) => {
+  //       if(this.upload.success) {
+  //         this.upload.success(JSON.parse(data.response));
+  //         alert("上传成功");
+  //       }else{
+  //         alert("上传失败");
+  //       }
 
-      }, (err) => {
-        if(this.upload.error) {
-          this.upload.error(err);
-        } else {
-          alert('错误：上传失败！');
-        }
-      });
-  }
+  //     }, (err) => {
+  //       if(this.upload.error) {
+  //         this.upload.error(err);
+  //       } else {
+  //         alert('错误：上传失败！');
+  //       }
+  //     });
+  // }
 
 
   

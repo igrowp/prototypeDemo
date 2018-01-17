@@ -1,7 +1,6 @@
-import { LocalStorageService } from './localStorage.service';
+import { AssetWebProvider } from './../web/asset.web.provider';
 import { CvtNonReceive, CvtNonCheck, CvtNonNotice,CvtNonNoticeSub } from './../entity/cvt.entity.provider';
 import { PhotoLibrary } from '@ionic-native/photo-library';
-import { WebService } from './web.service';
 import { FixedAsset, ChangeRecord, UserSimple } from './../entity/entity.provider';
 import { CvtWebProvider } from '../web/cvt.web.provider';
 import { Injectable } from '@angular/core';
@@ -9,6 +8,9 @@ import 'rxjs/add/operator/map';
 import { DataBaseUtil } from '../utils/dataBaseUtil';
 import { NoticeService } from './notice.service';
 import { PubContanst } from '../entity/constant.provider';
+import { ConvertDBProvider } from '../storage/convert.db.provider';
+import { PubDBProvider } from '../storage/pub.db.provider';
+import { AttachmentWebProvider } from '../web/attachment.web.provider';
 /*
   Generated class for the AboutServiceProvider provider.
 
@@ -20,8 +22,10 @@ export class ConvertService {
 
   constructor(private cvtWebProvider:CvtWebProvider,
     private photoLibrary: PhotoLibrary,
-    private webService:WebService,
-    private storageService:LocalStorageService,
+    private attaWebProvider:AttachmentWebProvider,
+    private assetWebProvider:AssetWebProvider,
+    private convertDBProvider:ConvertDBProvider,
+    private pubDBProvider:PubDBProvider,
     private noticeService:NoticeService) {
   }
 
@@ -34,7 +38,7 @@ export class ConvertService {
       if(workerNumber==null||workerNumber==""){
         resolve(null);
       }
-      this.storageService.queryFromCvtNonNoticeByWorkerNumber(workerNumber).then((data)=>{
+      this.convertDBProvider.queryFromCvtNonNoticeByWorkerNumber(workerNumber).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -50,7 +54,7 @@ export class ConvertService {
       if(noticeId==null||noticeId==""){
         resolve(null);
       }
-      this.storageService.queryFromCvtNonNoticeSubByNoticeId(noticeId).then((data)=>{
+      this.convertDBProvider.queryFromCvtNonNoticeSubByNoticeId(noticeId).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -60,7 +64,7 @@ export class ConvertService {
 
   queryFromCvtNonReceive(noticeId:string){
     return new Promise<Array<CvtNonReceive>>((resolve,reject)=>{
-      this.storageService.queryFromCvtNonReceive(noticeId).then((data)=>{
+      this.convertDBProvider.queryFromCvtNonReceive(noticeId).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -74,7 +78,7 @@ export class ConvertService {
    */
   queryFromCvtNonChecks(investplanId:string){
     return new Promise<Array<CvtNonCheck>>((resolve,reject)=>{
-      this.storageService.queryFromCvtNonCheck(investplanId).then((data)=>{
+      this.convertDBProvider.queryFromCvtNonCheck(investplanId).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -87,7 +91,7 @@ export class ConvertService {
    */
   queryFromUserSimpleByUserId(userId:string){
     return new Promise<UserSimple>((resolve,reject)=>{
-      this.storageService.queryFromUserSimpleByUserId(userId).then((data)=>{
+      this.pubDBProvider.queryFromUserSimpleByUserId(userId).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -104,7 +108,7 @@ export class ConvertService {
       if(workerNumber==null||workerNumber==""){
         resolve(null);
       }
-      this.storageService.queryFromCvtNonNoticeByWorkerNumber(workerNumber).then((data)=>{
+      this.convertDBProvider.queryFromCvtNonNoticeByWorkerNumber(workerNumber).then((data)=>{
         if(data!=null){
           resolve(data);
         }else{
@@ -135,17 +139,17 @@ export class ConvertService {
         if(data==null||data.recipient==""){
           resolve(null);
         }else{
-          this.storageService.queryFromCvtNonNoticeByWorkerNumber(data.recipient).then((cvtNonNotice)=>{
+          this.convertDBProvider.queryFromCvtNonNoticeByWorkerNumber(data.recipient).then((cvtNonNotice)=>{
             if(cvtNonNotice==null){
               //本地没有存储，存到本地
-              this.storageService.insertToCvtNonNotice(data).then(()=>{
+              this.convertDBProvider.insertToCvtNonNotice(data).then(()=>{
                 resolve(data);
               },(error)=>{
                 reject("插入本地非安转产通知错误："+error);
               })
             }else{
               //本地有通知，更新
-              this.storageService.updateToCvtNonNotice(data).then(()=>{
+              this.convertDBProvider.updateToCvtNonNotice(data).then(()=>{
                 resolve(data);
               },(error)=>{
                 reject("更新本地非安转产通知错误："+error);
@@ -189,7 +193,7 @@ export class ConvertService {
         }else{
           for(var i=0;i<noticeSubs.length;i++){
             let noticeSub=noticeSubs[i];
-            this.storageService.insertToCvtNonNoticeSub(noticeSub).then(()=>{
+            this.convertDBProvider.insertToCvtNonNoticeSub(noticeSub).then(()=>{
               if(noticeSub.subNoticeId==noticeSubs[noticeSubs.length-1].subNoticeId){
                 resolve();
               }
@@ -224,13 +228,35 @@ export class ConvertService {
     });
   }
 
+
+
+  /**
+   * 领用人不再发放，直接保存
+   */
+  receiverNoGranting(cvtNonNotice: CvtNonNotice, recipient) {
+    return new Promise((resolve, reject) => {
+      this.cvtWebProvider.receiverNoGranting(cvtNonNotice.noticeId, recipient).then(() => {
+        // 更新服务器通知单状态
+        this.cvtWebProvider.updateStateToCvtNotice(PubContanst.CvtNonNoniceState.FINISH,cvtNonNotice.noticeId).then(() => {
+          //删除本地通知单
+          this.convertDBProvider.deleteFromCvtNonNoticeByNoticeId(cvtNonNotice.noticeId).then(() => {
+            resolve();
+          }, error => reject(error));
+        }, (error) => {
+          this.noticeService.showIonicAlert(error);
+          reject(error);
+        })
+      })
+    })
+  }
+
   /**
    * 修改本地的通知单非安设备转产通知单
    * @param cvtNotice 
    */
   updateStateToCvtNotice(cvtNotice:CvtNonNotice){
     return new Promise<string>((resolve,reject)=>{
-      this.storageService.updateToCvtNonNotice(cvtNotice).then((data)=>{
+      this.convertDBProvider.updateToCvtNonNotice(cvtNotice).then((data)=>{
         resolve("修改成功！");
       },(err)=>{
         reject(err);
@@ -251,7 +277,7 @@ export class ConvertService {
         let lastReceiveId = cvtNonReceives[cvtNonReceives.length - 1].receiveId;
         for (var i = 0; i < cvtNonReceives.length; i++) {
           let cvtNonReceive = cvtNonReceives[i];
-          this.storageService.updateToCvtNonReceive(cvtNonReceive).then(() => {
+          this.convertDBProvider.updateToCvtNonReceive(cvtNonReceive).then(() => {
             if (cvtNonReceive.receiveId == lastReceiveId) {
               resolve();
             }
@@ -275,7 +301,7 @@ export class ConvertService {
         let lastCheckId = cvtNonChecks[cvtNonChecks.length - 1].checkId;
         for (var i = 0; i < cvtNonChecks.length; i++) {
           let cvtNonCheck = cvtNonChecks[i];
-          this.storageService.updateToCvtNonCheck(cvtNonCheck).then(() => {
+          this.convertDBProvider.updateToCvtNonCheck(cvtNonCheck).then(() => {
             if (cvtNonCheck.checkId == lastCheckId) {
               resolve();
             }
@@ -287,18 +313,23 @@ export class ConvertService {
     })
   }
   
+
   /**
    * 上传图片
-   * @param workerNumber 
-   * @param signaturePath 
-   * @param signatureName 
+   * @param workerNumber 员工编号
+   * @param signaturePath 签名路径
+   * @param signatureName 签名名称
+   * @param recordId 存放附件的表的主键
+   * @param attachmentType 附件类型
    */
-  uploadSignature(workerNumber, signaturePath, signatureName) {
+  uploadSignature(workerNumber, signaturePath, signatureName,recordId,attachmentType) {
     return new Promise((resolve, reject) => {
       let signatureParams = new Map<string, string>();
       signatureParams.set("workerNumber", workerNumber);
+      signatureParams.set("recordId", recordId);
+      signatureParams.set("attachmentType", "inv_signature"); //转产凭证、资产附件、转产照片、盘点
       this.photoLibrary.getPhoto(signaturePath).then((blob) => {
-        this.webService.uploadSignature(blob, signatureName, signatureParams).then((data) => {
+        this.attaWebProvider.uploadSignature(blob, signatureName, signatureParams).then((data) => {
           resolve(data);
         })
       })
@@ -333,7 +364,7 @@ export class ConvertService {
           // nonReceive.receiveTime;  //领用时间
           // nonReceive.reveiveStyle="0"; //领用方式   
           nonReceive.recordFlag=0;   //逻辑删除标志
-          this.storageService.insertToCvtNonReceive(nonReceive).then(()=>{
+          this._addOrUpdateToCvtNonReceive(nonReceive).then(()=>{
             //插入成功，执行
             let nonCheck=new CvtNonCheck();
             nonCheck.checkId=DataBaseUtil.generateUUID();       //主键
@@ -363,7 +394,7 @@ export class ConvertService {
             //nonCheck.isReadyForUse; //是否达到预定使用状态  不写
             // nonCheck.componentToolDesc;    //不写
             nonCheck.recordFlag=0;    //逻辑删除标志
-            this.storageService.insertToCvtNonCheck(nonCheck).then(()=>{
+            this._addOrUpdateToCvtNonCheck(nonCheck).then(()=>{
               //修改日志表
               let changeRecord=new ChangeRecord();
               changeRecord.assetId=fixedAsset.assetId;
@@ -374,7 +405,7 @@ export class ConvertService {
               changeRecord.dutyOrg=workInOrg;
               changeRecord.state="ENABLE";
               //说明没有该条记录的日志，插入
-              this.storageService.insertToChangeRecord(changeRecord).then(()=>{
+              this.pubDBProvider.insertToChangeRecord(changeRecord).then(()=>{
                 if(fixedAsset.assetId==fixedAssets[fixedAssets.length-1].assetId){
                   //说明插入到了最后一个
                   resolve("插入成功");
@@ -412,7 +443,7 @@ export class ConvertService {
         let lastCheckId = changeRecords[changeRecords.length - 1].assetId;
         for (var i = 0; i < changeRecords.length; i++) {
           let changeRecord = changeRecords[i];
-          this.storageService.insertToChangeRecord(changeRecord).then(() => {
+          this.pubDBProvider.insertToChangeRecord(changeRecord).then(() => {
             if (changeRecord.assetId == lastCheckId) {
               resolve();
             }
@@ -430,7 +461,7 @@ export class ConvertService {
    */
   queryListFromChangeRecordByChangeTypes(changeType:string){
     return new Promise<Array<ChangeRecord>>((resolve,reject)=>{
-      this.storageService.queryListFromChangeRecordByChangeType(changeType).then((records)=>{
+      this.pubDBProvider.queryListFromChangeRecordByChangeType(changeType).then((records)=>{
         resolve(records);
       },(error)=>{
         reject(error);
@@ -453,14 +484,14 @@ export class ConvertService {
           this.cvtWebProvider.syncCvtNonCheckToServer(cvtNonChecks).then((data)=>{
             this._deleteFromCvtNonChecksByCheckId(cvtNonChecks).then(()=>{
               //同步并删除本地记录表
-              this.webService.syncChangeRecordToServer(changeRecords).then((data)=>{
-                this.storageService.deleteFromChangeRecordByChangeType(PubContanst.ChangeRecord.CONVERT).then(()=>{
-                  this.storageService.deleteFromChangeRecordByChangeType(PubContanst.ChangeRecord.GRANTING).then(()=>{
+              this.assetWebProvider.syncChangeRecordToServer(changeRecords).then((data)=>{
+                this.pubDBProvider.deleteFromChangeRecordByChangeType(PubContanst.ChangeRecord.CONVERT).then(()=>{
+                  this.pubDBProvider.deleteFromChangeRecordByChangeType(PubContanst.ChangeRecord.GRANTING).then(()=>{
                     //更新服务器通知单状态
                     this.cvtWebProvider.updateStateToCvtNotice(PubContanst.CvtNonNoniceState.FINISH,noticeId).then(()=>{
                       //删除本地通知单和附加表
-                      this.storageService.deleteFromCvtNonNoticeByNoticeId(noticeId).then(()=>{
-                        this.storageService.deleteFromCvtNonNoticeSubByNoticeId(noticeId).then(()=>{
+                      this.convertDBProvider.deleteFromCvtNonNoticeByNoticeId(noticeId).then(()=>{
+                        this.convertDBProvider.deleteFromCvtNonNoticeSubByNoticeId(noticeId).then(()=>{
                           resove(data);
                         },(error)=>reject(error))
                       },(error)=>reject(error))
@@ -475,6 +506,42 @@ export class ConvertService {
     })
   }
 
+  //////插入专区///////////
+  //插入或更新非安转产领用表
+  private _addOrUpdateToCvtNonReceive(cvtNonReceive: CvtNonReceive){
+    return new Promise((resolve,reject)=>{
+      this.convertDBProvider.queryFromCvtNonReceiveByReceiveId(cvtNonReceive.receiveId).then((receives)=>{
+        if(receives.length==0){
+          this.convertDBProvider.insertToCvtNonReceive(cvtNonReceive).then(()=>{
+            resolve();
+          },err=>reject(err))
+        }else{
+          this.convertDBProvider.updateToCvtNonReceive(cvtNonReceive).then(()=>{
+            resolve();
+          },err=>reject(err))
+        }
+      },err=>reject(err))
+    })
+  }
+
+  //插入或更新非安转产领用表
+  private _addOrUpdateToCvtNonCheck(CvtNonCheck: CvtNonCheck){
+    return new Promise((resolve,reject)=>{
+      this.convertDBProvider.queryFromCvtNonCheck(CvtNonCheck.checkId).then((checks)=>{
+        if(checks.length==0){
+          this.convertDBProvider.insertToCvtNonCheck(CvtNonCheck).then(()=>{
+            resolve();
+          },err=>reject(err))
+        }else{
+          this.convertDBProvider.updateToCvtNonCheck(CvtNonCheck).then(()=>{
+            resolve();
+          },err=>reject(err))
+        }
+      },err=>reject(err))
+    })
+  }
+
+  //////插入专区END///////////
 
   //////删除专区///////////
   private _deleteFromCvtNonReceivesByReceiveId(cvtNonReceives:Array<CvtNonReceive>){
@@ -486,7 +553,7 @@ export class ConvertService {
         let lastReceiveId=cvtNonReceives[cvtNonReceives.length-1].receiveId;
         for(var i=0;i<cvtNonReceives.length;i++){
           let cvtNonReceive=cvtNonReceives[i];
-          this.storageService.deleteFromCvtNonReceiveByReceiveId(cvtNonReceive.receiveId).then((data)=>{
+          this.convertDBProvider.deleteFromCvtNonReceiveByReceiveId(cvtNonReceive.receiveId).then((data)=>{
             if(cvtNonReceive.receiveId==lastReceiveId){
               resolve();
             }
@@ -507,7 +574,7 @@ export class ConvertService {
         let lastCheckId=cvtNonChecks[cvtNonChecks.length-1].checkId;
         for(var i=0;i<cvtNonChecks.length;i++){
           let cvtNonCheck=cvtNonChecks[i];
-          this.storageService.deleteFromCvtNonCheckByCheckId(cvtNonCheck.checkId).then((data)=>{
+          this.convertDBProvider.deleteFromCvtNonCheckByCheckId(cvtNonCheck.checkId).then((data)=>{
             if(cvtNonCheck.checkId==lastCheckId){
               resolve();
             }

@@ -11,10 +11,10 @@
         </ion-buttons>
         <ion-title>数据同步中：</ion-title>
     </ion-navbar>
-
 </ion-header>
 
 <ion-content padding id="div_content">
-    <h3 id="prompt">首次登陆可能会消耗一定的时间，请耐心等候!</h3>
+    <h3 id="prompt">首次登录可能会消耗一定的时间，请耐心等候!</h3>
     <h1 id="message">{{message}}</h1>
+    <h4 [hidden]="hidden">{{messageSub}}</h4>
 </ion-content>

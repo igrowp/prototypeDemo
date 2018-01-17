@@ -1,11 +1,8 @@
 import { CvtNonNotice, CvtNonNoticeSub } from './../../providers/entity/cvt.entity.provider';
 import { ConvertService } from './../../providers/service/convert.service';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { FixedAsset } from './../../providers/entity/entity.provider';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Slides } from 'ionic-angular/components/slides/slides';
-import { ModalController } from 'ionic-angular/components/modal/modal-controller';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
 
 /**
@@ -15,6 +12,7 @@ import { AlertController } from 'ionic-angular/components/alert/alert-controller
  * on Ionic pages and navigation.
  */
 
+ 
 @IonicPage()
 @Component({
   selector: 'page-trans',
@@ -34,9 +32,7 @@ export class TransPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public convertService: ConvertService,
-    private alertCtrl:AlertController,
-    private modalCtrl:ModalController,
-    private barcodeScanner: BarcodeScanner) {
+    private alertCtrl:AlertController,) {
     this.cvtNotice = navParams.get("cvtNotice");
     this.custodian=navParams.get("custodian");
     this.workInOrg=navParams.get("workInOrg");
@@ -65,7 +61,7 @@ export class TransPage {
   }
   //点击详情
   handleDetail(noticeSub){
-    this.convertService.getCvtAssetByAssetName(noticeSub.specModel,noticeSub.purchasingId,this.workInOrg).then((data)=>{
+    this.convertService.getCvtAssetByAssetName(noticeSub.assetName,noticeSub.purchasingId,this.workInOrg).then((data)=>{
       console.log(data);
       console.log(noticeSub);
       this.navCtrl.push("ConvertNonDetailPage",{

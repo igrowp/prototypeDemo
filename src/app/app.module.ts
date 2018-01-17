@@ -1,3 +1,6 @@
+import { AssetWebProvider } from './../providers/web/asset.web.provider';
+import { TabsPage } from './../pages/tabs/tabs';
+import { LoginDBProvider } from './../providers/storage/login.db.provider';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { CvtWebProvider } from './../providers/web/cvt.web.provider';
 import { Test3Page } from './../pages/test3/test3';
@@ -9,23 +12,27 @@ import { InvService } from './../providers/service/inv.service';
 import { ConvertService } from './../providers/service/convert.service';
 import { LoginService } from './../providers/service/login.service';
 import { AssetService } from './../providers/service/asset.service';
-import { WebService } from './../providers/service/web.service';
 import { LocalStorageService } from './../providers/service/localStorage.service';
 import { IonicStorageModule } from '@ionic/storage/es2015';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AlertController, IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
-import { TabsPage } from '../pages/tabs/tabs';
 import { SQLite } from '@ionic-native/sqlite';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule } from '@angular/http';
-import { TablesProvider } from '../providers/storage/tables';
+import { DBService } from '../providers/storage/db.service';
+import { PubDBProvider } from '../providers/storage/pub.db.provider';
+import { InvDBProvider } from '../providers/storage/inv.db.provider';
+import { ConvertDBProvider } from '../providers/storage/convert.db.provider';
+import { LoginWebProvider } from '../providers/web/login.web.provider';
+import { InvWebProvider } from '../providers/web/inv.web.provider';
+import { AttachmentWebProvider } from '../providers/web/attachment.web.provider';
 @NgModule({
   declarations: [
     MyApp,
-    TabsPage,
+    TabsPage
   ],
   imports: [
     BrowserModule,
@@ -45,11 +52,10 @@ import { TablesProvider } from '../providers/storage/tables';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     SQLite,
     LocalStorageService,
-    WebService,
     AssetService,
     BarcodeScanner,
     LoginService,
-    CvtWebProvider,
+    
     PhotoLibrary,
     ConvertService,
     InvService,
@@ -57,7 +63,16 @@ import { TablesProvider } from '../providers/storage/tables';
     BackButtonService,
     File,
     Test3Page,
-    TablesProvider,
+    DBService,
+    LoginDBProvider,
+    PubDBProvider,
+    InvDBProvider,
+    ConvertDBProvider,
+    LoginWebProvider,
+    InvWebProvider,
+    AssetWebProvider,
+    CvtWebProvider,
+    AttachmentWebProvider
   ]
 })
 export class AppModule {}

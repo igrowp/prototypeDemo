@@ -72,7 +72,11 @@ body {
     -webkit-box-flex: 1;
     -ms-flex: 1;
     flex: 1;
-    border: 1px solid #f4f4f4;
+    border: 2px solid #c4c1c1;
+
+    //修改
+    padding-top:10%;
+    
 }
 
 .signature-pad--body canvas {
@@ -116,4 +120,13 @@ body {
 #clear,
 #undo {
     float: left;
+}
+ion-grid{
+    height:40%;
+    padding-top:10%;
+}
+ion-col{
+    padding-left:10%;
+    padding-right:10%;
+
 }

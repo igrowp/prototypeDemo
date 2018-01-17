@@ -1,21 +1,26 @@
 import { CvtNonNotice, CvtNonNoticeSub,CvtNonReceive,CvtNonCheck } from './../entity/cvt.entity.provider';
 import { FixedAsset } from './../entity/entity.provider';
-import { WebService } from './../service/web.service';
 import { Http, Headers,RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
+import { HttpUtils } from '../utils/httpUtils';
+import { PhotoLibrary } from '@ionic-native/photo-library';
+import { AttachmentWebProvider } from './attachment.web.provider';
 
 @Injectable()
 export class CvtWebProvider{
-    private Local_URL="";
     constructor(public http: Http,
-               private webService:WebService,) {
-       this.Local_URL=webService.getURL()+"convert/noninstall/notice/";
+      private photoLibrary: PhotoLibrary,
+    private attaWebProvider:AttachmentWebProvider) {
     }
+    getUrl(){
+      return HttpUtils.getUrlFromProperties()+"/cvt/noninstal";
+    }
+
   //从服务器根据员工编号得到资产，，，领用人的
   getAllCvtAsset(noticeId:string,workInOrg:string){
     let params= "?noticeId="+noticeId+"&workInOrg="+workInOrg;
     return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      this.http.get(this.Local_URL+'getAllCvtAsset'+params)
+      this.http.get(this.getUrl()+'/asset/list'+params)
       .map(res=>res.json())
       .subscribe((data)=>{
         resolve(data);
@@ -33,10 +38,14 @@ export class CvtWebProvider{
   getCvtNoticeByRecipientAndOrg(recipient:string,orgId:string){
     let params= "?recipient="+recipient+"&orgId="+orgId;
     return new Promise<CvtNonNotice>((resolve,reject)=>{
-      this.http.get(this.Local_URL+'getCvtNonNotice'+params)
+      this.http.get(this.getUrl()+'/notice'+params)
       .map(res=>res.json())
-      .subscribe((data)=>{  
-        resolve(data);
+      .subscribe((data)=>{
+        if(JSON.stringify(data)=="{}"){
+          resolve(null);
+        }else{
+          resolve(data);
+        }
       },err=>{
         reject(err);
       })
@@ -45,7 +54,27 @@ export class CvtWebProvider{
   getCvtNonNoticeSub(noticeId:string){
     let params= "?noticeId="+noticeId;
     return new Promise<Array<CvtNonNoticeSub>>((resolve,reject)=>{
-      this.http.get(this.Local_URL+'getCvtNonNoticeSub'+params)
+      this.http.get(this.getUrl()+'/notice/sub'+params)
+      .map(res=>res.json())
+      .subscribe((data)=>{
+        if(JSON.stringify(data)=="{}"){
+          resolve(null);
+        }else{
+          resolve(data);
+        }
+      },err=>{
+        reject(err);
+      })
+    })
+  }
+  
+  /**
+   * 领用人不再发放，直接保存
+   */
+  receiverNoGranting(noticeId,recipient){
+    let params= "?noticeId="+noticeId+"&recipient="+recipient;
+    return new Promise<Array<FixedAsset>>((resolve,reject)=>{
+      this.http.get(this.getUrl()+'/save'+params)
       .map(res=>res.json())
       .subscribe((data)=>{
         resolve(data);
@@ -53,12 +82,13 @@ export class CvtWebProvider{
         reject(err);
       })
     })
+    
   }
 
   getCvtAssetByAssetName(assetName:string,purchasingId:string,orgId:string){
     let params= "?assetName="+assetName+"&purchasingId="+purchasingId+"&orgId="+orgId;
     return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      this.http.get(this.Local_URL+'getCvtAssetByAssetName'+params)
+      this.http.get(this.getUrl()+'/asset/list/sub'+params)
       .map(res=>res.json())
       .subscribe((data)=>{
         resolve(data);
@@ -69,9 +99,9 @@ export class CvtWebProvider{
   }
 
   updateStateToCvtNotice(state:string,noticeId:string){
-    let params= "?state="+state+"&noticeId="+noticeId;
+    let params= "?noticeState="+state+"&noticeId="+noticeId;
     return new Promise<string>((resolve,reject)=>{
-      this.http.get(this.Local_URL+'updateStateToCvtNotice'+params)
+      this.http.get(this.getUrl()+'/notice/update'+params)
       .map(res=>res.text())
       .subscribe((data)=>{
         resolve(data);
@@ -102,10 +132,29 @@ export class CvtWebProvider{
         resolve();
         return;
       }
-      this.http.post(this.Local_URL + "updateToCvtNonReceive", WebService.toQueryString(obj), options)
-        .map(res => res.json)
+      this.http.post(this.getUrl() + "/receive", HttpUtils.toQueryString(obj), options)
+        .map(res => res.json())
         .subscribe((data) => {
-          resolve(data);
+          var receiveId = cvtNonReceives[cvtNonReceives.length - 1].receiveId;
+          for (var i = 0; i < cvtNonReceives.length; i++) {
+            //图片上传成功！
+            //传签名
+            let cvtNonReceive = cvtNonReceives[i];
+            let signatureParams = new Map<string, string>();
+            signatureParams.set("workerNumber", cvtNonReceive.receivePerson);
+            signatureParams.set("recordId", cvtNonReceive.receiveId);
+            signatureParams.set("attachmentType", "cvt_signature"); //转产凭证、资产附件、转产照片、盘点
+            this.photoLibrary.getPhoto(cvtNonReceive.signaturePath).then((blob) => {
+              this.attaWebProvider.uploadSignature(blob, cvtNonReceive.signatureName, signatureParams).then(() => {
+                if (cvtNonReceive.receiveId == receiveId) {
+                  //说明完成了最后一个的图片上传
+                  resolve("同步成功");
+                }
+              }, error => {
+                reject(error + "\n")
+              })
+            })
+          }
         }, err => {
           reject(err);
         });
@@ -134,8 +183,8 @@ export class CvtWebProvider{
         resolve();
         return;
       }
-      this.http.post(this.Local_URL + "updateToCvtNonCheck", WebService.toQueryString(obj), options)
-        .map(res => res.json)
+      this.http.post(this.getUrl() + "/check", HttpUtils.toQueryString(obj), options)
+        .map(res => res.json())
         .subscribe((data) => {
           resolve(data);
         }, err => {
@@ -143,6 +192,7 @@ export class CvtWebProvider{
         });
     });
   }
+
 
    
 

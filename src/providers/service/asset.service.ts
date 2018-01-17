@@ -1,10 +1,12 @@
-import { ChangeRecord, FixedAsset, InvAsset, User } from './../entity/entity.provider';
+import { AssetWebProvider } from './../web/asset.web.provider';
+import { ChangeRecord, FixedAsset, InvAsset } from './../entity/entity.provider';
 import { Http } from '@angular/http';
-import { WebService } from './web.service';
-import { LocalStorageService } from './localStorage.service';
 import { AlertController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
+import { PubDBProvider } from '../storage/pub.db.provider';
+import { InvDBProvider } from '../storage/inv.db.provider';
+import { InvWebProvider } from '../web/inv.web.provider';
 
 /*
   Generated class for the AboutServiceProvider provider.
@@ -20,17 +22,19 @@ export class AssetService {
   constructor(
             public http:Http,
             public alertCtrl:AlertController,
-            public storageService:LocalStorageService,
-            public webService:WebService) {
+            public pubDBProvider:PubDBProvider,
+            public invDbProvider:InvDBProvider,
+            public assetWebProvider:AssetWebProvider,
+            private invWebProvider:InvWebProvider,) {
   }
 
   testhttp(){
-    return new Promise((resolve,reject)=>{
-      this.webService.testhttp().then((data)=>{
-        resolve(data);
+    // return new Promise((resolve,reject)=>{
+    //   this.webService.testhttp().then((data)=>{
+    //     resolve(data);
 
-      })
-    })
+    //   })
+    // })
   }
 
 
@@ -40,7 +44,7 @@ export class AssetService {
    */
   downloadAndSaveData(workerNumber:string){
     return new Promise((resolve,reject)=>{
-      this.webService.getListFormFixedByWorkerNumber(workerNumber).then((data)=>{
+      this.assetWebProvider.getListFormFixedByWorkerNumber(workerNumber).then((data)=>{
         if(data.length==0){
           //没有数据
           resolve();
@@ -56,7 +60,7 @@ export class AssetService {
           if(fixAsset.manufactureDate!=null){
             fixAsset.manufactureDate=new Date(fixAsset.manufactureDate);
           }
-          this.storageService.insertToFixed(fixAsset).then(()=>{
+          this.pubDBProvider.insertToFixed(fixAsset).then(()=>{
             if(fixAsset.assetId==data[data.length-1].assetId){
               resolve("同步成功")
             }
@@ -77,10 +81,10 @@ export class AssetService {
   syncDBToServer(fixedAssets:Array<FixedAsset>,invAssets:Array<InvAsset>,changeRecords:Array<ChangeRecord>){
     return new Promise((resolve,reject)=>{
       this.changeCusAndWorkerInFixed(fixedAssets).then((fixeds)=>{
-      this.webService.syncFixedToServer(fixeds).then((data)=>{
-        this.webService.syncInvToServer(invAssets).then((data)=>{
+      this.assetWebProvider.syncFixedToServer(fixeds).then((data)=>{
+        this.invWebProvider.syncInvToServer(invAssets).then((data)=>{
           //同步资产盘点记录表成功
-          this.webService.syncChangeRecordToServer(changeRecords).then(()=>{
+          this.assetWebProvider.syncChangeRecordToServer(changeRecords).then(()=>{
             //同步日志表成功
             resolve("同步成功！");
           },(error)=>{
@@ -112,13 +116,13 @@ export class AssetService {
       }
       for(var i=0;i<fixedAssets.length;i++){
         var fixedAsset=fixedAssets[i];
-        if(fixedAsset.changeCustodian!=""&&fixedAsset.changeWorkerNumber!=""){
+        if(fixedAsset.changeCustodian!=null&&fixedAsset.changeCustodian!=""&&fixedAsset.changeWorkerNumber!=null&&fixedAsset.changeWorkerNumber!=""){
           //说明更改了保管人，本地进行修改
           fixedAsset.custodian=fixedAsset.changeCustodian;
           fixedAsset.workerNumber=fixedAsset.changeWorkerNumber;
           fixedAsset.changeCustodian="";
           fixedAsset.changeWorkerNumber="";
-          this.storageService.updateToFixed(fixedAsset).then(()=>{
+          this.pubDBProvider.updateToFixed(fixedAsset).then(()=>{
             fixedAsset.isChecked="0";
             assets.push(fixedAsset);
             if(fixedAsset.assetId==fixedAssets[fixedAssets.length-1].assetId){
@@ -138,34 +142,35 @@ export class AssetService {
     })
   }
 
-  /**
-   * 根据员工编号从服务器中获取用户的详细信息
-   * @param userId 
-   */
-  getUserMessageFromServerByWorkerNumber(workerNumber:string){
-    return new Promise<User>((resolve,reject)=>{
-        this.webService.getUserMessageByWorkerNumber(workerNumber).then((user)=>{
-        if(user==null){
-          resolve(null)
-        }else{
-          resolve(user);
-        }
-    },(error)=>{
-      reject("网络连接超时，请确认当前为内网环境！");
-    })
-    })
-  }
+  // /**
+  //  * 根据员工编号从服务器中获取用户的详细信息
+  //  * @param userId 
+  //  */
+  // getUserMessageFromServerByWorkerNumber(workerNumber:string){
+  //   return new Promise<User>((resolve,reject)=>{
+  //       this.webService.getUserMessageByWorkerNumber(workerNumber).then((user)=>{
+  //       if(user==null){
+  //         resolve(null)
+  //       }else{
+  //         resolve(user);
+  //       }
+  //   },(error)=>{
+  //     reject("网络连接超时，请确认当前为内网环境！");
+  //   })
+  //   })
+  // }
 
 
 
 /////////////本地数据库查询///////////////////
+
 
   /**
    * 从本地固定资产台账中获得数据
    */
   queryAssetsFormFixed(workerNumber:string,isChecked:string){
     return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      this.storageService.queryAssetsFormFixed(workerNumber,isChecked).then((data)=>{
+      this.pubDBProvider.queryAssetsFormFixed(workerNumber,isChecked).then((data)=>{
         resolve(data);
       },(err)=>{
         reject(err);
@@ -181,7 +186,7 @@ export class AssetService {
    */
   queryAssetsFormFixedByPage(pageSize:number,pageIndex:number,workerNumber:string){
     return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      this.storageService.queryAssetsFormFixedByPage(pageSize,pageIndex,workerNumber).then((data)=>{
+      this.pubDBProvider.queryAssetsFormFixedByPage(pageSize,pageIndex,workerNumber).then((data)=>{
         resolve(data);
       },(err)=>{
         reject(err);
@@ -195,7 +200,7 @@ export class AssetService {
    */
   queryAssetsFormInv(preWorkerNumber:string,isSignatured:string){
     return new Promise<Array<InvAsset>>((resolve,reject)=>{
-      this.storageService.queryAssetsFromInv(preWorkerNumber,isSignatured).then((data)=>{
+      this.invDbProvider.queryAssetsFromInv(preWorkerNumber,isSignatured).then((data)=>{
         resolve(data);
       },(err)=>{
         reject(err);
@@ -210,7 +215,7 @@ export class AssetService {
    */
   queryAssetFromFixedByIdAndCode(assetId,code){
     return new Promise<FixedAsset>((resolve,reject)=>{
-      this.storageService.queryFromFixedByIdAndCode(assetId,code).then((data)=>{
+      this.pubDBProvider.queryFromFixedByIdAndCode(assetId,code).then((data)=>{
         if(data==null){
 
           this.alertCtrl.create({
@@ -239,7 +244,7 @@ export class AssetService {
    */
   queryAssetFromFixedById(assetId){
     return new Promise<FixedAsset>((resolve,reject)=>{
-      this.storageService.queryFromFixedById(assetId).then((data)=>{
+      this.pubDBProvider.queryFromFixedById(assetId).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -253,7 +258,7 @@ export class AssetService {
    */
   queryAssetFromFixedByRFID(rfid){
     return new Promise<FixedAsset>((resolve,reject)=>{
-      this.storageService.queryFromFixedByRFID(rfid).then((data)=>{
+      this.pubDBProvider.queryFromFixedByRFID(rfid).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -267,7 +272,7 @@ export class AssetService {
    */
   queryAssetFromFixedByCode(Code){
     return new Promise<FixedAsset>((resolve,reject)=>{
-      this.storageService.queryFromFixedByCode(Code).then((data)=>{
+      this.pubDBProvider.queryFromFixedByCode(Code).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -288,7 +293,7 @@ export class AssetService {
         reject("错误：资产ID为空或通知ID为空");
         return;
       }
-      this.storageService.queryFromInvByIdAndNotice(assetId,noticeId).then((data)=>{
+      this.invDbProvider.queryFromInvByIdAndNotice(assetId,noticeId).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -304,7 +309,7 @@ export class AssetService {
    */
   insertToFixed(asset:FixedAsset){
     return new Promise((resolve,reject)=>{
-      this.storageService.insertToFixed(asset).then((data)=>{
+      this.pubDBProvider.insertToFixed(asset).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -318,7 +323,7 @@ export class AssetService {
    */
   insertToInv(asset:InvAsset){
     return new Promise((resolve,reject)=>{
-      this.storageService.insertToInv(asset).then((data)=>{
+      this.invDbProvider.insertToInv(asset).then((data)=>{
         resolve(data);
       },(error)=>{
         this.alertCtrl.create({
@@ -340,7 +345,7 @@ export class AssetService {
    */
   updateToInv(asset:InvAsset){
     return new Promise((resolve,reject)=>{
-      this.storageService.updateToInv(asset).then((data)=>{
+      this.invDbProvider.updateToInv(asset).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -354,7 +359,7 @@ export class AssetService {
    */
   updateToFixed(asset:FixedAsset){
     return new Promise((resolve,reject)=>{
-      this.storageService.updateToFixed(asset).then((data)=>{
+      this.pubDBProvider.updateToFixed(asset).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -370,7 +375,7 @@ export class AssetService {
    */
   insertToChangeRecord(changeRecord:ChangeRecord){
     return new Promise((resolve,reject)=>{
-      this.storageService.insertToChangeRecord(changeRecord).then((data)=>{
+      this.pubDBProvider.insertToChangeRecord(changeRecord).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -383,7 +388,7 @@ export class AssetService {
    */
   updateToChangeRecord(changeRecord:ChangeRecord){
     return new Promise((resolve,reject)=>{
-      this.storageService.updateToChangeRecord(changeRecord).then((data)=>{
+      this.pubDBProvider.updateToChangeRecord(changeRecord).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -395,7 +400,7 @@ export class AssetService {
    */
   queryListFormChangeRecord(workerNumber:string){
     return new Promise<Array<ChangeRecord>>((resolve,reject)=>{
-      this.storageService.queryListFromChangeRecord(workerNumber).then((data)=>{
+      this.pubDBProvider.queryListFromChangeRecord(workerNumber).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -407,7 +412,7 @@ export class AssetService {
    */
   queryFromChangeRecordByAssetId(assetId:string){
     return new Promise((resolve,reject)=>{
-      this.storageService.queryFromChangeRecordByAssetId(assetId).then((data)=>{
+      this.pubDBProvider.queryFromChangeRecordByAssetId(assetId).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -416,12 +421,4 @@ export class AssetService {
   }
 
 ////////////////////////日志更改END//////////////////////////////
-  formatDate( date: Date ){
-      // 格式化日期，获取今天的日期
-      var year: number = date.getFullYear();
-      var month: any = ( date.getMonth() + 1 ) < 10 ? '0' + ( date.getMonth() + 1 ) : ( date.getMonth() + 1 );
-      var day: any = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-      return year + '-' + month + '-' + day;
-    };
-
 }

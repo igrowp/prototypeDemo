@@ -1,6 +1,5 @@
 import { ConvertService } from './../../providers/service/convert.service';
 import { DateUtil } from './../../providers/utils/dateUtil';
-import { ModalController } from 'ionic-angular/components/modal/modal-controller';
 import { NoticeService } from './../../providers/service/notice.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { CvtNonReceive } from './../../providers/entity/cvt.entity.provider';
@@ -32,7 +31,6 @@ export class GrantingBindPage {
               private convertSer:ConvertService,
               private alertCtrl:AlertController,
               private noticeSer:NoticeService,
-              private ModalCtrl:ModalController,
               private barcodeScanner:BarcodeScanner,
               public menuCtrl:MenuController,
                public navParams: NavParams) {

@@ -8,23 +8,8 @@
     </ion-toolbar>
 </ion-header>
 <ion-content style="max-height: 250px;min-height: 150px;">
-    <ion-list style="max-height: 200px;padding-top: 50px;">
-        <ion-scroll *ngIf="type=='MANAGER'" id="list_scroll" scrollY="true">
-            <ion-item *ngFor="let item of items" (click)="close(item)">
-                {{ item.userName }}
-            </ion-item>
-            <ion-item *ngIf="items!=null&&items.length==0">
-                没有搜索到该结果
-            </ion-item>
-        </ion-scroll>
-        <ion-scroll *ngIf="type=='ORGANIZATION'" id="list_scroll" scrollY="true">
-            <ion-item *ngFor="let item of items" (click)="close(item)">
-                {{ item.orgName }}
-            </ion-item>
-            <ion-item *ngIf="items!=null&&items.length==0">
-                没有搜索到该结果
-            </ion-item>
-        </ion-scroll>
-    </ion-list>
+    <button ion-button (click)="presentPopover($event)">Popover</button>
+    <button ion-button (click)="alert($event)">alert</button>
+
 
 </ion-content>

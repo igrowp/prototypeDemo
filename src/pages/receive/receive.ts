@@ -1,5 +1,5 @@
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 // declare let qrcode:any;

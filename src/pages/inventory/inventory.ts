@@ -2,9 +2,11 @@ import { NoticeService } from './../../providers/service/notice.service';
 import { FabContainer } from 'ionic-angular';
 import { FixedAsset, InvNotice } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AlertController, Platform, InfiniteScroll,ModalController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { DateUtil } from '../../providers/utils/dateUtil';
+import { Content } from 'ionic-angular/components/content/content';
 declare let ReadRFID: any;
  
 @IonicPage()
@@ -13,6 +15,7 @@ declare let ReadRFID: any;
   templateUrl: 'inventory.html'
 })
 export class InventoryPage {  
+  @ViewChild(Content) content:Content
   public dataTable:Array<FixedAsset>=new Array<FixedAsset>();
   public searched:boolean=false;
   private pageIndex=1;
@@ -22,6 +25,9 @@ export class InventoryPage {
   public isHaveData;   //判断是否有数据
 
   public finishTime;  //通知终止时间
+
+  private selectedIndex;  //记录点击盘点的资产索引号
+  private isInToSignaturePage=false;  //记录是否进入了签名页，如果进入则全部数据进行刷新
 
 
   constructor(
@@ -38,7 +44,24 @@ export class InventoryPage {
     this.invNotice=this.navParams.get("invNotice");
     this.workerNumber=this.navParams.get("workerNumber");
     this.platform.ready().then(()=>{
-      this.finishTime=this.assetService.formatDate(new Date(this.invNotice.timeFinish));
+      this.finishTime=DateUtil.formatDate(new Date(this.invNotice.timeFinish));
+    })
+    this.init();
+  }
+  init(){
+    this.pageIndex=1;
+    this.dataTable = new Array<FixedAsset>();
+    this.assetService.queryAssetsFormFixedByPage(this.pageSize, this.pageIndex, this.workerNumber).then(data => {
+      for (var i = 0; i < data.length; i++) {
+        this.dataTable.push(data[i]);
+      }
+      this.pageIndex++;
+      if (data.length == 0) {
+        //说明没有数据
+        this.isHaveData = false;
+      } else {
+        this.isHaveData = true;
+      }
     })
   }
   
@@ -51,23 +74,17 @@ export class InventoryPage {
     //   duration:10000
     // });
     //  loading.present();
-
-     this.pageIndex=1;
-     this.dataTable=new Array<FixedAsset>();
-     this.assetService.queryAssetsFormFixedByPage(this.pageSize,this.pageIndex,this.workerNumber).then(data=>{
-     for(var i=0;i<data.length;i++){
-       this.dataTable.push(data[i]);
-     }
-      this.pageIndex++;
-      // loading.dismiss();
-      if(data.length==0){
-        //说明没有数据
-        this.isHaveData=false;
-      }else{
-        this.isHaveData=true;
-      }
-    })
-    
+    if(this.isInToSignaturePage){
+      this.init();
+      this.isInToSignaturePage=false;
+    }else if (this.selectedIndex!=null) {
+      //更新具体的某一项状态
+      this.assetService.queryAssetFromFixedById(this.dataTable[this.selectedIndex].assetId).then((data) => {
+        if (data) {
+          this.dataTable[this.selectedIndex].isChecked = data.isChecked;
+        }
+      })
+    }
   }
 
     //进入手写签名页面
@@ -83,6 +100,7 @@ export class InventoryPage {
         signatureType:"inv"
       });
     })
+    this.isInToSignaturePage=true;
   }
  
 
@@ -125,19 +143,25 @@ export class InventoryPage {
     }
   }
  
-
-
+  judge=true;
   /**
    * 显示搜索窗体
    */
   doSearch(){
-    let searchbar=document.getElementById("searchbar");
-    if(searchbar.style.display=="none"){
-      searchbar.style.display="inline";
+    this.content.scrollToTop(0);
+    if(this.content.scrollTop<50){
+      //开闭
+      this.judge=!this.judge;
+    }else if(this.judge==true){
+      this.judge=false;
     }
-    else{
-      searchbar.style.display="none";
-    }
+    // let searchbar=document.getElementById("searchbar");
+    // if(searchbar.style.display=="none"){
+    //   searchbar.style.display="inline";
+    // }
+    // else{
+    //   searchbar.style.display="none";
+    // }
   }
 
 
@@ -170,9 +194,11 @@ export class InventoryPage {
       });
      });
   }
+   
 
   //盘点
-  scan(item){
+  scan(item,i){
+    this.selectedIndex=i;
     let id=item.assetId;
     let code=item.twoDimensionCode;  //应该是扫码获得的ID
     if(code==""||code==null){
@@ -228,7 +254,7 @@ export class InventoryPage {
 
  
   //重新盘点
-  reScan(item){
+  reScan(item,i){
     var alert=this.alertCtrl.create({
       title:'提示',
       message:'该资产已经盘点，是否重新进行盘点？',
@@ -240,7 +266,7 @@ export class InventoryPage {
         {
           text:'确定',
           handler:()=>{
-            this.scan(item);
+            this.scan(item,i);
           }
         }
       ]

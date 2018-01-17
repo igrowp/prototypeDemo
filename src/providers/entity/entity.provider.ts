@@ -88,9 +88,9 @@ export class User{
   age;           //年龄  int型，0是男，1是女
   workerNumber;   //员工编号
   workForOrg;     //所属机构
-  wFOAddress;     //所属机构中文名 
+  wfoAddress;     //所属机构中文名 
   workInOrg;      //所在机构
-  wIOAddress;     //所在机构中文名
+  wioAddress;     //所在机构中文名
   telePhone;      //座机号
   callPhone;      //手机号
   eMail;          //邮箱
@@ -101,6 +101,7 @@ export class User{
   job;            //工作
   presentAddress; //现居地
   remark;         //备注
+  synchroTime;    //上次同步时间
 }
 
 /**

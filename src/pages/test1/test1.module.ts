@@ -1,4 +1,4 @@
-import { File ,FileEntry} from '@ionic-native/file';
+import { File } from '@ionic-native/file';
 
 import { Camera } from '@ionic-native/camera';
 

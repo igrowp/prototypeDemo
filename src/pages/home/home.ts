@@ -1,19 +1,17 @@
+import { DateUtil } from './../../providers/utils/dateUtil';
+import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { PubContanst } from './../../providers/entity/constant.provider';
-import { LocalStorageService } from './../../providers/service/localStorage.service';
-import { DateUtil } from './../../providers/utils/dateUtil';
 import { CvtNonNotice } from './../../providers/entity/cvt.entity.provider';
 import { BackButtonService } from '../../providers/service/backButton.service';
 import { NoticeService } from './../../providers/service/notice.service';
 import { ConvertService } from './../../providers/service/convert.service';
 import { InvService } from './../../providers/service/inv.service';
 import { LoginService } from './../../providers/service/login.service';
-import { InvNotice, ChangeRecord } from './../../providers/entity/entity.provider';
-import { WebService } from './../../providers/service/web.service';
+import { InvNotice } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, ModalController, NavController, NavParams, Platform } from 'ionic-angular';
-import { DataBaseUtil } from '../../providers/utils/dataBaseUtil';
+import { IonicPage, LoadingController, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
 declare let ReadRFID: any;
 
 @IonicPage()
@@ -36,28 +34,29 @@ export class HomePage {
 
 
   constructor(public navCtrl: NavController,
-    public modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
     public loginService: LoginService,
     public assetService: AssetService,
-    private storageService:LocalStorageService,
     public invService: InvService,
     public navParams: NavParams,
     private platform: Platform,
+    private alertCtrl:AlertController,
     private barcodeScanner:BarcodeScanner,
     private convertSer:ConvertService,
-    private webService: WebService,  //测试
     public noticeService: NoticeService,
     private backButtonService: BackButtonService,
     public convertService: ConvertService) {
+
+    this.badgeValueCvt = 0;
+    this.badgeValueInv = 0;
+    
     this.platform.ready().then(() => {
       this.backButtonService.registerBackButtonAction(null);
-      this.badgeValueCvt=0;
-      this.badgeValueInv=0;
 
       //初始化数据
-      this.loginService.getFromStorage("workForOrg").then((wForOrg) => {
-        this.workForOrg = wForOrg;
+      setTimeout(() => {
+        this.loginService.getFromStorage("account").then(()=>{
+          
         this.loginService.getFromStorage("userName").then((userName) => {
           this.userName = userName;
           this.loginService.getFromStorage("wFOAddress").then((wFOAddress) => {
@@ -66,72 +65,30 @@ export class HomePage {
               this.workerNumber = number;
               this.loginService.getFromStorage("workInOrg").then((workInOrg) => {
                 this.workInOrg = workInOrg;
-                this.getNoticeFromServe();
+                this.loginService.getFromStorage("workForOrg").then((wForOrg) => {
+                  this.workForOrg = wForOrg;
+                  this.getNoticeFromServe();
+
+                });
               })
             })
           })
         })
-      })
-    });
+        })
+      }, 1000)
+    })
+
+      
   }
 
   ionViewDidEnter() {
-    this.getNoticeFromServe();  //每次进入主界面，从服务器获取一次数据    
+    if(this.workForOrg){
+      this.getNoticeFromServe();  //每次进入主界面，从服务器获取一次数据
+    }    
   }
 
   //转到资产转产页面
   navToCvt() {
-    // if(this.badgeValueCvt==0&&!this.isGranting){
-    //   let loading=this.loadingCtrl.create({
-    //     content:"正在从服务器获取数据！",
-    //     duration:30000
-    //   });
-    //   loading.present();
-    //   this.convertService.getFromCvtNonNoticeByWNAndOrgOrFromServe(this.workerNumber,this.workInOrg).then((cvtNonNotice)=>{
-    //     if(cvtNonNotice!=null){
-    //       //可以获取到数据
-    //       this.cvtNotice=cvtNonNotice;
-    //       loading.dismiss();
-    //       //在这里还要判断是什么状态，领用还是发放
-    //       if(this.cvtNotice.noticeState=="ISSUED"){
-    //         //领用界面
-    //         this.badgeValueCvt=1;
-    //         this.navCtrl.push('TransPage', {
-    //           workerNumber: this.workerNumber,
-    //           custodian: this.userName,
-    //           cvtNotice: this.cvtNotice,
-    //           workInOrg:this.workInOrg
-    //         });
-    //       }else if(this.cvtNotice.noticeState=="GRANTING"){
-    //         //发放界面
-    //         this.badgeValueCvt=0;
-    //         this.isGranting=true;
-    //         this.isSynchro=false;
-    //         this.navCtrl.push("GrantingPage",{
-    //           cvtNonNotice:this.cvtNotice,
-    //           userName: this.userName,
-    //         });
-    //       }
-    //     }else{  //notice==null  统一进入到二维码界面
-    //       //没有资产通知，说明1.没有领用通知，2.为资产保管人
-    //       alert("进入");
-    //       loading.dismiss();
-    //       this.badgeValueCvt=0;
-    //       this.isGranting=false;
-    //       this.isSynchro=false;
-    //       this.loginService.getFromStorage("userId").then((userId)=>{
-    //         this.barcodeScanner.encode(this.barcodeScanner.Encode.TEXT_TYPE,userId).then((data)=>{
-    //           //进入页面
-    //         },error=>{
-    //           this.noticeService.showIonicAlert(error.message);
-    //         })
-    //       },error=>this.noticeService.showIonicAlert(error))
-    //     }
-    //   }, (error) => {
-    //     loading.dismiss();
-    //     this.noticeService.showNativeToast(error);
-    //   })
-    // }else if(this.badgeValueCvt>0||this.isGranting){
       //有通知，直接进入
       this.convertService.queryFromCvtNonNoticeByWorkerNumber(this.workerNumber).then((cvtNotice)=>{
         this.cvtNotice=cvtNotice;
@@ -139,7 +96,7 @@ export class HomePage {
           //处于领用状态
           this.badgeValueCvt=1;
           this.isGranting=false;
-          this.navCtrl.push('TransPage', {
+          this.navCtrl.push('ConvertPage', {
             workerNumber: this.workerNumber,
             custodian: this.userName,
             cvtNotice: this.cvtNotice,
@@ -154,7 +111,6 @@ export class HomePage {
             cvtNonNotice:this.cvtNotice,
             userName: this.userName,
           });
-
         }else if(cvtNotice != null&&cvtNotice.noticeState=="SYNCHRONIZE"){
           this.isSynchro=true;
           this.isGranting=false;
@@ -279,9 +235,53 @@ export class HomePage {
     })
   }
 
-
   //同步数据
   navToSynchro() {
+    let synchroTitle="";
+    let synchroTime="";
+    this.loginService.getFromStorage("synchroTime").then((data)=>{
+      if(data==null||data==""){
+        //没有同步过
+        synchroTitle="";
+        synchroTime="";
+      }else{
+        synchroTitle="上次同步时间";
+        synchroTime=data;
+      }
+      let synchroAlert=this.alertCtrl.create({
+        title:'是否同步数据？',
+        subTitle:synchroTitle,
+        message:synchroTime,
+        cssClass:'alert-synchro',
+        buttons:[
+          {
+            text:'取消',
+            role:'concel',
+            handler:()=>{
+  
+            }
+          },
+          {
+            text:'确定',
+            cssClass:"border:1px",
+            handler:()=>{
+              this._synchro();
+              //将时间保存到数据库中
+              let time=DateUtil.formatDateToHMS(new Date())
+              this.loginService.updateSynchroTimeToUserInfo(this.workerNumber,time);
+              this.loginService.setInStorage("synchroTime",time); 
+            }
+          }
+  
+        ]
+      })
+      synchroAlert.present();
+    })
+
+  }
+
+  private _synchro(){
+
     let loading = this.loadingCtrl.create({
       spinner: 'bubbles',
       content: '正在同步中...',
@@ -291,6 +291,7 @@ export class HomePage {
     this.assetService.queryAssetsFormFixed(this.workerNumber, "2").then().then((fixedAssets) => {
       this.assetService.queryAssetsFormInv(this.workerNumber, "2").then().then((invAssets) => {
         this.assetService.queryListFormChangeRecord(this.workerNumber).then((changeRecords) => {
+          //alert("fixed="+fixedAssets.length+"\n invAssets="+invAssets.length+"\n changeRecords="+changeRecords.length);
           this.assetService.syncDBToServer(fixedAssets, invAssets, changeRecords).then((data) => {
             loading.dismiss();
             this.noticeService.showNativeToast("同步成功！");
@@ -310,7 +311,12 @@ export class HomePage {
       loading.dismiss();
       this.noticeService.showIonicAlert("获取台账失败：" + err);
     })
+    //需要同步转产数据
+    if(this.isSynchro){
+      this.handleCvtSynchro();
+    }
   }
+
   /**
    * 退出
    */
@@ -318,6 +324,7 @@ export class HomePage {
     this.loginService.getFromStorage("isRemember").then((isRemember) => {
       if (isRemember == "true") {
         //不清除数据，直接退出
+        this.loginService.setInStorage("signIn","false");
         this.navCtrl.setRoot("LoginPage");
       } else {
         //清楚本地存储的内容
@@ -329,7 +336,10 @@ export class HomePage {
                   this.loginService.RemoveFromStorage("workForOrg").then(() => {
                     this.loginService.RemoveFromStorage("workInOrg").then(()=>{
                       this.loginService.RemoveFromStorage("userId").then(()=>{
-                        this.navCtrl.setRoot("LoginPage");
+                        this.loginService.RemoveFromStorage("signIn").then(()=>{
+                          this.navCtrl.setRoot("LoginPage");
+
+                        })
                       })
                     })
                   })
@@ -342,10 +352,12 @@ export class HomePage {
     });
   }
 
-  test() {
-    this.webService.testhttp().then((data)=>{
-      alert(data.length);
-    })
+  test33() {
+
+    //this.webService.testPost("1170000020003");
+    // this.webService.testhttp().then((data)=>{
+    //   alert(data.length);
+    // })
 
     //this.navCtrl.push("ReceivePage");
 
@@ -368,6 +380,12 @@ export class HomePage {
   
 
   getInvNotice() {
+  }
+
+  //用户信息
+  userMessage(){
+    this.noticeService.showIonicAlert("当前用户："+this.userName);
+
   }
 
   download() {
@@ -414,8 +432,7 @@ export class HomePage {
     return new Promise((resolve,reject)=>{
       if (this.badgeValueInv == 0 || this.invNotice == null) {
         //获取盘点通知
-        this.invService.getInvNoticeByLeadingOrgOrFromServe(this.workForOrg).then((invNotice) => {
-          this.invService.queryFromInvNoticeByLeadingOrg(this.workForOrg).then((notice) => {
+        this.invService.getInvNoticeByLeadingOrgOrFromServe(this.workForOrg).then((notice) => {
             if (notice != null) {
               //说明有通知了
               this.badgeValueInv = 1;
@@ -425,11 +442,8 @@ export class HomePage {
               this.invNotice = null;
             }
             resolve();
-          }, error => {
-            reject("查询盘点通知单失败!"+error);
-          })
         }, (error) => {
-          reject("网络连接超时，请确认当前为内网环境");
+          reject("网络连接超时，请确认当前为内网环境"+error);
           //this.noticeService.showNativeToast("网络连接超时，请确认当前为内网环境");
         })
       }else{
@@ -469,7 +483,7 @@ export class HomePage {
         }
         resolve();
       }, (error) => {
-        reject("网络连接超时，请确认当前为内网环境");
+        reject("网络连接超时，请确认当前为内网环境"+error);
         //this.noticeService.showIonicAlert(error.toString());
         //this.noticeService.showNativeToast("网络连接超时，请确认当前为内网环境");
       })

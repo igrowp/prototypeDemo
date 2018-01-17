@@ -1,9 +1,112 @@
+<!-- <ion-content padding class="cover background">
+    <div style="height:10%">
+        <img src="./assets/imgs/title.png" style="height:100%">
+        <p class="account">
+            <ion-icon name="home"></ion-icon> {{wFOAddress}}</p>
+        <p class="account">
+            <ion-icon name="person"></ion-icon> {{userName}} </p>
+    </div>
+    <div class="grid-content">
+        <ion-grid>
+            <ion-row>
+                <ion-col class="cover" col-4>
+                    <div class="green cover" (click)="navToMyAsset()">
+                        <img class="icon-size center" src="./assets/imgs/home-mine.png">
+                        <h5 class="item-title">我的资产</h5>
+                    </div>
+                </ion-col>
+                <ion-col class="cover" col-4>
+                    <div class="yellow cover" (click)="navToCvt()">
+                        <img class="icon-size center" src="./assets/imgs/home-cvt.png">
+                        <h5 class="item-title">资产领用
+                            <sup>
+                                <ion-badge color="danger" *ngIf="badgeValueCvt!=null&&badgeValueCvt!=0">{{badgeValueCvt}}</ion-badge>
+                                <ion-badge color="danger" *ngIf="isGranting">1</ion-badge>
+                            </sup>
+                        </h5>
+
+                    </div>
+
+                </ion-col>
+                <ion-col class="cover" col-4>
+                    <div class="image1 image-set cover">
+
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col class="cover" col-4>
+                    <div class="image2 image-set cover">
+
+                    </div>
+                </ion-col>
+                <ion-col class="cover" col-4>
+                    <div class="deep-blue cover" (click)="navToInv()">
+                        <img class="icon-size center" src="./assets/imgs/home-inv.png">
+                        <h5 class="item-title">资产盘点
+                            <sup>
+                                <ion-badge color="danger" *ngIf="badgeValueInv!=null&&badgeValueInv!=0">{{badgeValueInv}}</ion-badge>
+                            </sup>
+                        </h5>
+
+                    </div>
+                </ion-col>
+                <ion-col class="cover" col-2>
+                    <div class="orange cover" (click)="download()">
+                        <img class="icon-size-petty center" src="./assets/imgs/home-download.png">
+                        <h6 class="item-title-petty">数据下载</h6>
+
+                    </div>
+                </ion-col>
+                <ion-col class="cover" col-2>
+                    <div class="purple cover" (click)="navToSynchro()">
+                        <img class="icon-size-petty center" src="./assets/imgs/home-upload.png">
+                        <h6 class="item-title-petty">数据上传</h6>
+
+                    </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col class="cover" col-4>
+                    <div class="blue cover" (click)="navToProcess()">
+                        <img class="icon-size center" src="./assets/imgs/home-process.png">
+                        <h5 class="item-title">流程审核</h5>
+
+                    </div>
+                </ion-col>
+                <ion-col class="cover" col-4>
+                    <div class="image3 image-set cover"></div>
+                </ion-col>
+                <ion-col class="cover" col-2>
+                    <div class="light-blue cover" (click)="userMessage()">
+                        <img class="icon-size-petty center" src="./assets/imgs/home-user.png">
+                        <h6 class="item-title-petty">用户信息</h6>
+
+                    </div>
+                </ion-col>
+                <ion-col class="cover" col-2>
+                    <div class="gray cover" (click)="exit()">
+                        <img class="icon-size-petty center" src="./assets/imgs/home-exit.png">
+                        <h6 class="item-title-petty">退出</h6>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
+</ion-content> -->
+
+
+
+<!-- 手机端 -->
 <ion-header>
     <ion-navbar color="title">
         <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>重庆气矿资产辅助管理系统</ion-title>
+        <ion-title>资产辅助管理系统</ion-title>
         <ion-buttons right>
             <button ion-button icon-only (click)="download()">
                 <ion-icon name="cloud-download" style="font-size:40px"></ion-icon>
@@ -14,7 +117,7 @@
 </ion-header>
 
 <ion-content style="background-color:#F7F6F6" #content>
-    <button ion-button (click)="test()">测试</button>
+    <!-- <button ion-button (click)="test1()">测试</button> -->
     <ion-card>
         <ion-card-content>
             <ion-row>
@@ -44,15 +147,11 @@
                         </sup>
                     </h2>
                 </ion-col>
-                <!-- <ion-col col-3 id="nav_col" (click)="exit()">
-                    <img src="./assets/imgs/exit.png" />
-                    <h2 style="margin-top:10px;">退出</h2>
-                </ion-col> -->
             </ion-row>
         </ion-card-content>
     </ion-card>
 
-    <ion-card *ngIf="isSynchro" (click)="handleCvtSynchro()">
+    <!-- <ion-card *ngIf="isSynchro" (click)="handleCvtSynchro()">
             <ion-card-content>
                 <ion-card-title>
                     待完成项
@@ -65,7 +164,7 @@
                     </h1>
                 </ion-item>
             </ion-card-content>
-        </ion-card>
+        </ion-card> -->
     
     <ion-card *ngIf="isGranting" (click)="navToCvt()">
         <ion-card-content>
@@ -111,24 +210,6 @@
         </ion-card-content>
     </ion-card>
 
-    <!-- <div id="right">
-        <div id="right_top">
-            <div id="trans" (click)="navToTrans()">
-                <img src="./assets/imgs/trans.png">
-                <p>资产领用
-                    <sup><ion-badge color="danger" *ngIf="badgeValueTrans!=0&&badgeValueTrans!=null">{{badgeValueTrans}}</ion-badge></sup>
-                </p>
-            </div>
-            <div id="inv" (click)="navToInv()">
-                <img src="./assets/imgs/inv.png">
-                <p>资产盘点
-                    <sup><ion-badge color="danger" *ngIf="badgeValueInv!=0&&badgeValueInv!=null">{{badgeValueInv}}</ion-badge></sup>
-                </p>
-            </div>
-        </div>
-
-    </div> -->
-
 </ion-content>
 
 
@@ -137,7 +218,6 @@
     <ion-grid id="grid">
         <ion-row id="left_top">
             <ion-col col-5 id="col_avatar">
-                <!--由于页面最终是要加载到index里面的所以路径如下，否则打包后会无法显示  -->
                 <img id="avatar" src="./assets/imgs/avatar.png" />
             </ion-col>
             <ion-col colr-7 id="col_user">

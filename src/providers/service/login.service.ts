@@ -1,9 +1,13 @@
-import { WebService } from './web.service';
+import { DBService } from './../storage/db.service';
+import { LoginWebProvider } from './../web/login.web.provider';
+import { AssetWebProvider } from './../web/asset.web.provider';
+import { LoginDBProvider } from './../storage/login.db.provider';
 import { User, UserAccount } from './../entity/entity.provider';
-import { LocalStorageService} from './localStorage.service';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { AlertController, LoadingController } from 'ionic-angular';
+
+import { PubDBProvider } from './../storage/pub.db.provider';
 /*
 提供关于登陆的服务
 */
@@ -11,9 +15,11 @@ import { AlertController, LoadingController } from 'ionic-angular';
 export class LoginService {
   constructor(
     public alertCtrl:AlertController,
-    
-    public webService:WebService,
-    public storageService:LocalStorageService,
+    public loginWebProvider:LoginWebProvider,
+    private loginDBProvider:LoginDBProvider,
+    private assetWebProvider:AssetWebProvider,
+    private pubDBProvider:PubDBProvider,
+    private dbService:DBService,
     private loadingCtrl:LoadingController,
   ) {
     
@@ -27,13 +33,13 @@ export class LoginService {
    */
   getAndSaveOrgInfoFromServe(){
     return new Promise((resolve,reject)=>{
-      this.webService.getOrgInfoListFromServe().then((data)=>{
+      this.assetWebProvider.getOrgInfoListFromServe().then((data)=>{
         for(var i=0;i<data.length;i++){
           let orgInfo=data[i]
-          this.storageService.queryFromOrgInfoByOrgId(orgInfo.orgId).then((data1)=>{
+          this.pubDBProvider.queryFromOrgInfoByOrgId(orgInfo.orgId).then((data1)=>{
             if(data1==null){
               //说明本地没有该组织机构信息，插入
-              this.storageService.insertToOrgInfo(orgInfo).then(()=>{
+              this.pubDBProvider.insertToOrgInfo(orgInfo).then(()=>{
                 //插入成功
                 if(orgInfo.orgId==data[data.length-1].orgId){
                   resolve();
@@ -43,7 +49,7 @@ export class LoginService {
               })
             }else{
               //本地有该组织机构，进行更新
-              this.storageService.updateToOrgInfo(orgInfo).then(()=>{
+              this.pubDBProvider.updateToOrgInfo(orgInfo).then(()=>{
                 //更新成功
                 if(orgInfo.orgId==data[data.length-1].orgId){
                   resolve();
@@ -64,8 +70,8 @@ export class LoginService {
    */
   downloadOrgInfoIfEmpty(){
     return new Promise((resolve,reject)=>{
-      this.storageService.queryListFromOrgInfo(1,1).then((data)=>{
-        if(data==null){
+      this.pubDBProvider.queryListFromOrgInfo(1,1).then((data)=>{
+        if(data==null||data.length==0){
           //说明本地没有员工信息，进行下载
           this.getAndSaveOrgInfoFromServe().then(()=>{
             resolve(data);
@@ -87,8 +93,8 @@ export class LoginService {
    */
   downloadUserSimpleIfEmpty(){
     return new Promise((resolve,reject)=>{
-      this.storageService.queryListFromUserSimple(1,1).then((data)=>{
-        if(data==null){
+      this.pubDBProvider.queryListFromUserSimple(1,1).then((data)=>{
+        if(data==null||data.length==0){
           //说明本地没有员工信息，进行下载
           this.getAndSaveUserSimpleFromServe().then(()=>{
             resolve(data);
@@ -110,12 +116,12 @@ export class LoginService {
    */
   getAndSaveUserSimpleFromServe(){
     return new Promise((resolve,reject)=>{
-      this.webService.getUserSimpleListFromServe().then((data)=>{
+      this.assetWebProvider.getUserSimpleListFromServe().then((data)=>{
         for(var i=0;i<data.length;i++){
           let userSimple=data[i];
-          this.storageService.queryFromUserSimpleByWorkerNumber(userSimple.workerNumber).then((userName)=>{
-            if(userName==""){
-              this.storageService.insertToUserSimple(userSimple).then(()=>{
+          this.pubDBProvider.queryFromUserSimpleByWorkerNumber(userSimple.workerNumber).then((userName)=>{
+            if(userName==null||userName==""){
+              this.pubDBProvider.insertToUserSimple(userSimple).then(()=>{
                 //插入成功
                 if(userSimple.workerNumber==data[data.length-1].workerNumber){
                   //说明执行成功了
@@ -148,17 +154,17 @@ export class LoginService {
    */
    insertOrUpdateToUserAccount(userAccount:UserAccount){
       return new Promise((resolve,reject)=>{
-          this.storageService.queryFromAccountByUserId(userAccount.userId).then((data)=>{
+          this.loginDBProvider.queryFromAccountByUserId(userAccount.userId).then((data)=>{
             if(data==null){
               //说明没有该人的账号信息，插入
-              this.storageService.insertToAccount(userAccount).then((data)=>{
+              this.loginDBProvider.insertToAccount(userAccount).then((data)=>{
                 // console.log("插入成功！");
               },(error)=>{
                 alert(error.message);
               })
             }else{
               //有该人的账号信息，进行更新
-              this.storageService.updateToAccount(userAccount).then((data)=>{
+              this.loginDBProvider.updateToAccount(userAccount).then((data)=>{
                 // console.log("更新成功!");
               },(error)=>{
                 alert(error.message);
@@ -175,17 +181,17 @@ export class LoginService {
    */
    insertOrUpdateToUser(user:User){
       return new Promise((resolve,reject)=>{
-          this.storageService.queryFromUserInfoByUserId(user.userId).then((data)=>{
+          this.loginDBProvider.queryFromUserInfoByUserId(user.userId).then((data)=>{
             if(data==null){
               //说明没有该人的账号信息，插入
-              this.storageService.insertToUserInfo(user).then((data)=>{
+              this.loginDBProvider.insertToUserInfo(user).then((data)=>{
                 // console.log("插入成功！");
               },(error)=>{
                 alert(error.message);
               })
             }else{
               //有该人的账号信息，进行更新
-              this.storageService.updateToUserInfo(user).then((data)=>{
+              this.loginDBProvider.updateToUserInfo(user).then((data)=>{
                 // console.log("更新成功!");
               },(error)=>{
                 alert(error.message);
@@ -202,15 +208,15 @@ export class LoginService {
    */
   getUserMessageFromServer(userId:string){
     return new Promise<User>((resolve,reject)=>{
-      this.storageService.queryFromUserInfoByUserId(userId).then((data)=>{
+      this.loginDBProvider.queryFromUserInfoByUserId(userId).then((data)=>{
         if(data==null){
           //说明本地没有该员工的信息，从服务器中获取
-          this.webService.getUserMessage(userId).then((user)=>{
+          this.loginWebProvider.getUserMessage(userId).then((user)=>{
             if(user==null){
               //说明没有该员工的信息
               reject("服务器中没有该员工的信息");
             }else{
-              this.storageService.insertToUserInfo(user).then((data)=>{
+              this.loginDBProvider.insertToUserInfo(user).then((data)=>{
                 //插入成功
                 resolve(user);
               },(error)=>{
@@ -232,7 +238,7 @@ export class LoginService {
    */
   queryAccountByUserNameAndPWD(userName:string,password:string){
     return new Promise<UserAccount>((resolve,reject)=>{
-      this.storageService.queryFromAccountByNameAndPWD(userName,password).then((data)=>{
+      this.loginDBProvider.queryFromAccountByNameAndPWD(userName,password).then((data)=>{
         if(data==null){
           //说明本地没有该成员的账户信息,从服务器获取
           let loading=this.loadingCtrl.create({
@@ -240,15 +246,15 @@ export class LoginService {
             duration:20000
           });
           loading.present();
-          this.webService.getUserAccountByNameAndPWD(userName,password).then((userAccount)=>{
+          this.loginWebProvider.getUserAccountByNameAndPWD(userName,password).then((userAccount)=>{
             if(userAccount==null){
               loading.dismiss();
               reject("账户或密码错误，请确认后重试！");
             }else{
-              this.storageService.queryFromAccountByUserId(userAccount.userId).then((userData)=>{
+              this.loginDBProvider.queryFromAccountByUserId(userAccount.userId).then((userData)=>{
                 if(userData==null){
                   //说明本地没有存储该成员的账户信息，存储到本地
-                  this.storageService.insertToAccount(userAccount).then(()=>{
+                  this.loginDBProvider.insertToAccount(userAccount).then(()=>{
                     // alert("插入账户信息");
                       loading.dismiss();
                       resolve(userAccount);
@@ -257,7 +263,7 @@ export class LoginService {
                   });
                 }else{
                   //说明本地已经存储该成员的账户信息，进行更新
-                  this.storageService.updateToAccount(userAccount).then(()=>{
+                  this.loginDBProvider.updateToAccount(userAccount).then(()=>{
                     // alert("插入账户信息");
                       loading.dismiss();
                       resolve(userAccount);
@@ -289,7 +295,7 @@ export class LoginService {
    */
   queryUserInfoByUserNameAndPWD(userName:string,password:string){
     return new Promise<User>((resolve,reject)=>{
-      this.storageService.queryUserInfoByNameAndPWD(userName,password).then((data)=>{
+      this.loginDBProvider.queryUserInfoByNameAndPWD(userName,password).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error.message);
@@ -305,7 +311,7 @@ export class LoginService {
    */
   getUserInfoFromServeByUserId(userId:string){
     return new Promise<User>((resolve,reject)=>{
-      this.webService.getUserMessage(userId).then((user)=>{
+      this.loginWebProvider.getUserMessage(userId).then((user)=>{
         resolve(user);
       },(error)=>{
         reject(error.message);
@@ -313,94 +319,97 @@ export class LoginService {
     });
   }
 
+
+
   /**
-   * 向本地存储写入键值对
+   * 向本地存储写入键值对     待改进
    * @param key 
    * @param value 
    */
-  setInStorage(key:string,value:string){
-      return new Promise((resolve,reject)=>{
-        if(key==""||key==null){
-          reject("键为空！");
-        }
-        this.storageService.getFromStorage(key).then((data)=>{
-          if(data==null||data==""){
-            //说明本地没有该记录
-            this.storageService.setInStorage(key,value).then((data)=>{
+  setInStorage(key: string, value: string) {
+    return new Promise((resolve, reject) => {
+      if (key == "" || key == null) {
+        reject("键为空！");
+      }
+      this.dbService.getFromStorage(key).then((data) => {
+        if (data == null || data == "") {
+          //说明本地没有该记录
+          this.dbService.setInStorage(key, value).then((data) => {
+            resolve(data);
+          }, (error) => {
+            reject(error);
+          })
+        } else {
+          //说明本地已经有该记录，删除后重新添加
+          this.dbService.removeFromStorage(key).then(() => {
+            this.dbService.setInStorage(key, value).then((data) => {
               resolve(data);
-            },(error)=>{
+            }, (error) => {
               reject(error);
             })
-          }else{
-            //说明本地已经有该记录，删除后重新添加
-            this.storageService.removeFromStorage(key).then(()=>{
-              this.storageService.setInStorage(key,value).then((data)=>{
-                resolve(data);
-              },(error)=>{
-                reject(error);
-              })
-            },(error)=>{
-              reject(error);
-            })
-          }
-        },(error)=>{
-          reject(error);
-        })
+          }, (error) => {
+            reject(error);
+          })
+        }
+      }, (error) => {
+        reject(error);
       })
+    })
   }
     
   /**
    * 从本地存储中读取
    * @param key 
    */
-  getFromStorage(key:string){
-      return new Promise<string>((resolve,reject)=>{
-        if(key==""||key==null){
-          reject("键为空！");
-          return;
+  getFromStorage(key: string) {
+    return new Promise<string>((resolve, reject) => {
+      if (key == "" || key == null) {
+        reject("键为空！");
+        return;
+      }
+      this.dbService.getFromStorage(key).then((data) => {
+        if (data != null) {
+          resolve(data.toString());
+        } else {
+          resolve(null);
         }
-          this.storageService.getFromStorage(key).then((data)=>{
-              resolve(data);
-          },(error)=>{
-              reject(error);
-          })
+      }, (error) => {
+        reject(error);
       })
+    })
   }
 
   /**
    * 删除本地存储的key键值对
    * @param key 
    */
-  RemoveFromStorage(key:string){
-      return new Promise((resolve,reject)=>{
-        if(key==""||key==null){
-          reject("键为空！");
-          return;
-        }
-          this.storageService.removeFromStorage(key).then((data)=>{
-              resolve(data);
-          },(error)=>{
-              reject(error.message);
-          })
+  RemoveFromStorage(key: string) {
+    return new Promise((resolve, reject) => {
+      if (key == "" || key == null) {
+        reject("键为空！");
+        return;
+      }
+      this.dbService.removeFromStorage(key).then((data) => {
+        resolve(data);
+      }, (error) => {
+        reject(error.message);
       })
+    })
   }
 
   /**
    * 初始化数据库
    */
   initDB(){
-    return new Promise((resolve,reject)=>{
-      this.storageService._getLocal().then(()=>{
-        resolve();
-      },(error)=>{
-        reject();
-      })
-    })
+    return this.dbService.initDB();
   }
 
-
-
-
-
+  /**
+     * 在用户表中插入数据
+     * @param user 
+     */
+  updateSynchroTimeToUserInfo(workerNumber:string,synchroTime:string){
+    return this.loginDBProvider.updateSynchroTimeToUserInfo(workerNumber,synchroTime);
+  }
 }
  

@@ -1,9 +1,10 @@
-import { WebService } from './web.service';
 import { InvNotice, OrgInfo, UserSimple } from './../entity/entity.provider';
-import { LocalStorageService } from './localStorage.service';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { AlertController } from 'ionic-angular';
+import { PubDBProvider } from '../storage/pub.db.provider';
+import { InvDBProvider } from '../storage/inv.db.provider';
+import { InvWebProvider } from '../web/inv.web.provider';
 /*
   资产盘点时对于数据的操作
 */
@@ -12,11 +13,60 @@ export class InvService {
 
   constructor(
     public alertCtrl:AlertController,
-    private webService:WebService,
-    private storageService:LocalStorageService
+    private invWebProvider:InvWebProvider,
+    private pubDBProvider:PubDBProvider,
+    private invDBProvider:InvDBProvider,
   ) {
   }
 
+  // /**
+  //  * 从本地固定资产台账中获得数据
+  //  */
+  // queryAssetsFormInv(preWorkerNumber:string,isSignatured:string){
+  //   return new Promise<Array<InvAsset>>((resolve,reject)=>{
+  //     this.invDBProvider.queryAssetsFromInv(preWorkerNumber,isSignatured).then((data)=>{
+  //       resolve(data);
+  //     },(err)=>{
+  //       reject(err);
+  //     });
+  //   });
+  // }
+
+  // /**
+  //  * 根据资产id从资产盘点记录中获取资产信息
+  //  * @param assetId 
+  //  * @param noticeId
+  //  */
+  // queryAssetFromInvByIdAndNoticeId(assetId,noticeId){
+  //   return new Promise<InvAsset>((resolve,reject)=>{
+  //     if(assetId==null||noticeId==null){
+  //       reject("错误：资产ID为空或通知ID为空");
+  //       return;
+  //     }
+  //     this.invDBProvider.queryFromInvByIdAndNotice(assetId,noticeId).then((data)=>{
+  //       resolve(data);
+  //     },(error)=>{
+  //       reject(error);
+  //     })
+  //   })
+  // }
+
+  /**
+   * 判断盘点通知单是否可用
+   * @param invNotice 
+   */
+  noticeIsAvailable(invNotice):boolean{
+    if(invNotice!=null&&invNotice.state=="ISSUED"){
+      //说明本地有通知，判断一下时间，
+      var timeStart=new Date(invNotice.timeStart);
+      var timeFinish=new Date(invNotice.timeFinish);
+      var timeNow=new Date();
+      var flag=this.isDateBetween(timeNow,timeStart,timeFinish);
+      return flag;
+    }else{
+      return false;
+    }
+  }
 
   /**
    * 获取通知,先从本地寻找，如果本地没有则从服务器进行下载
@@ -26,25 +76,24 @@ export class InvService {
       if(leadingOrg==null||leadingOrg==""){
         resolve(null);
       }
-      this.storageService.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice)=>{
+      this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice)=>{
         var data:InvNotice=null;
-        if(dataNotice!=null){
-          //说明本地有通知，判断一下时间，
-          var timeStart=new Date(dataNotice.timeStart);
-          var timeFinish=new Date(dataNotice.timeFinish);
-          var timeNow=new Date();
-          var flag=this.isDateBetween(timeNow,timeStart,timeFinish);
-          if(flag&&dataNotice.state=="ISSUED"){
-            //说明在时间范围内，可以盘点
-            data=dataNotice;
-          }
+        //说明本地有通知，判断一下时间，
+        var flag = this.noticeIsAvailable(dataNotice);
+        if (flag) {
+          //说明在时间范围内，可以盘点
+          data = dataNotice;
         }
         if(data!=null){
           resolve(data);
-          
         }else{
           //说明本地没有通知，向服务器找找
-          this.webService.getInvNoticeByOrg(leadingOrg).then((notice)=>{
+          this.invWebProvider.getInvNoticeByOrg(leadingOrg).then((noticeServer)=>{
+            var notice:InvNotice=null;
+            var flag1=this.noticeIsAvailable(noticeServer);
+            if(flag1){
+              notice=noticeServer;
+            }
             if(notice==null){
               //说明没有存在该通知
               resolve(null);
@@ -52,17 +101,19 @@ export class InvService {
               if(notice.timeStart!=null){
                 notice.timeStart=new Date(notice.timeStart);
               }
-              if(notice.timeFinish!=null){notice.timeFinish=new Date(notice.timeFinish);
+              if(notice.timeFinish!=null){
+                notice.timeFinish=new Date(notice.timeFinish);
               }
               notice.state="ISSUED";
+
               //有该通知，看本地数据库是否存储，没有的话存下去
-              this.storageService.queryFromInvNoticeByLeadingOrg(notice.leadingOrg).then((invNotice)=>{
+              this.invDBProvider.queryFromInvNoticeByLeadingOrg(notice.leadingOrg).then((invNotice)=>{
               if(invNotice==null){
                 //本地没有存储，存到本地
-                this.storageService.insertToInvNotice(notice).then(()=>{
+                this.invDBProvider.insertToInvNotice(notice).then(()=>{
                   //清除本地该作业区下已经盘点的数据
-                  // this.storageService.deleteFromInv
-                  this.storageService.deleteFromInv(notice.leadingOrg).then(()=>{
+                  // this.invDBProvider.deleteFromInv
+                  this.invDBProvider.deleteFromInv(notice.leadingOrg).then(()=>{
                     resolve(notice);
                   },(error)=>{
                     reject(error);
@@ -74,9 +125,9 @@ export class InvService {
                 //每个作业区只会有一个通知记录
                 if(data!=null&&invNotice.noticeId!=data.noticeId){
                 //说明不是一个通知了，删除本地数据
-                this.storageService.deleteFromInv(leadingOrg).then();
+                this.invDBProvider.deleteFromInv(leadingOrg).then();
                 }
-                this.storageService.updateToInvNotice(notice).then(()=>{
+                this.invDBProvider.updateToInvNotice(notice).then(()=>{
                   resolve(notice);
                 },(error)=>{
                   reject(error);
@@ -89,7 +140,6 @@ export class InvService {
           },(error)=>{
             reject("网络连接失败，请确认当前为内网环境！")
           })
-
         }
       },(error)=>{
         reject("获取本地通知表失败！")
@@ -98,59 +148,60 @@ export class InvService {
 
   }
 
-  /**
-   * 根据所属单位获取盘点通知，服务器会判断当前时间下有没有通知
-   * @param leadingOrg 员工所属单位编号
-   */
-  getInvNoticeByOrgFromServe(leadingOrg:string){
-    return new Promise<InvNotice>((resolve,reject)=>{
-      this.webService.getInvNoticeByOrg(leadingOrg).then((data)=>{
-        if(data==null){
-          //说明没有存在该通知
-          resolve(data);
-        }else{
-          if(data.timeStart!=null){
-            data.timeStart=new Date(data.timeStart);
-          }
-          if(data.timeFinish!=null){
-            data.timeFinish=new Date(data.timeFinish);
-          }
-          data.state="ISSUED";
-          //有该通知，看本地数据库是否存储，没有的话存下去
-          this.storageService.queryFromInvNoticeByLeadingOrg(leadingOrg).then((invNotice)=>{
-            if(invNotice==null){
-              //本地没有存储，存到本地
-              this.storageService.insertToInvNotice(data).then(()=>{
-                this.storageService.deleteFromInv(leadingOrg).then(()=>{
-                  resolve(data);
-                },(error)=>{
-                  reject(error);
-                })
-              },(error)=>{
-                reject(error);
-              });
-            }else{
-              if(invNotice.noticeId!=data.noticeId){
-                //说明不是一个通知了，删除本地数据
-                this.storageService.deleteFromInv(leadingOrg).then();
-              }
-              //每个作业区只会有一个通知记录
-              this.storageService.updateToInvNotice(data).then(()=>{
+
+  // /**
+  //  * 根据所属单位获取盘点通知，服务器会判断当前时间下有没有通知
+  //  * @param leadingOrg 员工所属单位编号
+  //  */
+  // getInvNoticeByOrgFromServe(leadingOrg:string){
+  //   return new Promise<InvNotice>((resolve,reject)=>{
+  //     this.invWebProvider.getInvNoticeByOrg(leadingOrg).then((data)=>{
+  //       if(data==null){
+  //         //说明没有存在该通知
+  //         resolve(data);
+  //       }else{
+  //         if(data.timeStart!=null){
+  //           data.timeStart=new Date(data.timeStart);
+  //         }
+  //         if(data.timeFinish!=null){
+  //           data.timeFinish=new Date(data.timeFinish);
+  //         }
+  //         data.state="ISSUED";
+  //         //有该通知，看本地数据库是否存储，没有的话存下去
+  //         this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((invNotice)=>{
+  //           if(invNotice==null){
+  //             //本地没有存储，存到本地
+  //             this.invDBProvider.insertToInvNotice(data).then(()=>{
+  //               this.invDBProvider.deleteFromInv(leadingOrg).then(()=>{
+  //                 resolve(data);
+  //               },(error)=>{
+  //                 reject(error);
+  //               })
+  //             },(error)=>{
+  //               reject(error);
+  //             });
+  //           }else{
+  //             if(invNotice.noticeId!=data.noticeId){
+  //               //说明不是一个通知了，删除本地数据
+  //               this.invDBProvider.deleteFromInv(leadingOrg).then();
+  //             }
+  //             //每个作业区只会有一个通知记录
+  //             this.invDBProvider.updateToInvNotice(data).then(()=>{
                 
-                resolve(data);
-              },(error)=>{
-                reject(error);
-              })
-            }
-          },error=>{
-            reject(error);
-          })
-        }
-      },(err)=>{
-        reject(err);
-      });
-    });
-  }
+  //               resolve(data);
+  //             },(error)=>{
+  //               reject(error);
+  //             })
+  //           }
+  //         },error=>{
+  //           reject(error);
+  //         })
+  //       }
+  //     },(err)=>{
+  //       reject(err);
+  //     });
+  //   });
+  // }
 
 
   /**
@@ -158,7 +209,7 @@ export class InvService {
    */
   queryFromOrgInfoByOrgCode(orgCode:string){
     return new Promise<OrgInfo>((resolve,reject)=>{
-      this.storageService.queryFromOrgInfoByOrgCode(orgCode).then((data)=>{
+      this.pubDBProvider.queryFromOrgInfoByOrgCode(orgCode).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -174,18 +225,13 @@ export class InvService {
       if(leadingOrg==null||leadingOrg==""){
         resolve(null);
       }
-      this.storageService.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice)=>{
-        var data:InvNotice=null;
-        if(dataNotice!=null){
-          //说明本地有通知，判断一下时间，
-          var timeStart=new Date(dataNotice.timeStart);
-          var timeFinish=new Date(dataNotice.timeFinish);
-          var timeNow=new Date();
-          var flag=this.isDateBetween(timeNow,timeStart,timeFinish);
-          if(flag&&dataNotice.state=="ISSUED"){
-            //说明在时间范围内，可以盘点
-            data=dataNotice;
-          }
+      this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice)=>{
+        var data: InvNotice = null;
+        //说明本地有通知，判断一下时间，
+        var flag = this.noticeIsAvailable(dataNotice);
+        if (flag) {
+          //说明在时间范围内，可以盘点
+          data = dataNotice;
         }
         if(data!=null){
           resolve(data);
@@ -205,7 +251,7 @@ export class InvService {
    */
   queryListFromOrgInfo(){
     return new Promise<Array<OrgInfo>>((resolve,reject)=>{
-      this.storageService.queryListFromOrgInfo(0,0).then((data)=>{
+      this.pubDBProvider.queryListFromOrgInfo(0,0).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
@@ -218,13 +264,46 @@ export class InvService {
    */
   queryListFromUserSimple(){
     return new Promise<Array<UserSimple>>((resolve,reject)=>{
-      this.storageService.queryListFromUserSimple(0,0).then((data)=>{
+      this.pubDBProvider.queryListFromUserSimple(0,0).then((data)=>{
         resolve(data);
       },(error)=>{
         reject(error);
       })
     })
   }
+
+  //  /**
+  //  * 向资产盘点记录表中更新数据
+  //  * @param asset 
+  //  */
+  // updateToInv(asset:InvAsset){
+  //   return new Promise((resolve,reject)=>{
+  //     this.invDBProvider.updateToInv(asset).then((data)=>{
+  //       resolve(data);
+  //     },(error)=>{
+  //       reject(error);
+  //     })
+  //   })
+  // }
+
+  // /**
+  //  * 向资产盘点记录表中插入数据
+  //  * @param asset 
+  //  */
+  // insertToInv(asset:InvAsset){
+  //   return new Promise((resolve,reject)=>{
+  //     this.invDBProvider.insertToInv(asset).then((data)=>{
+  //       resolve(data);
+  //     },(error)=>{
+  //       this.alertCtrl.create({
+  //             title:"提醒",
+  //             subTitle:"插入数据失败:"+error,
+  //             buttons:["确定"]
+  //           }).present();
+  //       reject(error);
+  //     })
+  //   })
+  // }
 
   ////////////进行时间判断///////////////////////
 

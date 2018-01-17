@@ -1,12 +1,12 @@
+import { PubContanst, SignatureType } from './../../providers/entity/constant.provider';
 import { CvtNonNotice, CvtNonReceive } from './../../providers/entity/cvt.entity.provider';
 import { NoticeService } from './../../providers/service/notice.service';
 import { PhotoLibrary } from "@ionic-native/photo-library";
-import { FixedAsset, InvAsset, ChangeRecord } from './../../providers/entity/entity.provider';
+import { InvAsset, ChangeRecord } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
 import { ConvertService } from './../../providers/service/convert.service';
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { PubContanst } from '../../providers/entity/constant.provider';
+import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
 /// <reference path="plugin/SignaturePad.d.ts"/>
 //import * as SignaturePad from 'signature_pad';
 /**
@@ -23,7 +23,6 @@ export class SignaturePage {
   private cvtNotice: CvtNonNotice;
   private workerType;  //用户类型，0代表责任人，1代表领用人(继续发放)，2代表领用人(不再发放)
   private workInOrg;
-  private cvtNoticeState = "GRANTING"; //将通知单状态改为发放状态
   //end转产
 
   //发放
@@ -35,7 +34,6 @@ export class SignaturePage {
 
   private workerNumber;
   private signature;   //用于记录signaturePad
-  private fixedAssets: Array<FixedAsset>;
   private invAssets: Array<InvAsset>;
   private signatureType;   //签名类型，是转产(trans)还是盘点(inv)
   private signaturePath = "";  //用于存储签名返回路径，包括文件名。保存到手机中，
@@ -46,10 +44,7 @@ export class SignaturePage {
     public cvtService: ConvertService,
     public alertCtrl: AlertController,
     private photoLibrary: PhotoLibrary,
-    private viewCtrl:ViewController,
-    private assetSer:AssetService,
     private noticeService: NoticeService,
-    private convertService: ConvertService,
     public assetService: AssetService) {
     this.signatureType = navParams.get("signatureType");
     if (this.signatureType == "convert") {
@@ -141,34 +136,38 @@ export class SignaturePage {
           //转产时的签名
           if (this.workerType == 1) {
             //领用人领用签名
-            this.cvtService.saveCvtAssetsFromServe(this.cvtNotice.noticeId, this.workInOrg, this.cvtNotice.investplanId, this.cvtNotice.recipient,this.navParams.get("userName")).then(() => {
-              this.cvtService.insertCvtNonNoticeSubFromServe(this.cvtNotice.noticeId).then(() => {
-                //修改状态
-                this.cvtNotice.noticeState = "GRANTING";
-                this.cvtService.updateStateToCvtNotice(this.cvtNotice).then(() => {
-                  this.noticeService.showIonicAlert("提交成功！");
-                  this.navCtrl.popToRoot();
-                  // //上传签名   还得把路径存到数据库中
-                  // this.convertService.uploadSignature(this.workerNumber,this.signaturePath,this.signatureName).then((data)=>{
-                  // })
+            //上传签名   还得把路径存到数据库中
+            this.cvtService.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, this.cvtNotice.noticeId, SignatureType.CVT_RECEIVER).then((data) => {
+              this.cvtService.saveCvtAssetsFromServe(this.cvtNotice.noticeId, this.workInOrg, this.cvtNotice.investplanId, this.cvtNotice.recipient, this.navParams.get("userName")).then(() => {
+                this.cvtService.insertCvtNonNoticeSubFromServe(this.cvtNotice.noticeId).then(() => {
+                  //修改状态
+                  this.cvtNotice.noticeState = "GRANTING";
+                  this.cvtService.updateStateToCvtNotice(this.cvtNotice).then(() => {
+                    this.noticeService.showIonicAlert("提交成功！");
+                    this.navCtrl.popToRoot();
+                  }, (error) => {
+                    this.noticeService.showIonicAlert(error);
+                  })
                 }, (error) => {
                   this.noticeService.showIonicAlert(error);
                 })
               }, (error) => {
                 this.noticeService.showIonicAlert(error);
               })
-            }, (error) => {
-              this.noticeService.showIonicAlert(error);
+            },(error) => {
+              this.noticeService.showIonicAlert("上传签名失败，请检查网络是否通畅！");
             })
-
-            // //更新通知单状态，目前有问题，无法修改成功//////////////////////////////////////最终所有人都领了才改变服务器状态
-            // this.convertService.updateStateToCvtNotice(this.cvtNoticeState,this.cvtNoticeId).then(()=>{
-            // },(error)=>{
-            //   this.noticeService.showIonicAlert("修改非安设备转产通知单出错：\n"+error)
-            // })
-
           } else if (this.workerType == 2) {
             //领用人，不在发放
+            this.cvtService.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, this.cvtNotice.noticeId, SignatureType.CVT_RECEIVER_NO_GRANTING).then((data) => {
+              this.cvtService.receiverNoGranting(this.cvtNotice,this.cvtNotice.recipient).then((data)=>{
+                this.noticeService.showIonicAlert("提交成功！");
+              }, (error) => {
+                this.noticeService.showIonicAlert(error);
+              })
+            },(error) => {
+              this.noticeService.showIonicAlert("上传签名失败，请检查网络是否通畅！");
+            }) 
             // this.assetService.saveTransDataInLocation(this.fixedAssets);
             this.navCtrl.popToRoot();
           } else if (this.workerType == 0) {
@@ -177,7 +176,11 @@ export class SignaturePage {
           }
         } else if (this.signatureType == "granting") {
           //用于发放时候的手写签名,签名后将本地领用表和验收表数据更新，同时保存签名信息
-          this.convertService.updateToCvtNonReceive(this.cvtNonReceives).then(() => {
+          for(var m=0;m<this.cvtNonReceives.length;m++){
+            this.cvtNonReceives[m].signaturePath=this.signaturePath;
+            this.cvtNonReceives[m].signatureName=this.signatureName;
+          }
+          this.cvtService.updateToCvtNonReceive(this.cvtNonReceives).then(() => {
             //更新验收表
             let cvtNonCheck = new Array<any>();
             let changeRecords = new Array<ChangeRecord>();
@@ -206,9 +209,9 @@ export class SignaturePage {
               changeRecords.push(changeRecord);
             }
             //更新验收表
-            this.convertService.updateToCvtNonCheck(cvtNonCheck).then(() => {
+            this.cvtService.updateToCvtNonCheck(cvtNonCheck).then(() => {
               //修改日志表
-              this.convertService.insertToChangeRecord(changeRecords).then(() => {
+              this.cvtService.insertToChangeRecord(changeRecords).then(() => {
                 //判断是否全部发放完成
                 if (this.sentQuantity + this.cvtNonReceives.length >= this.totalQuantity&&this.cvtNonNotice) {
                   //说明发放完成，修改本地通知的状态
@@ -305,6 +308,13 @@ export class SignaturePage {
     canvas.height = canvas.offsetHeight * ratio;
     canvas.getContext("2d").scale(ratio, ratio);
     signaturePad.clear();
+  }
+
+  /**
+   * 返回按钮
+   */
+  handleBack(){
+    this.navCtrl.pop();
   }
 
 

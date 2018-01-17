@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Platform, ToastController, App, NavController, Tabs } from 'ionic-angular';
+import { Platform, ToastController, App, Tabs } from 'ionic-angular';
 
 @Injectable()
 export class BackButtonService {

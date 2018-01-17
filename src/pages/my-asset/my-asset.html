@@ -9,7 +9,8 @@
         <ion-title id="title">我的资产</ion-title>
         <ion-buttons right>
             <button ion-button icon-only (click)="doSearch()">
-        <ion-icon name="search"></ion-icon> </button>
+                <ion-icon name="search"></ion-icon>
+            </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
@@ -17,22 +18,30 @@
 
 
 <ion-content id="content">
+    <!-- 搜索框  -->
+    <ion-toolbar id="searchbar" color="title" [hidden]="isHiddenSearch">
+        <ion-searchbar   placeholder="搜索" (ionInput)="getItems($event)"></ion-searchbar>
+    </ion-toolbar>
     <div id="list_content">
-        <!-- 搜索框  -->
-        <ion-toolbar no-border-top id="searchbar" style="display:none;padding:0xp;margin:0px;">
-            <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
-        </ion-toolbar>
         <ion-list id="list" *ngIf="isHaveData==true">
             <!-- <ion-item-sliding> -->
-            <ion-item *ngFor="let item of dataTable">
+            <ion-item *ngFor="let item of dataTable;let i=index">
                 <ion-label id="list_label">
                     <p id="list-item-head">{{item.assetName}} [{{item.selfNumber}}] </p>
                     <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
                 </ion-label>
+
+                <!-- 手机版 -->
                 <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="rfid()" />
-     <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="rfid()" />
-                <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" (click)="bind(item,false)" />
-                <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" (click)="reBind(item)" />
+                <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="rfid()" />
+                <!-- Pad版 -->
+                <!-- <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="bindRFID(item)" />
+                <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="reBindRFID(item)" /> -->
+                
+                <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" (click)="bind(item,i)"
+                />
+                <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" (click)="reBind(item,i)"
+                />
                 <img item-end src="./assets/imgs/more.png" (click)="scan(item)" />
                 <!-- <ion-item-options>
                         <button ion-button (click)="scan(item)">查看</button>

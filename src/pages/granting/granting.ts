@@ -1,7 +1,5 @@
 import { NoticeService } from './../../providers/service/notice.service';
-import { UserSimple } from './../../providers/entity/entity.provider';
 import { ConvertService } from './../../providers/service/convert.service';
-import { WebService } from './../../providers/service/web.service';
 import { CvtNonNotice, CvtNonReceive, CvtNonNoticeSub } from './../../providers/entity/cvt.entity.provider';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';

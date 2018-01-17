@@ -229,9 +229,9 @@
             </ion-item>
 
             <ion-item>
-                <h3 id="th_img">上传图片:</h3>
-                <div id="imgs_content" *ngFor="let item of photos">
-                    <img id="imgs" [src]="item" (click)="isDeleteImg(item)" />
+                <h3 id="th_img">上传图片({{photos.length}}/2):</h3>
+                <div id="imgs_content" *ngFor="let item of photos;let i=index">
+                    <img id="imgs" [src]="item" (click)="isDeleteImg(i)" />
                 </div>
                 <div id="imgs_content" *ngIf="photos.length<3" style="border: 1px dashed #9C9C9C;">
                     <img id="imgs_add" (click)="add()" src="./assets/imgs/add.png" />

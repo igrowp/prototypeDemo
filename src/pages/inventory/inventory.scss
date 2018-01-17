@@ -14,13 +14,13 @@ page-inventory {
         background-size: cover;
     }
     #list_content {
-        height: 100%;
-        padding: 2% 3% 2% 3%;
+        //height: 100%;
+        padding: 0% 3% 0% 3%;
     }
-    #list,
-    #list_scroll {
-        height: 100%;
+    #list {
+       // height: 100%;
     }
+    
     #list_label {
         padding-left: 3%;
     }
