@@ -6,24 +6,25 @@
         <p class="account">
             <ion-icon name="person"></ion-icon> {{userName}} </p>
     </div>
+
     <div class="grid-content">
         <ion-grid>
             <ion-row>
                 <ion-col class="cover" col-4>
-                    <div class="green cover" (click)="navToMyAsset()">
-                        <img class="icon-size center" src="./assets/imgs/home-mine.png">
+                    <div class="green cover opacity" (click)="navToMyAsset()">
+                        <img class="icon-size-large center" src="./assets/imgs/home-mine.png">
                         <h5 class="item-title">我的资产</h5>
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-4>
-                    <div class="yellow cover" (click)="navToCvt()">
-                        <img class="icon-size center" src="./assets/imgs/home-cvt.png">
-                        <h5 class="item-title">资产领用
-                            <sup>
-                                <ion-badge color="danger" *ngIf="badgeValueCvt!=null&&badgeValueCvt!=0">{{badgeValueCvt}}</ion-badge>
-                                <ion-badge color="danger" *ngIf="isGranting">1</ion-badge>
-                            </sup>
-                        </h5>
+                    <div class="yellow cover opacity" (click)="navToCvt()">
+                            <div class="icon-content-size center">
+                                    <img class="icon-size  center" src="./assets/imgs/home-cvt.png">
+                                    <ion-badge class="right-top" color="danger" *ngIf="badgeValueCvt!=null&&badgeValueCvt!=0">{{badgeValueCvt}}</ion-badge>
+                                    <ion-badge class="right-top" color="danger" *ngIf="isGranting==true">1</ion-badge>
+                                </div>
+                        <h5 class="item-title" *ngIf="isGranting==false">资产领用</h5>
+                        <h5 class="item-title" *ngIf="isGranting==true">资产发放</h5>
 
                     </div>
 
@@ -42,25 +43,28 @@
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-4>
-                    <div class="deep-blue cover" (click)="navToInv()">
-                        <img class="icon-size center" src="./assets/imgs/home-inv.png">
+                    <div class="deep-blue cover opacity" (click)="navToInv()">
+                        <div class="icon-content-size center">
+                            <img class="icon-size  center" src="./assets/imgs/home-inv.png">
+                            <ion-badge class="right-top" color="danger" *ngIf="badgeValueInv!=null&&badgeValueInv!=0">{{badgeValueInv}}</ion-badge>
+                        </div>
                         <h5 class="item-title">资产盘点
                             <sup>
-                                <ion-badge color="danger" *ngIf="badgeValueInv!=null&&badgeValueInv!=0">{{badgeValueInv}}</ion-badge>
+                                
                             </sup>
                         </h5>
 
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-2>
-                    <div class="orange cover" (click)="download()">
+                    <div class="orange cover opacity" (click)="download()">
                         <img class="icon-size-petty center" src="./assets/imgs/home-download.png">
                         <h6 class="item-title-petty">数据下载</h6>
 
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-2>
-                    <div class="purple cover" (click)="navToSynchro()">
+                    <div class="purple cover opacity" (click)="navToSynchro()">
                         <img class="icon-size-petty center" src="./assets/imgs/home-upload.png">
                         <h6 class="item-title-petty">数据上传</h6>
 
@@ -70,7 +74,7 @@
 
             <ion-row>
                 <ion-col class="cover" col-4>
-                    <div class="blue cover" (click)="navToProcess()">
+                    <div class="blue cover opacity" (click)="navToProcess()">
                         <img class="icon-size center" src="./assets/imgs/home-process.png">
                         <h5 class="item-title">流程审核</h5>
 
@@ -80,14 +84,14 @@
                     <div class="image3 image-set cover"></div>
                 </ion-col>
                 <ion-col class="cover" col-2>
-                    <div class="light-blue cover" (click)="userMessage()">
+                    <div class="light-blue cover opacity" (click)="userMessage()">
                         <img class="icon-size-petty center" src="./assets/imgs/home-user.png">
                         <h6 class="item-title-petty">用户信息</h6>
 
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-2>
-                    <div class="gray cover" (click)="exit()">
+                    <div class="gray cover opacity" (click)="exit()">
                         <img class="icon-size-petty center" src="./assets/imgs/home-exit.png">
                         <h6 class="item-title-petty">退出</h6>
                     </div>
@@ -117,7 +121,7 @@
 </ion-header>
 
 <ion-content style="background-color:#F7F6F6" #content>
-    <!-- <button ion-button (click)="test1()">测试</button> -->
+    <button ion-button (click)="test()">测试</button>
     <ion-card>
         <ion-card-content>
             <ion-row>
@@ -189,8 +193,8 @@
                 <ion-thumbnail item-start>
                     <img src="./assets/imgs/cvt.png">
                 </ion-thumbnail>
-                <h1 style="padding:3px;">资产领用
-                </h1>
+                <h1 style="padding:3px;">资产领用</h1>
+                <h2 style="padding:3px;">发料单号：{{cvtNotice.workOrderNumber}}</h2>
             </ion-item>
         </ion-card-content>
     </ion-card>

@@ -157,7 +157,7 @@ export class InvNotice{
  */
 
 export class ChangeRecord{
-  assetId;       //资产ID
+  bizId;       //资产ID
 	changeType;    //变更类型
 	changeDetail;  //转产凭证、资产附件、转产照片、盘点
 	dutyOrg;       //责任单位

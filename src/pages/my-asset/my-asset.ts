@@ -234,7 +234,7 @@ export class MyAssetPage {
     });
      loading.present();
     // 重新刷新
-    this.assetService.queryAssetsFormFixed(this.workerNumber,"-1").then((data)=>{
+    this.assetService.queryAssetsFromFixed(this.workerNumber,"-1").then((data)=>{
       //进行筛选
       this.recordData=data;
     // if(val&&val.trim!=""){

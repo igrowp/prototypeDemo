@@ -1,4 +1,9 @@
 page-popup {
+    .border-radius {
+        border-radius: 5px;
+        padding: 5px;
+        border: 1px solid #ddd;
+    }
     #div_content {
         text-align: center;
         height: 100%;

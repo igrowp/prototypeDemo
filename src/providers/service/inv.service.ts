@@ -113,27 +113,27 @@ export class InvService {
                 this.invDBProvider.insertToInvNotice(notice).then(()=>{
                   //清除本地该作业区下已经盘点的数据
                   // this.invDBProvider.deleteFromInv
-                  this.invDBProvider.deleteFromInv(notice.leadingOrg).then(()=>{
-                    resolve(notice);
-                  },(error)=>{
-                    reject(error);
-                  })
+                  // this.invDBProvider.deleteFromInv(notice.leadingOrg).then(()=>{
+                  //   resolve(notice);
+                  // },(error)=>{
+                  //   reject(error);
+                  // })
                 },(error)=>{
                   reject(error)
-                });
-              }else{
-                //每个作业区只会有一个通知记录
-                if(data!=null&&invNotice.noticeId!=data.noticeId){
-                //说明不是一个通知了，删除本地数据
-                this.invDBProvider.deleteFromInv(leadingOrg).then();
+                    });
+                } else {
+                  //每个作业区只会有一个通知记录
+                  if (data != null && invNotice.noticeId != data.noticeId) {
+                    //说明不是一个通知了，删除本地数据
+                    //this.invDBProvider.deleteFromInv(leadingOrg).then();
+                  }
+                  this.invDBProvider.updateToInvNotice(notice).then(() => {
+                    resolve(notice);
+                  }, (error) => {
+                    reject(error);
+                  })
                 }
-                this.invDBProvider.updateToInvNotice(notice).then(()=>{
-                  resolve(notice);
-                },(error)=>{
-                  reject(error);
-                })
-              }
-            },error=>{
+              }, error => {
               reject(error);
             })
             }

@@ -1,3 +1,4 @@
+import { Dict, DictDetail } from './../entity/pub.entity';
 import { DateUtil } from './../utils/dateUtil';
 import { SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
@@ -18,7 +19,6 @@ export class PubDBProvider {
         })
     }
 
-    
 
 
 
@@ -34,7 +34,7 @@ export class PubDBProvider {
     /**
          * 获取所有固定资产台账中的数据
          */
-    queryAssetsFormFixed(workerNumber: string, isChecked: string) {
+    queryAssetsFromFixed(workerNumber: string, isChecked: string) {
         let sql: string = "";
         let params: any = [];
         if (isChecked == "-1") {
@@ -62,7 +62,7 @@ export class PubDBProvider {
      * @param pageIndex 页码，从1开始
      * @param workerNumber 员工编号
      */
-    queryAssetsFormFixedByPage(pageSize: number, pageIndex: number, workerNumber: string) {
+    queryAssetsFromFixedByPage(pageSize: number, pageIndex: number, workerNumber: string) {
         return new Promise<Array<FixedAsset>>((resolve, reject) => {
             var index = pageSize * (pageIndex - 1);
             this.dbService.executeSql("select * from asset_account_fixed where WORKER_NUMBER=? limit ? offset ?", [workerNumber, pageSize, index])
@@ -70,7 +70,7 @@ export class PubDBProvider {
                     var assets: Array<FixedAsset> = this._getFixedAssetsFromDBResult(data);
                     resolve(assets);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n"+error.message);
+                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
                 });
         })
     }
@@ -87,7 +87,7 @@ export class PubDBProvider {
                     var asset: FixedAsset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }, (error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n"+error.message);
+                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
                 })
         })
     }
@@ -103,7 +103,7 @@ export class PubDBProvider {
                     var asset: FixedAsset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }, (error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n"+error.message);
+                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
                 })
         })
     }
@@ -115,7 +115,7 @@ export class PubDBProvider {
                     var asset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n"+error.message);
+                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
                 });
         });
     }
@@ -131,7 +131,7 @@ export class PubDBProvider {
                     var asset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n"+error.message);
+                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
                 });
         });
     }
@@ -221,7 +221,7 @@ export class PubDBProvider {
             let params: any = [];
             if (pageSize == 0 && pageIndex == 0) {
                 //都为0时默认查询所有数据
-                sql = 'select * from sys_org_info';
+                sql = 'select * from sys_org_info order by ORG_NAME';
                 params = [];
             } else {
                 var index = pageSize * (pageIndex - 1);
@@ -281,14 +281,7 @@ export class PubDBProvider {
         return new Promise<UserSimple>((resolve, reject) => {
             this.dbService.executeSql("select * from sys_person_info_simple where USER_ID=?", [userId])
                 .then((data) => {
-                    var userSimple: UserSimple = null;
-                    if (data.rows.length > 0) {
-                        userSimple = new UserSimple();
-                        userSimple.userName = data.rows.item(0).USER_NAME;
-                        userSimple.workerNumber = data.rows.item(0).WORKER_NUMBER;
-                        userSimple.workInOrg = data.rows.item(0).WORK_IN_ORG;
-                        userSimple.userId = data.rows.item(0).USER_ID;
-                    }
+                    var userSimple: UserSimple = this._getUserSimpleFromDBResult(data);
                     resolve(userSimple);
                 }, (error) => {
                     reject("数据库操作：\n查询员工精简表失败\n" + error.message);
@@ -307,7 +300,7 @@ export class PubDBProvider {
             let params: any = [];
             if (pageSize == 0 && pageIndex == 0) {
                 //都为0时默认查询所有数据
-                sql = 'select * from sys_person_info_simple';
+                sql = 'select * from sys_person_info_simple order by USER_NAME';
                 params = [];
             } else {
                 var index = pageSize * (pageIndex - 1);
@@ -320,25 +313,6 @@ export class PubDBProvider {
                     resolve(userSimples);
                 }, (error) => {
                     reject("数据库操作：\n查询员工精简表失败\n" + error.message);
-                })
-        })
-    }
-
-    /**
-       * 根据员工编号获取用户信息
-       * @param workerNumber 
-       */
-    queryFromUserSimpleByWorkerNumber(workerNumber: string) {
-        return new Promise<String>((resolve, reject) => {
-            this.dbService.executeSql('select USER_NAME from sys_person_info_simple where WORKER_NUMBER=?', [workerNumber])
-                .then((data) => {
-                    var userName: string = "";
-                    if (data.rows.length > 0) {
-                        userName = data.rows.item(0).USER_NAME;
-                    }
-                    resolve(userName);
-                }, (error) => {
-                    reject("数据库操作：\n查询简单用户表失败\n" + error.message);
                 })
         })
     }
@@ -360,20 +334,170 @@ export class PubDBProvider {
     ///////////员工精简表END////////////////
 
 
+
+
+
+    //////////   数据字典   //////////////////
+
+    /**
+       * 根据Id查询数据字典明细
+       * @param dictId 
+       */
+    queryFromDictByDictId(dictId: string) {
+        return new Promise<Dict>((resolve, reject) => {
+            this.dbService.executeSql('select * from sys_dict where DICT_ID=?', [dictId])
+                .then((data) => {
+                    var dict = this._getDictFromDBResult(data);
+                    resolve(dict);
+                }, (error) => {
+                    reject("数据库操作：\n查询数据字典表失败\n" + error.message);
+                })
+        })
+    }
+
+    /**
+       * 分页查询数据字典
+       * @param pageSize 
+       * @param pageIndex  页号，从1开始 
+       */
+    queryListFromDict(pageSize: number, pageIndex: number) {
+        return new Promise<Array<Dict>>((resolve, reject) => {
+            let sql: string = "";
+            let params: any = [];
+            if (pageSize == 0 && pageIndex == 0) {
+                //都为0时默认查询所有数据
+                sql = 'select * from sys_dict order by CATEGORY_CODE';
+                params = [];
+            } else {
+                var index = pageSize * (pageIndex - 1);
+                sql = 'select * from sys_dict limit ? offset ?';
+                params = [pageSize, index];
+            }
+            this.dbService.executeSql(sql, params)
+                .then((data) => {
+                    var userSimples: Array<Dict> = this._getDictListFromDBResult(data);
+                    resolve(userSimples);
+                }, (error) => {
+                    reject("数据库操作：\n查询数据字典表失败\n" + error.message);
+                })
+        })
+    }
+
+    /**
+       * 在数据字典明细表中插入数据
+       * @param userSimple 
+       */
+    insertToDict(dict: Dict) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('insert into sys_dict values (?,?,?,?)', [dict.dictId, dict.categoryCode, dict.categoryDesc, dict.recordFlag])
+                .then((data) => {
+                    resolve(data);
+                }, (error) => {
+                    reject("数据库操作：\n插入数据字典明细表失败\n" + error.message);
+                })
+        })
+    }
+    //////////   数据字典END   //////////////////
+
+    //////////   数据字典明细   //////////////////
+
+    /**
+      * 根据Id查询数据字典明细
+      * @param dictDetailId 
+      */
+    queryFromDictDetailByDictDetailId(dictDetailId: string) {
+        return new Promise<DictDetail>((resolve, reject) => {
+            this.dbService.executeSql('select * from sys_dict_detail where DICT_DETAIL_ID=?', [dictDetailId])
+                .then((data) => {
+                    var dictDetail = this._getDictDetailFromDBResult(data);
+                    resolve(dictDetail);
+                }, (error) => {
+                    reject("数据库操作：\n查询数据字典明细表失败\n" + error.message);
+                })
+        })
+    }
+
+    /**
+      * 根据DictId查询数据字典明细
+      * @param dictDetailId 
+      */
+      queryListFromDictDetailByCategoryCode(categoryCode: string) {
+        return new Promise<Array<DictDetail>>((resolve, reject) => {
+            this.dbService.executeSql('select * from sys_dict_detail where CATEGORY_CODE=? order by DICT_CODE', [categoryCode])
+                .then((data) => {
+                    var dictDetails = this._getDictDetailListFromDBResult(data);
+                    resolve(dictDetails);
+                }, (error) => {
+                    reject("数据库操作：\n查询数据字典明细表失败\n" + error.message);
+                })
+        })
+    }
+
+    /**
+       * 分页查询数据字典明细
+       * @param pageSize 
+       * @param pageIndex  页号，从1开始 
+       */
+    queryListFromDictDetail(pageSize: number, pageIndex: number) {
+        return new Promise<Array<DictDetail>>((resolve, reject) => {
+            let sql: string = "";
+            let params: any = [];
+            if (pageSize == 0 && pageIndex == 0) {
+                //都为0时默认查询所有数据
+                sql = 'select * from sys_dict_detail order by CATEGORY_CODE';
+                params = [];
+            } else {
+                var index = pageSize * (pageIndex - 1);
+                sql = 'select * from sys_dict_detail limit ? offset ?';
+                params = [pageSize, index];
+            }
+            this.dbService.executeSql(sql, params)
+                .then((data) => {
+                    var dictDetail: Array<DictDetail> = this._getDictDetailListFromDBResult(data);
+                    resolve(dictDetail);
+                }, (error) => {
+                    reject("数据库操作：\n查询数据字典明细表失败\n" + error.message);
+                })
+        })
+    }
+
+    /**
+       * 在数据字典明细表中插入数据
+       * @param userSimple 
+       */
+    insertToDictDetail(dictDetail: DictDetail) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('insert into sys_dict_detail values (?,?,?,?,?,?,?,?)',
+                [dictDetail.dictDetailId, dictDetail.categoryCode, dictDetail.dictCode, dictDetail.dictCodeDesc,
+                dictDetail.codeType, dictDetail.codeSize, dictDetail.remark, dictDetail.record_flag])
+                .then((data) => {
+                    resolve(data);
+                }, (error) => {
+                    reject("数据库操作：\n插入数据字典明细表失败\n" + error.message);
+                })
+        })
+    }
+    //////////   数据字典明细END   //////////////////
+
+
+
+
+
+
     //////////日志表/////////////////////
 
     /**
       * 根据资产ID获取日志表信息
       * @param assetId 
       */
-      queryFromChangeRecordByAssetId(assetId: string) {
+    queryFromChangeRecordByAssetId(assetId: string) {
         return new Promise<ChangeRecord>((resolve, reject) => {
             this.dbService.executeSql('select * from asset_change_record where ASSET_ID=?', [assetId])
                 .then((data) => {
                     var changeRecord: ChangeRecord = this._getChangeRecordFromDBResult(data);
                     resolve(changeRecord);
                 }, (error) => {
-                    reject("数据库操作：\n查询日志表失败\n"+error.message);
+                    reject("数据库操作：\n查询日志表失败\n" + error.message);
                 })
         })
     }
@@ -382,25 +506,9 @@ export class PubDBProvider {
       * 获取所有的日志表信息  
       * @param assetId 
       */
-      queryListFromChangeRecord(workerNumber: string) {
+    queryListFromChangeRecord(workerNumber: string) {
         return new Promise<Array<ChangeRecord>>((resolve, reject) => {
             this.dbService.executeSql('select * from asset_change_record where CHANGE_PERSON=?', [workerNumber])
-                .then((data) => {
-                    var changeRecords: Array<ChangeRecord> = this._getChangeRecordsFromDBResult(data);
-                    resolve(changeRecords);
-                }, (error) => {
-                    reject("数据库操作：\n查询日志表失败\n"+error.message);
-                })
-        })
-    }
-
-    /**
-        * 获取所有的日志表信息  
-        * @param changeType 
-        */
-    queryListFromChangeRecordByChangeType(changeType: string) {
-        return new Promise<Array<ChangeRecord>>((resolve, reject) => {
-            this.dbService.executeSql('select * from asset_change_record where CHANGE_TYPE=?', [changeType])
                 .then((data) => {
                     var changeRecords: Array<ChangeRecord> = this._getChangeRecordsFromDBResult(data);
                     resolve(changeRecords);
@@ -416,12 +524,12 @@ export class PubDBProvider {
      */
     updateToChangeRecord(changeRecord: ChangeRecord) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql("update asset_change_record set CHANGE_DETAIL=?,DUTY_ORG=?,CHANGE_PERSON=? ,CHANGE_TIME=?,STATE=? where ASSET_ID=?", [changeRecord.changeDetail, changeRecord.dutyOrg, changeRecord.changePerson, changeRecord.changeTime, changeRecord.state, changeRecord.assetId])
+            this.dbService.executeSql("update asset_change_record set CHANGE_DETAIL=?,DUTY_ORG=?,CHANGE_PERSON=? ,CHANGE_TIME=?,STATE=? where ASSET_ID=?", [changeRecord.changeDetail, changeRecord.dutyOrg, changeRecord.changePerson, changeRecord.changeTime, changeRecord.state, changeRecord.bizId])
                 .then((data) => {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新日志表失败\n"+error.message);
+                    reject("数据库操作：\n更新日志表失败\n" + error.message);
                 })
         })
     }
@@ -448,7 +556,7 @@ export class PubDBProvider {
      */
     insertToChangeRecord(changeRecord: ChangeRecord) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql('insert into asset_change_record values (?,?,?,?,?,?,?)', [changeRecord.assetId, changeRecord.changeType, changeRecord.changeDetail, changeRecord.dutyOrg, changeRecord.changePerson, changeRecord.changeTime, changeRecord.state])
+            this.dbService.executeSql('insert into asset_change_record values (?,?,?,?,?,?,?)', [changeRecord.bizId, changeRecord.changeType, changeRecord.changeDetail, changeRecord.dutyOrg, changeRecord.changePerson, changeRecord.changeTime, changeRecord.state])
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
@@ -501,6 +609,18 @@ export class PubDBProvider {
         return orgInfoes;
     }
 
+    private _getUserSimpleFromDBResult(data): UserSimple {
+        var userSimple: UserSimple = null;
+        if (data.rows.length > 0) {
+            userSimple = new UserSimple();
+            userSimple.userName = data.rows.item(0).USER_NAME;
+            userSimple.workerNumber = data.rows.item(0).WORKER_NUMBER;
+            userSimple.workInOrg = data.rows.item(0).WORK_IN_ORG;
+            userSimple.userId = data.rows.item(0).USER_ID;
+        }
+        return userSimple;
+    }
+
     private _getUserSimplesFromDBResult(data): Array<UserSimple> {
         var userSimples: Array<UserSimple> = new Array<UserSimple>();
         if (data.rows.length > 0) {
@@ -515,6 +635,72 @@ export class PubDBProvider {
         return userSimples;
     }
 
+
+    //获取数据字典数据
+    private _getDictFromDBResult(data): Dict {
+        var dict: Dict = null;
+        if (data.rows.length > 0) {
+            dict = new Dict();
+            dict.dictId = data.rows.item(0).DICT_ID;
+            dict.categoryCode = data.rows.item(0).CATEGORY_CODE;
+            dict.categoryDesc = data.rows.item(0).CATEGORY_DESC;
+            dict.recordFlag = data.rows.item(0).RECORD_FLAG;
+        }
+        return dict;
+    }
+    //数据字典列表
+    private _getDictListFromDBResult(data): Array<Dict> {
+        var dicts: Array<Dict> = new Array<Dict>();
+        if (data.rows.length > 0) {
+            for (var i = 0; i < data.rows.length; i++) {
+                var dict: Dict = new Dict();
+                dict.dictId = data.rows.item(i).DICT_ID;
+                dict.categoryCode = data.rows.item(i).CATEGORY_CODE;
+                dict.categoryDesc = data.rows.item(i).CATEGORY_DESC;
+                dict.recordFlag = data.rows.item(i).RECORD_FLAG;
+                dicts.push(dict);
+            }
+        }
+        return dicts;
+    }
+
+    //获取数据字典数据
+    private _getDictDetailFromDBResult(data): DictDetail {
+        var dictDetail: DictDetail = null;
+        if (data.rows.length > 0) {
+            dictDetail = new DictDetail();
+            dictDetail.dictDetailId = data.rows.item(0).DICT_DETAIL_ID;
+            dictDetail.categoryCode = data.rows.item(0).CATEGORY_CODE;
+            dictDetail.dictCode = data.rows.item(0).DICT_CODE;
+            dictDetail.dictCodeDesc = data.rows.item(0).DICT_CODE_DESC;
+            dictDetail.codeType = data.rows.item(0).CODE_TYPE;
+            dictDetail.codeSize = data.rows.item(0).CODE_SIZE;
+            dictDetail.remark = data.rows.item(0).REMARK;
+            dictDetail.record_flag = data.rows.item(0).RECORD_FLAG;
+        }
+        return dictDetail;
+    }
+    //数据字典列表
+    private _getDictDetailListFromDBResult(data): Array<DictDetail> {
+        var dictsDetail: Array<DictDetail> = new Array<DictDetail>();
+        if (data.rows.length > 0) {
+            for (var i = 0; i < data.rows.length; i++) {
+                var dictDetail: DictDetail = new DictDetail();
+                dictDetail = new DictDetail();
+                dictDetail.dictDetailId = data.rows.item(i).DICT_DETAIL_ID;
+                dictDetail.categoryCode = data.rows.item(i).CATEGORY_CODE;
+                dictDetail.dictCode = data.rows.item(i).DICT_CODE;
+                dictDetail.dictCodeDesc = data.rows.item(i).DICT_CODE_DESC;
+                dictDetail.codeType = data.rows.item(i).CODE_TYPE;
+                dictDetail.codeSize = data.rows.item(i).CODE_SIZE;
+                dictDetail.remark = data.rows.item(i).REMARK;
+                dictDetail.record_flag = data.rows.item(i).RECORD_FLAG;
+                dictsDetail.push(dictDetail);
+            }
+        }
+        return dictsDetail;
+    }
+
     /**
      * 从数据库查询结果中返回Array<ChangeRecord>的值
      * @param data 
@@ -525,7 +711,7 @@ export class PubDBProvider {
             changeRecords = new Array<ChangeRecord>();
             for (var i = 0; i < data.rows.length; i++) {
                 var changeRecord = new ChangeRecord();
-                changeRecord.assetId = data.rows.item(i).ASSET_ID;
+                changeRecord.bizId = data.rows.item(i).ASSET_ID;
                 changeRecord.changeType = data.rows.item(i).CHANGE_TYPE;
                 changeRecord.changeDetail = data.rows.item(i).CHANGE_DETAIL;
                 changeRecord.dutyOrg = data.rows.item(i).DUTY_ORG;
@@ -545,7 +731,7 @@ export class PubDBProvider {
         var changeRecord: ChangeRecord = null;
         if (data.rows.length > 0) {
             changeRecord = new ChangeRecord();
-            changeRecord.assetId = data.rows.item(0).ASSET_ID;
+            changeRecord.bizId = data.rows.item(0).ASSET_ID;
             changeRecord.changeType = data.rows.item(0).CHANGE_TYPE;
             changeRecord.changeDetail = data.rows.item(0).CHANGE_DETAIL;
             changeRecord.dutyOrg = data.rows.item(0).DUTY_ORG;

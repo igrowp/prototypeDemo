@@ -119,8 +119,8 @@ export class LoginService {
       this.assetWebProvider.getUserSimpleListFromServe().then((data)=>{
         for(var i=0;i<data.length;i++){
           let userSimple=data[i];
-          this.pubDBProvider.queryFromUserSimpleByWorkerNumber(userSimple.workerNumber).then((userName)=>{
-            if(userName==null||userName==""){
+          this.pubDBProvider.queryFromUserSimpleByUserId(userSimple.userId).then((userName)=>{
+            if(userName==null){
               this.pubDBProvider.insertToUserSimple(userSimple).then(()=>{
                 //插入成功
                 if(userSimple.workerNumber==data[data.length-1].workerNumber){
@@ -132,7 +132,10 @@ export class LoginService {
               })
             }else{
               //已经有该成员，退出
-              resolve();
+              if(userSimple.workerNumber==data[data.length-1].workerNumber){
+                //说明执行成功了
+                resolve();
+              }
             }
           })
         }
@@ -141,6 +144,134 @@ export class LoginService {
       });
     });
   }
+
+  /**
+   * 如果本地数据字典表中没有数据从服务器中下载数据
+   */
+  downloadDictIfEmpty(){
+    return new Promise((resolve,reject)=>{
+      this.pubDBProvider.queryListFromDict(1,1).then((data)=>{
+        if(data==null||data.length==0){
+          //说明本地没有员工信息，进行下载
+          this.getAndSaveDictFromServe().then(()=>{
+            resolve(data);
+          },(error)=>{
+            reject(error);
+          });
+        }else{
+          //有数据就不用再下载了
+          resolve(data);
+        }
+      },(error)=>{
+        reject(error);
+      })
+    })
+  }
+
+  /**
+   * 从服务器获取员工精简信息表，并保存
+   */
+  getAndSaveDictFromServe(){
+    return new Promise((resolve, reject) => {
+      this.assetWebProvider.getDictListFromServe().then((data) => {
+        if (data == null || data.length == 0) {
+          resolve();
+        } else {
+          let dictId=data[data.length-1].dictId;
+          for (var i = 0; i < data.length; i++) {
+            let dict = data[i];
+            this.pubDBProvider.queryFromDictByDictId(dict.dictId).then((dictObject) => {
+              if (dictObject == null) {
+                this.pubDBProvider.insertToDict(dict).then(() => {
+                  //插入成功
+                  if (dict.dictId == dictId) {
+                    //说明执行成功了
+                    resolve();
+                  }
+                }, (error) => {
+                  reject("插入简单员工表失败：" + error)
+                })
+              } else {
+                //已经有该成员
+                if (dict.dictId == dictId) {
+                  //说明执行成功了
+                  resolve();
+                }
+              }
+            })
+          }
+        }
+      }, error => {
+        reject(error);
+      });
+
+    });
+  }
+
+
+  /**
+   * 如果本地数据字典表中没有数据从服务器中下载数据
+   */
+  downloadDictDetailIfEmpty(){
+    return new Promise((resolve,reject)=>{
+      this.pubDBProvider.queryListFromDictDetail(1,1).then((data)=>{
+        if(data==null||data.length==0){
+          //说明本地没有员工信息，进行下载
+          this.getAndSaveDictDetailFromServe().then(()=>{
+            resolve(data);
+          },(error)=>{
+            reject(error);
+          });
+        }else{
+          //有数据就不用再下载了
+          resolve(data);
+        }
+      },(error)=>{
+        reject(error);
+      })
+    })
+  }
+
+  /**
+   * 从服务器获取员工精简信息表，并保存
+   */
+  getAndSaveDictDetailFromServe(){
+    return new Promise((resolve, reject) => {
+      this.assetWebProvider.getDictDetailListFromServe().then((data) => {
+        if (data == null || data.length == 0) {
+          resolve();
+        } else {
+          let dictDetailId=data[data.length-1].dictDetailId;
+          for (var i = 0; i < data.length; i++) {
+            let dictDetail = data[i];
+            this.pubDBProvider.queryFromDictDetailByDictDetailId(dictDetail.dictDetailId).then((dictObject) => {
+              if (dictObject == null) {
+                this.pubDBProvider.insertToDictDetail(dictDetail).then(() => {
+                  //插入成功
+                  if (dictDetail.dictDetailId == dictDetailId) {
+                    //说明执行成功了
+                    resolve();
+                  }
+                }, (error) => {
+                  reject("插入简单员工表失败：" + error)
+                })
+              } else {
+                //已经有该成员
+                if (dictDetail.dictDetailId == dictDetailId) {
+                  //说明执行成功了
+                  resolve();
+                }
+              }
+            })
+          }
+        }
+      }, error => {
+        reject(error);
+      });
+
+    });
+  }
+  
 
 
 

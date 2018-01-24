@@ -179,9 +179,6 @@ export class LoginDBProvider {
       })
   }
 
-
-
-
   ///////////用户账号END//////////////////
 
 
@@ -204,6 +201,7 @@ export class LoginDBProvider {
       }
       return userAccount;
   }
+
 
   /**
      * 从数据库查询结果中返回UserInfo的值

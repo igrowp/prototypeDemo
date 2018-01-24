@@ -1,4 +1,4 @@
-import { ConvertService } from './../../providers/service/convert.service';
+import { CvtService } from './../../providers/service/cvt.service';
 import { DateUtil } from './../../providers/utils/dateUtil';
 import { NoticeService } from './../../providers/service/notice.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
@@ -28,7 +28,7 @@ export class GrantingBindPage {
 
   constructor(public navCtrl: NavController,
               public invService:InvService,
-              private convertSer:ConvertService,
+              private cvtService:CvtService,
               private alertCtrl:AlertController,
               private noticeSer:NoticeService,
               private barcodeScanner:BarcodeScanner,
@@ -82,7 +82,7 @@ export class GrantingBindPage {
         if(code==""){
           return;
         }
-        this.convertSer.queryFromUserSimpleByUserId(code).then((userSimple)=>{
+        this.cvtService.queryFromUserSimpleByUserId(code).then((userSimple)=>{
           if(userSimple==null){
             this.noticeSer.showIonicAlert("无法识别该二维码！");
           } else {

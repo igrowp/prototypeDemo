@@ -1,5 +1,5 @@
 import { CvtNonNotice, CvtNonNoticeSub } from './../../providers/entity/cvt.entity.provider';
-import { ConvertService } from './../../providers/service/convert.service';
+import { CvtService } from './../../providers/service/cvt.service';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Slides } from 'ionic-angular/components/slides/slides';
@@ -25,24 +25,20 @@ export class ConvertPage {
   private workerNumber;
   public slideActivityIndex=1;
   public slideSize=0;
-  private workInOrg;
   @ViewChild(Slides) slides: Slides;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    public convertService: ConvertService,
+    public cvtService: CvtService,
     private alertCtrl:AlertController,) {
     this.cvtNotice = navParams.get("cvtNotice");
     this.custodian=navParams.get("custodian");
-    this.workInOrg=navParams.get("workInOrg");
     this.workerNumber=navParams.get("workerNumber");
-    console.log(this.cvtNotice.noticeId);
     
 
   }
 
   ionViewDidLoad() {
-    this.convertService.getCvtNoticeSubByNoticeId(this.cvtNotice.noticeId).then((data) => {
-      console.log(data);
+    this.cvtService.getCvtNoticeSubByNoticeId(this.cvtNotice.noticeId).then((data) => {
       this.dataTable = data;
       this.slideSize=data.length;
       
@@ -59,7 +55,7 @@ export class ConvertPage {
   }
   //点击详情
   handleDetail(noticeSub){
-    this.convertService.getCvtAssetByAssetName(noticeSub.assetName,noticeSub.purchasingId,this.workInOrg).then((data)=>{
+    this.cvtService.getCvtAssetBySubNoticeId(noticeSub.subNoticeId).then((data)=>{
       console.log(data);
       console.log(noticeSub);
       this.navCtrl.push("ConvertNonDetailPage",{
@@ -95,7 +91,6 @@ export class ConvertPage {
               signatureType:"convert",
               cvtNotice:this.cvtNotice,
               workerType:2,
-              workInOrg:this.workInOrg,
               workerNumber:this.workerNumber
             });
           }
@@ -107,9 +102,7 @@ export class ConvertPage {
               signatureType:"convert",
               cvtNotice:this.cvtNotice,
               workerType:1,
-              workInOrg:this.workInOrg,
               workerNumber:this.workerNumber,
-              userName:this.custodian
             });
           }
         }

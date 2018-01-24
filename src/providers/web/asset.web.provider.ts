@@ -1,22 +1,23 @@
+import { Dict, DictDetail } from './../entity/pub.entity';
 import { ChangeRecord } from './../entity/entity.provider';
-import { Http, Headers,RequestOptions } from '@angular/http';
+import { Http, Headers, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { FixedAsset, OrgInfo, UserSimple } from '../entity/entity.provider';
 import { HttpUtils } from '../utils/httpUtils';
 
 @Injectable()
-export class AssetWebProvider{
-    constructor(public http: Http) {
-    }
-    getUrl(){
-      return HttpUtils.getUrlFromProperties()+"/asset";
-    }
+export class AssetWebProvider {
+  constructor(public http: Http) {
+  }
+  getUrl() {
+    return HttpUtils.getUrlFromProperties() + "/asset";
+  }
 
 
-    /**
-   * 获取资产列表数据
-   */
+  /**
+ * 获取资产列表数据
+ */
   getListFormFixedByWorkerNumber(workerNumber: string) {
     let params = "?workerNumber=" + workerNumber;
     return new Promise<Array<FixedAsset>>((resolve, reject) => {
@@ -50,13 +51,13 @@ export class AssetWebProvider{
       if (fixedAssets == null || fixedAssets.length == 0) {
         resolve();
       } else {
-      this.http.post(this.getUrl() + "/fixed/update",HttpUtils.toQueryString(obj), options)
-        .map(res => res.json())
-        .subscribe((data) => {
-          resolve(data);
-        }, err => {
-          reject(err);
-        });
+        this.http.post(this.getUrl() + "/fixed/update", HttpUtils.toQueryString(obj), options)
+          .map(res => res.json())
+          .subscribe((data) => {
+            resolve(data);
+          }, err => {
+            reject(err);
+          });
       }
     });
   }
@@ -94,10 +95,9 @@ export class AssetWebProvider{
 
 
 
-   /**
-   * 从服务器获取组织机构信息
-   * @param workerNumber 
-   */
+  /**
+  * 从服务器获取组织机构信息
+  */
   getOrgInfoListFromServe() {
     return new Promise<Array<OrgInfo>>((resolve, reject) => {
       this.http.get(this.getUrl() + '/org/list')
@@ -110,23 +110,52 @@ export class AssetWebProvider{
     })
   }
 
-   /**
- * 从服务器获取简单用户信息
- * @param workerNumber 
- */
-getUserSimpleListFromServe() {
-  return new Promise<Array<UserSimple>>((resolve, reject) => {
-    this.http.get(this.getUrl() + '/user/simple/list')
-      .map(res => res.json())
-      .subscribe((data) => {
-        resolve(data);
-      }, error => {
-        reject(error.message);
-      })
-  })
-}
-    
-  
+  /**
+   * 从服务器获取简单用户信息
+   */
+  getUserSimpleListFromServe() {
+    return new Promise<Array<UserSimple>>((resolve, reject) => {
+      this.http.get(this.getUrl() + '/user/simple/list')
+        .map(res => res.json())
+        .subscribe((data) => {
+          resolve(data);
+        }, error => {
+          reject(error.message);
+        })
+    })
+  }
 
-  
+  /**
+   * 从服务器获取数据字典
+   */
+  getDictListFromServe() {
+    return new Promise<Array<Dict>>((resolve, reject) => {
+      this.http.get(this.getUrl() + '/dict/list')
+        .map(res => res.json())
+        .subscribe((data) => {
+          resolve(data);
+        }, error => {
+          reject(error.message);
+        })
+    })
+  }
+
+   /**
+   * 从服务器获取数据字典明细
+   */
+  getDictDetailListFromServe() {
+    return new Promise<Array<DictDetail>>((resolve, reject) => {
+      this.http.get(this.getUrl() + '/dict/detail/list')
+        .map(res => res.json())
+        .subscribe((data) => {
+          resolve(data);
+        }, error => {
+          reject(error.message);
+        })
+    })
+  }
+
+
+
+
 }

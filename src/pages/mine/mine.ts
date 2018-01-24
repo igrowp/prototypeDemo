@@ -32,7 +32,7 @@ export class MinePage {
     //  this.service.getAssets().then((data)=>{
     //    this.dataTable=data;
     //  });
-    this.assetService.queryAssetsFormFixed("1","-1").then(data=>{
+    this.assetService.queryAssetsFromFixed("1","-1").then(data=>{
       this.dataTable=null;
       this.dataTable=data;
     })

@@ -1,5 +1,5 @@
 import { NoticeService } from './../../providers/service/notice.service';
-import { ConvertService } from './../../providers/service/convert.service';
+import { CvtService } from './../../providers/service/cvt.service';
 import { CvtNonNotice, CvtNonReceive, CvtNonNoticeSub } from './../../providers/entity/cvt.entity.provider';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -32,11 +32,12 @@ export class GrantingPage {
   public sentQuantity=0;   //已经确定发放的资产数量
   constructor( public navParams: NavParams,
               public navCtrl: NavController,
-              public convertSer:ConvertService,
+              public cvtService:CvtService,
               public noticeSer:NoticeService,
               public menuCtrl:MenuController) {
     this.cvtNotice=this.navParams.get("cvtNonNotice");
-    this.convertSer.queryFromCvtNonNoticeSubByNoticeId(this.cvtNotice.noticeId).then((noticeSub) => {
+    this.cvtService.queryFromCvtNonNoticeSubByNoticeId(this.cvtNotice.noticeId).then((noticeSub) => {
+      console.log("构造函数"+noticeSub);
       if (noticeSub != null) {
         this.noticeSubArray = noticeSub;
       }
@@ -44,18 +45,6 @@ export class GrantingPage {
     })
     
   }
-  clean(){
-    this.convertSer.queryFromCvtNonReceive(this.cvtNotice.investplanId).then((data) => {
-      data[0].receiveName="";
-      data[0].receiveOrg="";
-      data[0].receivePerson=null;
-      data[0].receiveTime="";
-      data[0].isChecked=false;
-      this.convertSer.updateToCvtNonReceive(data).then((data)=>{
-        alert("修改成功");
-      });
-  })
-}
   //初始化
   init(){
     //初始化参数
@@ -64,7 +53,7 @@ export class GrantingPage {
     let totalQuantity=0;
     let sentQuantity=0;
     //得到数据
-    this.convertSer.queryFromCvtNonReceive(this.cvtNotice.investplanId).then((data) => {
+    this.cvtService.queryFromCvtNonReceive(this.cvtNotice.noticeId).then((data) => {
       if (data == null || data.length == 0) {
         this.assetArray = new Array<CvtNonReceive>();
       } else {

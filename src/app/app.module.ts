@@ -9,10 +9,9 @@ import { File } from '@ionic-native/file';
 import { BackButtonService } from '../providers/service/backButton.service';
 import { NoticeService } from './../providers/service/notice.service';
 import { InvService } from './../providers/service/inv.service';
-import { ConvertService } from './../providers/service/convert.service';
+import { CvtService } from './../providers/service/cvt.service';
 import { LoginService } from './../providers/service/login.service';
 import { AssetService } from './../providers/service/asset.service';
-import { LocalStorageService } from './../providers/service/localStorage.service';
 import { IonicStorageModule } from '@ionic/storage/es2015';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -25,7 +24,7 @@ import { HttpModule } from '@angular/http';
 import { DBService } from '../providers/storage/db.service';
 import { PubDBProvider } from '../providers/storage/pub.db.provider';
 import { InvDBProvider } from '../providers/storage/inv.db.provider';
-import { ConvertDBProvider } from '../providers/storage/convert.db.provider';
+import { CvtDBProvider } from '../providers/storage/cvt.db.provider';
 import { LoginWebProvider } from '../providers/web/login.web.provider';
 import { InvWebProvider } from '../providers/web/inv.web.provider';
 import { AttachmentWebProvider } from '../providers/web/attachment.web.provider';
@@ -51,13 +50,12 @@ import { AttachmentWebProvider } from '../providers/web/attachment.web.provider'
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     SQLite,
-    LocalStorageService,
     AssetService,
     BarcodeScanner,
     LoginService,
     
     PhotoLibrary,
-    ConvertService,
+    CvtService,
     InvService,
     NoticeService,
     BackButtonService,
@@ -67,7 +65,7 @@ import { AttachmentWebProvider } from '../providers/web/attachment.web.provider'
     LoginDBProvider,
     PubDBProvider,
     InvDBProvider,
-    ConvertDBProvider,
+    CvtDBProvider,
     LoginWebProvider,
     InvWebProvider,
     AssetWebProvider,

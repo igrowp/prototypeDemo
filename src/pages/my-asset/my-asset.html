@@ -26,10 +26,11 @@
         <ion-list id="list" *ngIf="isHaveData==true">
             <!-- <ion-item-sliding> -->
             <ion-item *ngFor="let item of dataTable;let i=index">
-                <ion-label id="list_label">
-                    <p id="list-item-head">{{item.assetName}} [{{item.selfNumber}}] </p>
-                    <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
-                </ion-label>
+            <ion-label id="list_label">
+                <p id="list-item-head" *ngIf="item.selfNumber==''">{{item.assetName}} </p>
+                <p id="list-item-head" *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </p>
+                <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+            </ion-label>
 
                 <!-- 手机版 -->
                 <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="rfid()" />

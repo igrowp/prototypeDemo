@@ -41,6 +41,9 @@ export class MyApp {
     let modal=this.modalCtrl.create("PopupPage");
     modal.present();
 
+    
+
+
     this.dbService.getFromStorage("account").then((userName)=>{
         if(userName==null||userName==""){
           this.rootPage = "LoginPage";

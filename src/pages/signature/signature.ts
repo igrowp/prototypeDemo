@@ -1,12 +1,13 @@
-import { PubContanst, SignatureType } from './../../providers/entity/constant.provider';
+import { PubContanst} from './../../providers/entity/constant.provider';
 import { CvtNonNotice, CvtNonReceive } from './../../providers/entity/cvt.entity.provider';
 import { NoticeService } from './../../providers/service/notice.service';
 import { PhotoLibrary } from "@ionic-native/photo-library";
 import { InvAsset, ChangeRecord } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
-import { ConvertService } from './../../providers/service/convert.service';
+import { CvtService } from './../../providers/service/cvt.service';
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
+import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 /// <reference path="plugin/SignaturePad.d.ts"/>
 //import * as SignaturePad from 'signature_pad';
 /**
@@ -22,7 +23,7 @@ export class SignaturePage {
   //转产
   private cvtNotice: CvtNonNotice;
   private workerType;  //用户类型，0代表责任人，1代表领用人(继续发放)，2代表领用人(不再发放)
-  private workInOrg;
+
   //end转产
 
   //发放
@@ -41,16 +42,16 @@ export class SignaturePage {
   private signatureFolderName = "signature";   //本地签名图片保存的文件名
   constructor(public navParams: NavParams,
     public navCtrl: NavController, 
-    public cvtService: ConvertService,
+    public cvtService: CvtService,
     public alertCtrl: AlertController,
     private photoLibrary: PhotoLibrary,
+    private loadingCtrl:LoadingController,
     private noticeService: NoticeService,
     public assetService: AssetService) {
     this.signatureType = navParams.get("signatureType");
     if (this.signatureType == "convert") {
       this.cvtNotice = navParams.get("cvtNotice");
       this.workerType = navParams.get("workerType");
-      this.workInOrg = navParams.get("workInOrg");
       this.workerNumber=navParams.get("workerNumber");
 
     } else if (this.signatureType == "inv") {
@@ -132,107 +133,80 @@ export class SignaturePage {
           }
           this.noticeService.showIonicAlert("提交成功");
           this.navCtrl.pop();
+
+
         } else if (this.signatureType == "convert") {
           //转产时的签名
           if (this.workerType == 1) {
             //领用人领用签名
-            //上传签名   还得把路径存到数据库中
-            this.cvtService.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, this.cvtNotice.noticeId, SignatureType.CVT_RECEIVER).then((data) => {
-              this.cvtService.saveCvtAssetsFromServe(this.cvtNotice.noticeId, this.workInOrg, this.cvtNotice.investplanId, this.cvtNotice.recipient, this.navParams.get("userName")).then(() => {
+            let loading = this.loadingCtrl.create({
+              spinner: 'bubbles',
+              content: '正在提交...',
+              duration: 30000
+            });
+            loading.present();
+            this.cvtService.saveCvtAssetsFromServe(this.cvtNotice.recipient).then(() => {
+              this.cvtService.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, null, null, this.cvtNotice.noticeId, PubContanst.SIGNATURE_TYPE_CVT_RECEIVER).then((data) => {
                 this.cvtService.insertCvtNonNoticeSubFromServe(this.cvtNotice.noticeId).then(() => {
                   //修改状态
                   this.cvtNotice.noticeState = "GRANTING";
                   this.cvtService.updateStateToCvtNotice(this.cvtNotice).then(() => {
                     this.noticeService.showIonicAlert("提交成功！");
+                    loading.dismiss();
                     this.navCtrl.popToRoot();
                   }, (error) => {
+                    loading.dismiss();
                     this.noticeService.showIonicAlert(error);
                   })
                 }, (error) => {
+                  loading.dismiss();
                   this.noticeService.showIonicAlert(error);
                 })
               }, (error) => {
-                this.noticeService.showIonicAlert(error);
-              })
-            },(error) => {
-              this.noticeService.showIonicAlert("上传签名失败，请检查网络是否通畅！");
-            })
-          } else if (this.workerType == 2) {
-            //领用人，不在发放
-            this.cvtService.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, this.cvtNotice.noticeId, SignatureType.CVT_RECEIVER_NO_GRANTING).then((data) => {
-              this.cvtService.receiverNoGranting(this.cvtNotice,this.cvtNotice.recipient).then((data)=>{
-                this.noticeService.showIonicAlert("提交成功！");
-              }, (error) => {
-                this.noticeService.showIonicAlert(error);
-              })
-            },(error) => {
-              this.noticeService.showIonicAlert("上传签名失败，请检查网络是否通畅！");
-            }) 
-            // this.assetService.saveTransDataInLocation(this.fixedAssets);
-            this.navCtrl.popToRoot();
-          } else if (this.workerType == 0) {
-            // this.assetService.saveTransDataInLocation(this.fixedAssets);
-            this.navCtrl.popToRoot();
-          }
-        } else if (this.signatureType == "granting") {
-          //用于发放时候的手写签名,签名后将本地领用表和验收表数据更新，同时保存签名信息
-          for(var m=0;m<this.cvtNonReceives.length;m++){
-            this.cvtNonReceives[m].signaturePath=this.signaturePath;
-            this.cvtNonReceives[m].signatureName=this.signatureName;
-          }
-          this.cvtService.updateToCvtNonReceive(this.cvtNonReceives).then(() => {
-            //更新验收表
-            let cvtNonCheck = new Array<any>();
-            let changeRecords = new Array<ChangeRecord>();
-            for (var i = 0; i < this.cvtNonReceives.length; i++) {
-              //更新非安设备资产验收单
-              let item = {
-                checkBillNum: 1234,
-                checkOrg: this.cvtNonReceives[i].receiveOrg,
-                checkDate: this.cvtNonReceives[i].receiveTime,
-                checkPerson: this.cvtNonReceives[i].receivePerson,
-                checkState: "NORMAL",
-                recordFlag: 1,  //表示已经确认，待同步数据后删除资产信息
-                assetId: this.cvtNonReceives[i].assetId
-              }
-              cvtNonCheck.push(item);
-              //得到日志信息
-              let changeRecord = new ChangeRecord();
-              changeRecord.assetId = this.cvtNonReceives[i].assetId;
-              let leadingPerson=this.navParams.get("userName");
-              changeRecord.changeDetail = "【资产发放】：使用保管人-->" + this.cvtNonReceives[i].receiveName+",发放人："+leadingPerson;
-              changeRecord.changePerson = this.cvtNonReceives[i].receivePerson;
-              changeRecord.changeTime =new Date(this.cvtNonReceives[i].receiveTime).getTime();
-              changeRecord.changeType = PubContanst.ChangeRecord.GRANTING;
-              changeRecord.dutyOrg = this.cvtNonReceives[i].receiveOrg;
-              changeRecord.state = "ENABLE";
-              changeRecords.push(changeRecord);
-            }
-            //更新验收表
-            this.cvtService.updateToCvtNonCheck(cvtNonCheck).then(() => {
-              //修改日志表
-              this.cvtService.insertToChangeRecord(changeRecords).then(() => {
-                //判断是否全部发放完成
-                if (this.sentQuantity + this.cvtNonReceives.length >= this.totalQuantity&&this.cvtNonNotice) {
-                  //说明发放完成，修改本地通知的状态
-                  this.cvtNonNotice.noticeState = "SYNCHRONIZE";//待同步状态
-                  this.cvtService.updateStateToCvtNotice(this.cvtNonNotice).then(() => {
-                    this.noticeService.showIonicAlert("提交成功,资产发放完成！");
-                    this.navCtrl.popToRoot();
-                  }, (error) => {
-                    this.noticeService.showIonicAlert(error);
-                  })
-                } else {
-                  //没有发放完成，继续发放
-                  this.noticeService.showIonicAlert("提交成功！");
-                  this.navCtrl.popToRoot();
-                }
-              }, (error) => {
+                loading.dismiss();
                 this.noticeService.showIonicAlert(error);
               })
             }, (error) => {
-              this.noticeService.showIonicAlert(error);
+              loading.dismiss();
+              this.noticeService.showIonicAlert("上传签名失败，请检查网络是否通畅！");
             })
+
+
+          } else if (this.workerType == 2) {
+            //领用人，不在发放
+            this.cvtService.receiverNoGranting(this.cvtNotice,this.cvtNotice.recipient,this.signaturePath, this.signatureName).then((data)=>{
+                this.noticeService.showIonicAlert("提交成功！");
+                this.navCtrl.popToRoot();
+              }, (error) => {
+                this.noticeService.showIonicAlert(error);
+              })
+          }
+
+
+
+        } else if (this.signatureType == "granting") {
+          //用于发放时候的手写签名,签名后将本地领用表和验收表数据更新，同时保存签名信息
+          for (var m = 0; m < this.cvtNonReceives.length; m++) {
+            this.cvtNonReceives[m].recordFlag=1;
+            this.cvtNonReceives[m].signaturePath = this.signaturePath;
+            this.cvtNonReceives[m].signatureName = this.signatureName;
+          }
+          this.cvtService.updateToCvtNonReceive(this.cvtNonReceives).then(() => {
+            //判断是否全部发放完成
+            if (this.sentQuantity + this.cvtNonReceives.length >= this.totalQuantity && this.cvtNonNotice) {
+              //说明发放完成，修改本地通知的状态
+              this.cvtNonNotice.noticeState = "SYNCHRONIZE";//待同步状态
+              this.cvtService.updateStateToCvtNotice(this.cvtNonNotice).then(() => {
+                this.noticeService.showIonicAlert("提交成功,资产发放完成！");
+                this.navCtrl.popToRoot();
+              }, (error) => {
+                this.noticeService.showIonicAlert(error);
+              })
+            } else {
+              //没有发放完成，继续发放
+              this.noticeService.showIonicAlert("提交成功！");
+              this.navCtrl.popToRoot();
+            }
           }, (error) => {
             this.noticeService.showIonicAlert(error);
           })

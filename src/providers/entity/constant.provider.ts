@@ -1,24 +1,26 @@
 export class PubContanst{
-	static CvtNonNoniceState={
-		FINISH:"FINISH"
-	}
-	static ChangeRecord={
-		CONVERT:"convert",
-		GRANTING:"granting",
+	//日志表类型
+	static CHANGE_RECORD_TYPE_CONVERT="CONVERT";
+	static CHANGE_RECORD_TYPE_GRANTING="GRANTING";
 
-	}
-	
-}
-
-export class SignatureType{
-	static CVT_RECEIVER:"cvt_receiver";  //转产领用人签名
-	static CVT_RECEIVER_NO_GRANTING:"cvt_receiver_no_granting";  //转产领用人签名
-
-}
+	/**
+	 * 转产领用人签名
+	 */
+	static SIGNATURE_TYPE_CVT_RECEIVER="CVT_RECEIVER";
+	/**
+	 * 转产领用人签名-未下发情况
+	 */
+	static SIGNATURE_TYPE_CVT_RECEIVER_NO_GRANTING="CVT_RECEIVER_NO_GRANTING";
 
 
-export class CvtContanst{
-	
-	
+	//非安转产
+	static CVT_NON_NOTICE_STATE_RECEIVED="RECEIVED";
+	static CVT_NON_NOTICE_STATE_COMPLETED="COMPLETED";
+	static CVT_NON_CHECK_STATE_SAVED="SAVED";
+
+	static DICT_TYPE_USE_STATE=20;
+	static DICT_TYPE_TECH_STATE=21;
+	static DICT_TYPE_SECURITY_STATE=26;
+
 }
 

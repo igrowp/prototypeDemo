@@ -1,3 +1,5 @@
+import { LoginPageModule } from './../login/login.module';
+import { PubContanst } from './../../providers/entity/constant.provider';
 import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
 import { DateUtil } from './../../providers/utils/dateUtil';
 import { AssetService } from '../../providers/service/asset.service';
@@ -14,6 +16,7 @@ import {
   NavController,
   NavParams
 } from 'ionic-angular';
+import { DictDetail } from '../../providers/entity/pub.entity';
 
 /**
  * Generated class for the EquipMessagePage page.
@@ -28,18 +31,24 @@ import {
   templateUrl: 'inv-asset-message.html',
 })
 export class InvAssetMessagePage {
-  public segment = "basicMassage";
+  //html绑定变量
+  public segment = "changeMessage";
   public photos: Array<string> = new Array<string>();
-
   public fixedAsset: FixedAsset = new FixedAsset();
   public invAsset: InvAsset = new InvAsset();
+  public manufactureDate: any;   //出厂日期
+  public productionTime: any;    //投产日期      
+  public dateNow = DateUtil.formatDate(new Date());
+  public techStates:Array<DictDetail>;  //技术状况的列表
+  public useStates:Array<DictDetail>;  //技术状况的列表
+  public securityStates:Array<DictDetail>;  //技术状况的列表
+
+  //html绑定变量END
+
   private originalInvAsset: InvAsset = new InvAsset();
   private changeDetail = null;  //用于记录修改细节，插入到日志中
   private workerNumber;
-  public manufactureDate: any;   //出厂日期
-  public productionTime: any;    //投产日期      
   private invNoticeId;
-  public dateNow = DateUtil.formatDate(new Date());
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public alertCtrl: AlertController,
@@ -79,6 +88,29 @@ export class InvAssetMessagePage {
         this.originalInvAsset = this.recordData(this.invAsset);
       }
     }
+
+  
+    this.initSelectOptions();
+
+    
+  }
+  //从数据字典中读取数据，展示在页面中
+  initSelectOptions(){
+    this.assetService.queryListFromDictDetailByCategoryCode(PubContanst.DICT_TYPE_TECH_STATE).then((techs)=>{
+      if(techs){
+        this.techStates=techs;
+      }
+    })
+    this.assetService.queryListFromDictDetailByCategoryCode(PubContanst.DICT_TYPE_USE_STATE).then((techs)=>{
+      if(techs){
+        this.useStates=techs;
+      }
+    })
+    this.assetService.queryListFromDictDetailByCategoryCode(PubContanst.DICT_TYPE_SECURITY_STATE).then((techs)=>{
+      if(techs){
+        this.securityStates=techs;
+      }
+    })
   }
 
 
@@ -133,7 +165,7 @@ export class InvAssetMessagePage {
     let changeRecord;
     if (this.changeDetail != "") {
       changeRecord = new ChangeRecord();
-      changeRecord.assetId = this.fixedAsset.assetId;
+      changeRecord.bizId = this.fixedAsset.assetId;
       changeRecord.changeDetail = this.changeDetail;
       changeRecord.changePerson = this.workerNumber;
       changeRecord.changeTime = new Date().getTime();
@@ -218,79 +250,60 @@ export class InvAssetMessagePage {
     }
   }
 
+  //根据字典code获得文字信息
+  getDictCodeDesc(dictDetails:Array<DictDetail>,code:string){
+    if(code){
+      var filter=dictDetails.filter((item)=>{
+        return item.dictCode==code;
+      })
+      if(filter.length>0){
+        return filter[0].dictCodeDesc;
+      }else{
+        return "";
+      }
+    }else{
+      return "";
+    }
+  }
   /**
    * 得到改变的记录
    * preItem为原始的数据，item为新修改的数据
    */
-  getChangeRecord(preItem: InvAsset, item: InvAsset) {
+  getChangeRecord(preItem: InvAsset, lastItem: InvAsset) {
     var change: Array<string> = new Array<string>();
-    if (preItem.techStatus != item.techStatus) {
-      change.push('【技术状况】:"' + this.initDataIfNull(preItem.techStatus) + '" --> "' + item.techStatus + '"');
+    if (preItem.techStatus != lastItem.techStatus) {
+      change.push('【技术状况】:"' + this.getDictCodeDesc(this.techStates,preItem.techStatus) + '" --> "' + this.getDictCodeDesc(this.techStates,lastItem.techStatus) + '"');
     }
-    if (preItem.useState != item.useState) {
-      change.push('【使用状况】:"' + this.initDataIfNull(preItem.useState) + '" --> "' + item.useState + '"');
+    if (preItem.useState != lastItem.useState) {
+      change.push('【使用状况】:"' + this.getDictCodeDesc(this.useStates,preItem.useState) + '" --> "' + this.getDictCodeDesc(this.useStates,lastItem.useState) + '"');
     }
-    if (preItem.securityState != item.securityState) {
-      change.push('【安全现状】:"' + this.initDataIfNull(preItem.securityState) + '" --> "' + item.securityState + '"');
+    if (preItem.securityState != lastItem.securityState) {
+      change.push('【安全现状】:"' + this.getDictCodeDesc(this.securityStates,preItem.securityState)+ '" --> "' + this.getDictCodeDesc(this.securityStates,lastItem.securityState) + '"');
     }
-    if (preItem.handleDate != item.handleDate) {
-      change.push('【闲置/停产日期】:"' + this.initDataIfNull(preItem.handleDate) + '" --> "' + item.handleDate + '"');
+    if (preItem.handleDate != lastItem.handleDate) {
+      change.push('【闲置/停产日期】:"' + this.initDataIfNull(preItem.handleDate) + '" --> "' + lastItem.handleDate + '"');
     }
-    if (preItem.installLocation != item.installLocation) {
-      change.push('【安装地点】:"' + this.initDataIfNull(preItem.installLocation) + '" --> "' + item.installLocation + '"');
+    if (preItem.installLocation != lastItem.installLocation) {
+      change.push('【安装地点】:"' + this.initDataIfNull(preItem.installLocation) + '" --> "' + lastItem.installLocation + '"');
     }
-    if (preItem.manager != item.manager) {
-      change.push('【保管人】:"' + this.initDataIfNull(preItem.manager) + '" --> "' + item.manager + '"');
+    // if (preItem.manager != lastItem.manager) {
+    //   change.push('【保管人】:"' + this.initDataIfNull(preItem.manager) + '" --> "' + lastItem.manager + '"');
+    // }
+    // if (preItem.useOrgName != lastItem.useOrgName) {
+    //   change.push('【使用单位】:"' + this.initDataIfNull(preItem.useOrgName) + '" --> "' + lastItem.useOrgName + '"');
+    // }
+    if (preItem.handleReason != lastItem.handleReason) {
+      change.push('【修改原因】:"' + this.initDataIfNull(preItem.handleReason) + '" --> "' + lastItem.handleReason + '"');
     }
-    if (preItem.useOrgName != item.useOrgName) {
-      change.push('【使用单位】:"' + this.initDataIfNull(preItem.useOrgName) + '" --> "' + item.useOrgName + '"');
-    }
-    if (preItem.handleReason != item.handleReason) {
-      change.push('【修改原因】:"' + this.initDataIfNull(preItem.handleReason) + '" --> "' + item.handleReason + '"');
+    if(change.length==0){
+      change.push("无变化信息");
     }
     return change.toString();
   }
 
   //////////////日志方法END//////////////////////////////
 
-  // /**
-  //  * 改变使用单位的值
-  //  * @param event 
-  //  */
-  // changeOrg(event){
-  //     let popover =this.popoverCtrl.create("Test2Page",{
-  //       type:"ORGANIZATION"
-  //     });
-  //     popover.onDidDismiss(data => {
-  //       if(data!=null){
-  //         this.invAsset.useOrgName=data.orgName;
-  //         this.invAsset.useOrg=data.orgCode;
-  //       }
-  //     });
-  //     popover.present({
-  //       ev:event
-  //     })
-  //   }
-
-  //   /**
-  //    * 修改管理人
-  //    * @param event 
-  //    */
-  //   changeManager(event){
-  //     let popover =this.popoverCtrl.create("Test2Page",{
-  //       type:"MANAGER"
-  //     });
-  //     popover.onDidDismiss(data => {
-  //       if(data!=null){
-  //         this.invAsset.manager=data.userName;
-  //         this.invAsset.workerNumber=data.workerNumber;
-  //       }
-  //    });
-  //     popover.present({
-  //       ev:event
-  //     })
-  //   }
-
+  
   /**
    * 确认是否删除按钮
    * @param file 

@@ -5,7 +5,6 @@ import { Properties } from './../../providers/properties/properties';
 import { AssetService } from './../../providers/service/asset.service';
 import { BackButtonService } from './../../providers/service/backButton.service';
 import { NoticeService } from './../../providers/service/notice.service';
-import { LocalStorageService } from './../../providers/service/localStorage.service';
 import { LoginService } from './../../providers/service/login.service';
 import { Component } from '@angular/core';
 import {
@@ -43,7 +42,6 @@ export class LoginPage {
     private backButtonService: BackButtonService,
     private platform: Platform,
     private loadingCtrl:LoadingController,
-    public storageService:LocalStorageService,
     private loginWebProvider:LoginWebProvider) {
       platform.ready().then(() => {
           this.backButtonService.registerBackButtonAction(null);
@@ -75,12 +73,6 @@ export class LoginPage {
 
     this.Local_URL=this.loginWebProvider.getUrl();
     alert(this.Local_URL);
-  }
-  test2(){
-    //Properties.webConfig.address="123";
-    alert(DataBaseUtil.getSqliteObject());
-    
-
   }
   test3(){
     this.navCtrl.push("Test2Page");

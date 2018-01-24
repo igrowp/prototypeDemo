@@ -86,7 +86,8 @@
               <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
           </ion-col>
           </ion-row> -->
-      <h2>{{item.assetName}} [{{item.selfNumber}}]</h2>
+      <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
+      <h2 *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}]</h2>
       <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
     </ion-item>
   </ion-list>

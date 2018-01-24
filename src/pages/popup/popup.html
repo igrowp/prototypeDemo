@@ -7,14 +7,28 @@
 <ion-header>
     <ion-navbar>
         <ion-buttons start>
-            <button ion-button (click)="dismiss()" style="font-size:1.5rem;padding-left:10px;padding-right:10px;margin-right:5px;border:1px solid white">返回</button>
+            <button ion-button (click)="dismiss()" style="font-size:1.5rem;padding-left:10px;padding-right:10px;margin-right:5px;border:1px solid white">退出</button>
         </ion-buttons>
         <ion-title>数据同步中：</ion-title>
     </ion-navbar>
 </ion-header>
 
+
 <ion-content padding id="div_content">
-    <h3 id="prompt">首次登录可能会消耗一定的时间，请耐心等候!</h3>
+        <ion-item no-lines [hidden]="hidden">
+                <ion-note item-end class="border-radius" (click)="setting()">
+                    <ion-icon name="ios-settings-outline"> 设置</ion-icon>
+                </ion-note>
+            </ion-item>
+    
     <h1 id="message">{{message}}</h1>
-    <h4 [hidden]="hidden">{{messageSub}}</h4>
+    
+    
+    <h4 >{{messageSub}}</h4>
+    <div [hidden]="hidden" style="text-align: center; margin-left: 30px; margin-right: 30px;margin-top:40px;">
+            <button ion-button block round color="default" (click)="handleReTry()">
+                重试
+            </button>
+        </div>
+        <h3 [hidden]="!hidden" id="prompt">首次登录可能会消耗一定的时间，请耐心等候!</h3>
 </ion-content>

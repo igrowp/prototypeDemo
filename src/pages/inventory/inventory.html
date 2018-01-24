@@ -33,12 +33,13 @@
                 <!-- <ion-scroll id="list_scroll" scrollY="true"> -->
                 <ion-item *ngFor="let item of dataTable;let i = index">
                     <ion-label id="list_label">
-                        <p id="list-item-head">{{item.assetName}} [{{item.selfNumber}}] </p>
+                        <p id="list-item-head" *ngIf="item.selfNumber==''">{{item.assetName}} </p>
+                        <p id="list-item-head" *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </p>
                         <p id="list-item-bottom">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
                     </ion-label>
                     <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" style="height:20px;" />
                     <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" style="height:20px;" />
-                    <button id="list_row_right" ion-button item-end (click)="scan(item,i)" *ngIf="item.isChecked=='0'" color="danger">盘点</button>
+                    <button id="list_row_right" ion-button item-end (click)="scan(item,i)" *ngIf="item.isChecked==null||item.isChecked=='0'||item.isChecked==''" color="danger">盘点</button>
                     <button id="list_row_right" ion-button item-end (click)="scan(item,i)" *ngIf="item.isChecked=='1'">待签字</button>
                     <ion-icon id="list_row_img" (click)="reScan(item,i)" *ngIf="item.isChecked=='2'" item-end name="checkmark"></ion-icon>
                     

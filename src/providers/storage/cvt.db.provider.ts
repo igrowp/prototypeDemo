@@ -1,13 +1,13 @@
 import { SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
 import { DBService } from './db.service';
-import { CvtNonNotice, CvtNonNoticeSub, CvtNonReceive, CvtNonCheck } from '../entity/cvt.entity.provider';
+import { CvtNonNotice, CvtNonNoticeSub, CvtNonReceive } from '../entity/cvt.entity.provider';
 
 /*
   盘点数据库类
 */
 @Injectable()
-export class ConvertDBProvider {
+export class CvtDBProvider {
     private dataBase: SQLiteObject = null;
     constructor(private dbService: DBService) {
         this.dbService.getSqliteObject().then((db) => {
@@ -90,7 +90,23 @@ export class ConvertDBProvider {
 
     ///////非安转产通知单明细/////////
     /**
-      * 根据员工编号获取非安设备转产通知附加表
+      * 根据通知单ID获取非安设备转产通知附加表
+      * @param noticeId 
+      */
+      queryFromCvtNonNoticeSubBySubId(subNoticeId: string) {
+        return new Promise<CvtNonNoticeSub>((resolve, reject) => {
+            this.dbService.executeSql('select * from cvt_noninstall_notice_sub where SUB_NOTICE_ID=?', [subNoticeId])
+                .then((data) => {
+                    var notice = this._getCvtNonNoticeSubFromDBResult(data);
+                    resolve(notice);
+                }, (error) => {
+                    reject("数据库操作：\n查询非安设备通知表失败\n" + error.message);
+                })
+        })
+    }
+
+    /**
+      * 根据通知单ID获取非安设备转产通知附加表
       * @param noticeId 
       */
     queryFromCvtNonNoticeSubByNoticeId(noticeId: string) {
@@ -141,11 +157,21 @@ export class ConvertDBProvider {
 
     ///////非安转产领用通知单///////////
     /**
-      * 获取领用表资产信息
-      */
-    queryFromCvtNonReceive(noticeId: string) {
+     * 获取领用表资产信息
+     * @param noticeId 
+     * @param recordFlag 0代表为分发，1代表已经分发
+     */
+    queryFromCvtNonReceive(noticeId: string,recordFlag?:number) {
+        let sql,param;
+        if(recordFlag||recordFlag==0){
+            sql='select * from cvt_noninstall_receive where NOTICE_ID=? AND RECORD_FLAG=?';
+            param=[noticeId,recordFlag];
+        }else{
+            sql='select * from cvt_noninstall_receive where NOTICE_ID=?';
+            param=[noticeId];
+        }
         return new Promise<Array<CvtNonReceive>>((resolve, reject) => {
-            this.dbService.executeSql('select * from cvt_noninstall_receive where NOTICE_ID=?', [noticeId])
+            this.dbService.executeSql(sql,param)
                 .then((data) => {
                     var notice = this._getCvtNonReceivesFromDBResult(data);
                     resolve(notice);
@@ -159,10 +185,10 @@ export class ConvertDBProvider {
       * 获取领用表资产信息
       */
       queryFromCvtNonReceiveByReceiveId(receiveId: string) {
-        return new Promise<Array<CvtNonReceive>>((resolve, reject) => {
+        return new Promise<CvtNonReceive>((resolve, reject) => {
             this.dbService.executeSql('select * from cvt_noninstall_receive where RECEIVE_ID=?', [receiveId])
                 .then((data) => {
-                    var notice = this._getCvtNonReceivesFromDBResult(data);
+                    var notice = this._getCvtNonReceiveFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
                     reject("数据库操作：\n查询非安转产领用表失败\n" + error.message);
@@ -186,13 +212,12 @@ export class ConvertDBProvider {
                 })
         })
     }
-
     /**
      * 删除非安设备转产领用单
      */
-    deleteFromCvtNonReceiveByReceiveId(receiveId: string) {
+    deleteFromCvtNonReceiveByNoticeId(noticeId: string) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql('delete from cvt_noninstall_receive where RECEIVE_ID=?', [receiveId])
+            this.dbService.executeSql('delete from cvt_noninstall_receive where NOTICE_ID=?', [noticeId])
                 .then((data) => {
                     resolve(data);
                 })
@@ -217,95 +242,6 @@ export class ConvertDBProvider {
         })
     }
     ///////非安转产领用通知单END///////////
-
-
-
-
-    /////////非安转产验收单/////////
-    /**
-      * 获取验收表资产信息
-      */
-    queryFromCvtNonCheck(investplanId: string) {
-        return new Promise<Array<CvtNonCheck>>((resolve, reject) => {
-            this.dbService.executeSql('select * from cvt_noninstall_check where INVESTPLAN_ID=?', [investplanId])
-                .then((data) => {
-                    var checks = this._getCvtNonChecksFromDBResult(data);
-                    resolve(checks);
-                }, (error) => {
-                    reject("数据库操作：\n查询非安转产验收表失败\n" + error.message);
-                })
-        })
-    }
-
-    /**
-      * 获取验收表资产信息
-      */
-    queryFromCvtNonCheckByCheckId(checkId: string) {
-        return new Promise<Array<CvtNonCheck>>((resolve, reject) => {
-            this.dbService.executeSql('select * from cvt_noninstall_check where CHECK_ID=?', [checkId])
-                .then((data) => {
-                    var checks = this._getCvtNonChecksFromDBResult(data);
-                    resolve(checks);
-                }, (error) => {
-                    reject("数据库操作：\n查询非安转产验收表失败\n" + error.message);
-                })
-        })
-    }
-
-    /**
-     * 根据通知ID更新领用单
-     * @param cvtNonCheck  map 
-     */
-    updateToCvtNonCheck(cvtNonCheck) {
-        return new Promise((resolve, reject) => {
-            this.dbService.executeSql("update cvt_noninstall_check set CHECK_BILL_NUM=?,CHECK_ORG=?,CHECK_DATE=? ,CHECK_PERSON=?,CHECK_STATE=?,RECORD_FLAG=? where ASSET_ID=?",
-                [cvtNonCheck.checkBillNum, cvtNonCheck.checkOrg, cvtNonCheck.checkDate, cvtNonCheck.checkPerson, cvtNonCheck.checkState, cvtNonCheck.recordFlag, cvtNonCheck.assetId])
-                .then((data) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject("数据库操作：\n更新非安设备转产领用单失败\n" + error.message);
-                })
-        })
-    }
-
-    /**
-     * 删除非安转产验收单
-     */
-    deleteFromCvtNonCheckByCheckId(checkId: string) {
-        return new Promise((resolve, reject) => {
-            this.dbService.executeSql('delete from cvt_noninstall_check where CHECK_ID=?', [checkId])
-                .then((data) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject("数据库操作：\n删除非安设备非安转产验收单失败\n" + error.message);
-                })
-        })
-    }
-
-    /**
-     * 在非安资产领用验收表中插入数据
-     * @param cvtNonCheck 
-     */
-    insertToCvtNonCheck(cvtNonCheck: CvtNonCheck) {
-        return new Promise((resolve, reject) => {
-            this.dbService.executeSql('insert into cvt_noninstall_check values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                [cvtNonCheck.checkId, cvtNonCheck.investplanId, cvtNonCheck.receiveId, cvtNonCheck.checkBillNum, cvtNonCheck.checkOrg, cvtNonCheck.checkDate, cvtNonCheck.checkPerson, cvtNonCheck.checkLeader,
-                cvtNonCheck.checkOpinion, cvtNonCheck.checkState, cvtNonCheck.assetId, cvtNonCheck.fundChannel, cvtNonCheck.assetCode, cvtNonCheck.assetName, cvtNonCheck.specModel, cvtNonCheck.selfNumber, cvtNonCheck.manufacturer,
-                cvtNonCheck.manufactureDate, cvtNonCheck.workInOrg, cvtNonCheck.serialNumber, cvtNonCheck.unit, cvtNonCheck.quantity, cvtNonCheck.originalValue, cvtNonCheck.isReadyForUse, cvtNonCheck.componentToolDesc, cvtNonCheck.technicalData, cvtNonCheck.recordFlag])
-                .then((data) => {
-                    resolve(data);
-                }, (error) => {
-                    reject("数据库操作：\n插入非安资产领用验收表失败\n" + error.message);
-                })
-        })
-    }
-
-    /////////非安转产验收单END////////
-
-
-
 
 
 
@@ -336,6 +272,31 @@ export class ConvertDBProvider {
      * 从数据库查询结果中返回CvtNonNoticeSub的值
      * @param data 
      */
+    private _getCvtNonNoticeSubFromDBResult(data): CvtNonNoticeSub {
+        var cvtNonNoticeSub: CvtNonNoticeSub = null;
+        if (data.rows.length > 0) {
+            cvtNonNoticeSub = new CvtNonNoticeSub();
+            cvtNonNoticeSub.subNoticeId = data.rows.item(0).SUB_NOTICE_ID;
+            cvtNonNoticeSub.noticeId = data.rows.item(0).NOTICE_ID;
+            cvtNonNoticeSub.purchasingId = data.rows.item(0).PURCHASING_ID;
+            cvtNonNoticeSub.materialCode = data.rows.item(0).MATERIAL_CODE;
+            cvtNonNoticeSub.assetName = data.rows.item(0).ASSET_NAME;
+            cvtNonNoticeSub.specModel = data.rows.item(0).SPEC_MODEL;
+            cvtNonNoticeSub.unit = data.rows.item(0).UNIT;
+            cvtNonNoticeSub.price = data.rows.item(0).PRICE;
+            cvtNonNoticeSub.amount = data.rows.item(0).AMOUNT;
+            cvtNonNoticeSub.sentQuantity = data.rows.item(0).SENT_QUANTITY;
+            cvtNonNoticeSub.storageDate = data.rows.item(0).STORAGE_DATE;
+            cvtNonNoticeSub.outDate = data.rows.item(0).OUT_DATE;
+            cvtNonNoticeSub.recordFlag = data.rows.item(0).RECORD_FLAG;
+        }
+        return cvtNonNoticeSub;
+    }
+
+    /**
+     * 从数据库查询结果中返回CvtNonNoticeSub的值
+     * @param data 
+     */
     private _getCvtNonNoticeSubsFromDBResult(data): Array<CvtNonNoticeSub> {
         var cvtNonNoticeSubs: Array<CvtNonNoticeSub> = new Array<CvtNonNoticeSub>();
         if (data.rows.length > 0) {
@@ -359,6 +320,31 @@ export class ConvertDBProvider {
             }
         }
         return cvtNonNoticeSubs;
+    }
+    /**
+    * 从数据库查询结果中返回Array<CvtNonReceive>的值
+    * @param data 
+    */
+    private _getCvtNonReceiveFromDBResult(data): CvtNonReceive {
+        var cvtNonReceive:CvtNonReceive = null;
+        if (data.rows.length > 0) {
+                cvtNonReceive= new CvtNonReceive();
+                cvtNonReceive.receiveId = data.rows.item(0).RECEIVE_ID;
+                cvtNonReceive.noticeId = data.rows.item(0).NOTICE_ID;
+                cvtNonReceive.assetId = data.rows.item(0).ASSET_ID;
+                cvtNonReceive.assetCode = data.rows.item(0).ASSET_CODE;
+                cvtNonReceive.assetName = data.rows.item(0).ASSET_NAME;
+                cvtNonReceive.specModel = data.rows.item(0).SPEC_MODEL;
+                cvtNonReceive.receiveOrg = data.rows.item(0).RECEIVE_ORG;
+                cvtNonReceive.receivePerson = data.rows.item(0).RECEIVE_PERSON;
+                cvtNonReceive.receiveTime = data.rows.item(0).RECEIVE_TIME;
+                cvtNonReceive.reveiveStyle = data.rows.item(0).RECEIVE_STYLE;
+                cvtNonReceive.recordFlag = data.rows.item(0).RECORD_FLAG;
+                cvtNonReceive.receiveName = data.rows.item(0).RECEIVE_NAME;
+                cvtNonReceive.signaturePath = data.rows.item(0).SIGNATURE_PATH;
+                cvtNonReceive.signatureName = data.rows.item(0).SIGNATURE_NAME;
+        }
+        return cvtNonReceive;
     }
 
     /**
@@ -389,49 +375,6 @@ export class ConvertDBProvider {
             }
         }
         return cvtNonReceives;
-    }
-
-    /**
-     * 从数据库查询结果中返回Array<CvtNonReceive>的值
-     * @param data 
-     */
-    private _getCvtNonChecksFromDBResult(data): Array<CvtNonCheck> {
-        var cvtNonChecks: Array<CvtNonCheck> = new Array<CvtNonCheck>();
-        if (data.rows.length > 0) {
-            cvtNonChecks = new Array<CvtNonCheck>();
-            for (var i = 0; i < data.rows.length; i++) {
-                var cvtNonCheck = new CvtNonCheck();
-                cvtNonCheck.checkId = data.rows.item(i).CHECK_ID;
-                cvtNonCheck.investplanId = data.rows.item(i).INVESTPLAN_ID;
-                cvtNonCheck.receiveId = data.rows.item(i).RECEIVE_ID;
-                cvtNonCheck.checkBillNum = data.rows.item(i).CHECK_BILL_NUM;
-                cvtNonCheck.checkOrg = data.rows.item(i).CHECK_ORG;
-                cvtNonCheck.checkDate = data.rows.item(i).CHECK_DATE;
-                cvtNonCheck.checkPerson = data.rows.item(i).CHECK_PERSON;
-                cvtNonCheck.checkLeader = data.rows.item(i).CHECK_LEADER;
-                cvtNonCheck.checkOpinion = data.rows.item(i).CHECK_OPINION;
-                cvtNonCheck.checkState = data.rows.item(i).CHECK_STATE;
-                cvtNonCheck.assetId = data.rows.item(i).ASSET_ID;
-                cvtNonCheck.fundChannel = data.rows.item(i).FUND_CHANNEL;
-                cvtNonCheck.assetCode = data.rows.item(i).ASSET_CODE;
-                cvtNonCheck.assetName = data.rows.item(i).ASSET_NAME;
-                cvtNonCheck.specModel = data.rows.item(i).SPEC_MODEL;
-                cvtNonCheck.selfNumber = data.rows.item(i).SELF_NUMBER;
-                cvtNonCheck.manufacturer = data.rows.item(i).MANUFACTURER;
-                cvtNonCheck.manufactureDate = data.rows.item(i).MANUFACTURE_DATE;
-                cvtNonCheck.workInOrg = data.rows.item(i).WORK_IN_ORG;
-                cvtNonCheck.serialNumber = data.rows.item(i).SERIAL_NUMBER;
-                cvtNonCheck.unit = data.rows.item(i).UNIT;
-                cvtNonCheck.quantity = data.rows.item(i).QUANTITY;
-                cvtNonCheck.originalValue = data.rows.item(i).ORIGINAL_VALUE;
-                cvtNonCheck.isReadyForUse = data.rows.item(i).IS_READY_FOR_USE;
-                cvtNonCheck.componentToolDesc = data.rows.item(i).COMPONENT_TOOL_DESC;
-                cvtNonCheck.technicalData = data.rows.item(i).TECHNICAL_DATA;
-                cvtNonCheck.recordFlag = data.rows.item(i).RECORD_FLAG;
-                cvtNonChecks.push(cvtNonCheck);
-            }
-        }
-        return cvtNonChecks;
     }
 
 }

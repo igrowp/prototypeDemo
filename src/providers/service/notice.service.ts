@@ -27,13 +27,25 @@ export class NoticeService {
      * 显示ionic自带TOAST
      * @param message 
      */
-    showIonicAlert(message: String) {
+    showIonicAlert(message: String,title?:string) {
+        var titleString;
+        if(title==null||title==""){
+            titleString="提示";
+        }else{
+            titleString=title;
+        }
         this.alertCtrl.create({
-            title: "提醒",
+            title: titleString,
             subTitle: message + "",
             buttons: ["确定"]
         }).present();
     }
+
+
+    // showIonicConformAlert(message:string,success,err,title?:string){
+        
+
+    // }
 
 
     /**

@@ -66,6 +66,22 @@ export class InvDBProvider {
         })
     }
 
+    /**
+     * 删除资产盘点通知单
+     * @param leadingOrg 
+     */
+    deleteFromInvNotice(leadingOrg: string) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('delete from inv_notice where LEADING_ORG=?', [leadingOrg])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：\n删除资产盘点通知单失败\n"+error.message);
+                })
+        })
+    }
+
 
     ////////盘点通知单操作END/////////
 
@@ -140,7 +156,7 @@ export class InvDBProvider {
                 .then((data) => {
                     if (data.rows.length > 0) {
                         for (var i = 0; i < data.rows.length; i++) {
-                            var workerNumber = data[i].rows.PRE_WORKER_NUMBER
+                            var workerNumber = data[i].rows.WORKER_NUMBER
                             this.dbService.executeSql('delete from inv_asset_record where PRE_WORKER_NUMBER=?', [workerNumber])
                                 .then((data) => {
                                     if (workerNumber == data[data.rows.length - 1].rows.PRE_WORKER_NUMBER) {

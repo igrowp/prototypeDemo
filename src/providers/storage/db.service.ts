@@ -1,8 +1,8 @@
-import { DataBaseUtil } from './../utils/dataBaseUtil';
 import { Storage } from '@ionic/storage';
 import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Properties } from '../properties/properties';
+import { NoticeService } from '../service/notice.service';
 
 /*
   该类用于数据库的创建已经数据库版本升级操作
@@ -29,9 +29,13 @@ export class DBService {
   // private INSERT_DATA = "insert into sys_person_info_simple select *,'' from _temp_sys_person_info_simple";
   // private DROP_TABLE = "drop table _temp_sys_person_info_simple";
 
+  
+
+
 
   constructor(private sqlite: SQLite,
-             private storage:Storage) {
+             private storage:Storage,
+             private noticeService:NoticeService) {
     //设定本次数据库的版本号
     this.newVersion = Properties.dbConfig.version;
     this.dbName = Properties.dbConfig.name;
@@ -46,7 +50,6 @@ export class DBService {
       this.onCreate().then((db)=>{
         this.onUpgrade();
         //alert("初始化数据库")
-        DataBaseUtil.setSqliteObject(db);
         //alert("数据库"+db);
         resolve(db);
       },(err)=>{reject(err)})
@@ -66,7 +69,6 @@ export class DBService {
           this.oldVersion = version;
           if (!this.database) {
             this.openDB().then((db) => {
-              //alert("已有数据库");
               resolve(db);
             }, err => { reject(err.message) });
           }else{
@@ -97,9 +99,10 @@ export class DBService {
    */
   onUpgrade() {
     //数据库版本不同，需要进行升级
-    if (this.newVersion != this.oldVersion) {
+    if (this.newVersion > this.oldVersion) {
       switch (this.oldVersion) {
         //升级数据库demo
+        //注意数据库升级是根据当前版本升级到最新数据库的，对于每一次升级都是建立在1.0修改版本基础上，而不是建立在上个版本的，所以不要忘记将前面版本的改动进行添加。
         // case 1.0:
         //   this.database.executeSql(this.CREATE_TEMP_TABLE, {});
         //   this.database.executeSql(this.CREATE_TABLE, {});
@@ -108,6 +111,11 @@ export class DBService {
         //   this.storage.set("dbVersion", this.newVersion);
         //   break;
       }
+    }else if(this.newVersion < this.oldVersion){
+      //低版本覆盖高版本的情况
+      //先不做，目前思路是重新创建数据库,弹出提示框，是否愿意这样做
+      //this.noticeService.showIonicAlertWithTitle("提示","低版本数据库覆盖高版本数据库，将清空数据库信息！")
+
     }
   }
 
@@ -450,48 +458,44 @@ WORKER_NUMBER varchar(20))`, {})//建表
         RECEIVE_PERSON varchar(32),
         RECEIVE_TIME datetime,
         RECEIVE_STYLE varchar(32),
-        RECORD_FLAG int,
+        RECORD_FLAG int DEFAULT 0,
         RECEIVE_NAME varchar(32),
         SIGNATURE_PATH varchar(128),
         SIGNATURE_NAME varcahr(32))`, {})//建表
           .then(() => console.log('创建非安设备转产资产领用表成功！'))
           .catch(e => alert(e.message));
 
-        //创建非安设备转产资产验收表
-        db.executeSql('drop table if exists cvt_noninstall_check', {});
-        db.executeSql(`create table cvt_noninstall_check
-         (CHECK_ID varchar(32) PRIMARY KEY,
-         INVESTPLAN_ID varchar(100),
-         RECEIVE_ID varchar(32),
-         CHECK_BILL_NUM varchar(100),
-         CHECK_ORG varchar(32),
-         CHECK_DATE datetime,
-         CHECK_PERSON varchar(32),
-         CHECK_LEADER varchar(32),
-         CHECK_OPINION varchar(512),
-         CHECK_STATE varchar(32),
-         ASSET_ID varchar(32),
-         FUND_CHANNEL varchar(100),
-         ASSET_CODE varchar(100),
-         ASSET_NAME varchar(100),
-         SPEC_MODEL varchar(100),
-         SELF_NUMBER varchar(100),
-         MANUFACTURER varchar(100),
-         MANUFACTURE_DATE datetime,
-         WORK_IN_ORG varchar(32),
-         SERIAL_NUMBER varchar(100),
-         UNIT varchar(32),
-         QUANTITY int,
-         ORIGINAL_VALUE decimal(20,8),
-         IS_READY_FOR_USE varchar(32),
-         COMPONENT_TOOL_DESC varchar(512),
-         TECHNICAL_DATA varchar(512),
-         RECORD_FLAG int)`, {})//建表
+        //创建数据字典
+        db.executeSql('DROP TABLE IF EXISTS sys_dict', {});
+        db.executeSql(`CREATE TABLE sys_dict (
+          DICT_ID varchar(32) NOT NULL,
+          CATEGORY_CODE varchar(100) DEFAULT NULL,
+          CATEGORY_DESC varchar(100) DEFAULT NULL,
+          RECORD_FLAG int(11) DEFAULT '0',
+          PRIMARY KEY (DICT_ID)
+        )`, {})//建表
+          .then(() => console.log('创建数据字典成功！'))
+          .catch(e => alert(e.message));
+
+          //创建数据字典附加表
+        db.executeSql('DROP TABLE IF EXISTS sys_dict_detail', {});
+        db.executeSql(`CREATE TABLE sys_dict_detail (
+          DICT_DETAIL_ID varchar(32) NOT NULL,
+          CATEGORY_CODE varchar(100) DEFAULT NULL,
+          DICT_CODE varchar(100) DEFAULT NULL,
+          DICT_CODE_DESC varchar(100) DEFAULT NULL,
+          CODE_TYPE varchar(20) DEFAULT NULL,
+          CODE_SIZE varchar(20) DEFAULT NULL,
+          REMARK varchar(100) DEFAULT NULL,
+          RECORD_FLAG int(11) DEFAULT '0',
+          PRIMARY KEY (DICT_DETAIL_ID)
+        ) `, {})//建表
           .then(() => {
-            console.log('创建非安设备转产资产验收表成功！');
+            console.log('创建数据字典附加表成功！');
             resolve(db);
           })
           .catch(e => alert(e.message));
+
       }).catch(e => {
         alert(e.message);
       });

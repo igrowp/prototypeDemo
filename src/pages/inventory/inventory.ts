@@ -94,7 +94,7 @@ export class InventoryPage {
       fab.close();
     },200);
     }
-    this.assetService.queryAssetsFormInv(this.workerNumber,"1").then((invAssets)=>{
+    this.assetService.queryAssetsFromInv(this.workerNumber,"1").then((invAssets)=>{
       this.navCtrl.push("SignaturePage",{
         invAssets:invAssets,
         signatureType:"inv"
@@ -118,7 +118,7 @@ export class InventoryPage {
     });
      loading.present();
     // 重新刷新
-    this.assetService.queryAssetsFormFixed(this.workerNumber,"-1").then((data)=>{
+    this.assetService.queryAssetsFromFixed(this.workerNumber,"-1").then((data)=>{
       //进行筛选
       this.recordData=data;
     // if(val&&val.trim!=""){
