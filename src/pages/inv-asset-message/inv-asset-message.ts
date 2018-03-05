@@ -1,5 +1,7 @@
+import { AssetHandleService } from './../../providers/service/asset.handle.service';
+import { Scrap, Idle } from './../../providers/entity/pub.entity';
 import { LoginPageModule } from './../login/login.module';
-import { PubContanst } from './../../providers/entity/constant.provider';
+import { PubConstant } from './../../providers/entity/constant.provider';
 import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
 import { DateUtil } from './../../providers/utils/dateUtil';
 import { AssetService } from '../../providers/service/asset.service';
@@ -42,6 +44,13 @@ export class InvAssetMessagePage {
   public techStates:Array<DictDetail>;  //技术状况的列表
   public useStates:Array<DictDetail>;  //技术状况的列表
   public securityStates:Array<DictDetail>;  //技术状况的列表
+  
+  public scrap:Scrap=new Scrap();  //报废记录信息
+  public idle:Idle=new Idle();     //闲置记录信息
+
+  public isIdle:boolean=false;   //判断该资产是否已经是闲置资产
+  public isScrap:boolean=false;  //判断该资产是否已经是报废资产
+
 
   //html绑定变量END
 
@@ -54,11 +63,12 @@ export class InvAssetMessagePage {
     public alertCtrl: AlertController,
     public assetService: AssetService,
     private actionSheetCtrl: ActionSheetController,
+    private assetHandleService:AssetHandleService,
     private camera: Camera,
     private menuCtrl: MenuController,
     private noticeService: NoticeService,
     private invService: InvService) {
-    this.segment = "basicMassage";
+    this.segment = "changeMessage";
 
     //初始化数据
     this.fixedAsset = navParams.get("fixedAsset");
@@ -77,6 +87,7 @@ export class InvAssetMessagePage {
     } else {
       this.invAsset.manager = this.fixedAsset.custodian;
       this.invAsset.workerNumber = this.fixedAsset.workerNumber;
+      this.invAsset.installLocation=this.fixedAsset.installLocation;
       if (!this.invAsset.useOrg) {
         //没有所在单位
         this.invService.queryFromOrgInfoByOrgCode(this.fixedAsset.workForOrg).then((data) => {
@@ -87,6 +98,14 @@ export class InvAssetMessagePage {
       } else {
         this.originalInvAsset = this.recordData(this.invAsset);
       }
+
+      //判断是否为闲置或报废资产
+      if(this.fixedAsset.useState==PubConstant.DICT_SUB_TYPE_IDLE){
+        this.isIdle=true;
+      }
+      if(this.fixedAsset.techStatus==PubConstant.DICT_SUB_TYPE_SCRAP){
+        this.isScrap=true;
+      }
     }
 
   
@@ -96,27 +115,24 @@ export class InvAssetMessagePage {
   }
   //从数据字典中读取数据，展示在页面中
   initSelectOptions(){
-    this.assetService.queryListFromDictDetailByCategoryCode(PubContanst.DICT_TYPE_TECH_STATE).then((techs)=>{
+    this.assetService.queryListFromDictDetailByCategoryCode(PubConstant.DICT_TYPE_TECH_STATE).then((techs)=>{
       if(techs){
         this.techStates=techs;
       }
     })
-    this.assetService.queryListFromDictDetailByCategoryCode(PubContanst.DICT_TYPE_USE_STATE).then((techs)=>{
+    this.assetService.queryListFromDictDetailByCategoryCode(PubConstant.DICT_TYPE_USE_STATE).then((techs)=>{
       if(techs){
         this.useStates=techs;
       }
     })
-    this.assetService.queryListFromDictDetailByCategoryCode(PubContanst.DICT_TYPE_SECURITY_STATE).then((techs)=>{
+    this.assetService.queryListFromDictDetailByCategoryCode(PubConstant.DICT_TYPE_SECURITY_STATE).then((techs)=>{
       if(techs){
         this.securityStates=techs;
       }
     })
   }
 
-
-
-  //提交修改        部分数据待确认
-  submit() {
+  getInitAsset(){
     //下面为增加资产盘点记录，出下面信息外，其他资产信息会跟着输入进行改变。
     this.invAsset.assetId = this.fixedAsset.assetId;
     this.invAsset.noticeId = this.invNoticeId;
@@ -143,7 +159,7 @@ export class InvAssetMessagePage {
     }
     this.invAsset.assetName = this.fixedAsset.assetName;
     this.invAsset.assetType = this.fixedAsset.assetType;
-    this.invAsset.isSignatured = "1";
+    this.invAsset.isSignatured = 1;
     this.invAsset.preWorkerNumber = this.fixedAsset.workerNumber;
     // securityStateDesc;
     // useOrgName;
@@ -159,21 +175,19 @@ export class InvAssetMessagePage {
 
     //更新资产台账信息
     this.fixedAsset.installLocation = this.invAsset.installLocation;
-    this.fixedAsset.isChecked = "1";
-    //增加日志
-    this.changeDetail = this.getChangeRecord(this.originalInvAsset, this.invAsset);
-    let changeRecord;
-    if (this.changeDetail != "") {
-      changeRecord = new ChangeRecord();
-      changeRecord.bizId = this.fixedAsset.assetId;
-      changeRecord.changeDetail = this.changeDetail;
-      changeRecord.changePerson = this.workerNumber;
-      changeRecord.changeTime = new Date().getTime();
-      changeRecord.changeType = "inventory";
-      changeRecord.dutyOrg = this.fixedAsset.workInOrg;
-      changeRecord.state = "ENABLE";
-    }
+    this.fixedAsset.isChecked = 1;
+  }
 
+
+
+  //提交修改        部分数据待确认
+  submit() {
+    //获得修改后的盘点信息/更新的台账信息
+    this.getInitAsset();
+    //增加日志
+    let changeRecord=this.getChangeRecord(this.originalInvAsset, this.invAsset);
+    //保留报废或者闲置表
+    this.initIdleOrScrap();
     this.assetService.queryAssetFromInvByIdAndNoticeId(this.invAsset.assetId, this.invNoticeId).then((data) => {
       if (data == null) {
         //说明资产盘点记录表中没有该资产数据，需要插入
@@ -215,6 +229,47 @@ export class InvAssetMessagePage {
     })
     this.navCtrl.pop();
   }
+
+
+  /**
+   * 如果有报废或者闲置表，保留下来
+   */
+  initIdleOrScrap(){
+    //初始化闲置表,保留到本地
+    if(this.isIdle==false&&this.fixedAsset.useState==PubConstant.DICT_SUB_TYPE_IDLE){
+      this.assetHandleService.getIdleByAssetId(this.fixedAsset.assetId).then((data)=>{
+        this.idle.assetId=this.fixedAsset.assetId;
+          this.idle.applyState=PubConstant.APPLY_STATE_NULL;
+          this.idle.recordFlag=0;
+        if(data==null){
+          //没有，插入
+          this.idle.idleId=DataBaseUtil.generateUUID();
+          this.assetHandleService.addToIdle(this.idle);
+        }else{
+          this.idle.idleId=data.idleId;
+          this.assetHandleService.updateToIdle(this.idle);
+        }
+      })
+    }
+    //初始化报废表,保留到本地
+    if(this.isScrap==false&&this.fixedAsset.techStatus==PubConstant.DICT_SUB_TYPE_SCRAP){
+      this.assetHandleService.getScrapByAssetId(this.fixedAsset.assetId).then((data)=>{
+        this.scrap.assetId=this.fixedAsset.assetId;
+          this.scrap.applyState=PubConstant.APPLY_STATE_NULL;
+          this.scrap.recordFlag=0;
+        if(data==null){
+          //没有，插入
+          this.scrap.scrapId=DataBaseUtil.generateUUID();
+          this.assetHandleService.addToScrap(this.scrap);
+        }else{
+          this.scrap.scrapId=data.scrapId;
+          this.assetHandleService.updateToScrap(this.scrap);
+        }
+      })
+    }
+  }
+
+
 
   //////////////日志方法//////////////////////////////
 
@@ -265,11 +320,33 @@ export class InvAssetMessagePage {
       return "";
     }
   }
+
+  /**
+   * 获得修改的日志信息
+   * @param preItem 
+   * @param lastItem 
+   */
+  getChangeRecord(preItem: InvAsset, lastItem: InvAsset){
+    //增加日志
+    this.changeDetail = this._getChangeRecordDetail(this.originalInvAsset, this.invAsset);
+    let changeRecord;
+    if (this.changeDetail != "") {
+      changeRecord = new ChangeRecord();
+      changeRecord.bizId = this.fixedAsset.assetId;
+      changeRecord.changeDetail = this.changeDetail;
+      changeRecord.changePerson = this.workerNumber;
+      changeRecord.changeTime = new Date().getTime();
+      changeRecord.changeType = PubConstant.CHANGE_RECORD_TYPE_INVENTORY;
+      changeRecord.dutyOrg = this.fixedAsset.workInOrg;
+      changeRecord.state = "ENABLE";
+    }
+    return changeRecord;
+  }
   /**
    * 得到改变的记录
    * preItem为原始的数据，item为新修改的数据
    */
-  getChangeRecord(preItem: InvAsset, lastItem: InvAsset) {
+  private _getChangeRecordDetail(preItem: InvAsset, lastItem: InvAsset) {
     var change: Array<string> = new Array<string>();
     if (preItem.techStatus != lastItem.techStatus) {
       change.push('【技术状况】:"' + this.getDictCodeDesc(this.techStates,preItem.techStatus) + '" --> "' + this.getDictCodeDesc(this.techStates,lastItem.techStatus) + '"');
@@ -311,7 +388,8 @@ export class InvAssetMessagePage {
   private isDeleteImg(index) {
     let alert = this.alertCtrl.create({
       title: '提示',
-      message: '是否要删除该照片?',
+      subTitle: '是否要删除该照片?',
+      cssClass:'alert-conform',
       buttons: [
         {
           text: '取消',
@@ -334,9 +412,9 @@ export class InvAssetMessagePage {
  * 添加图片
  */
   add() {
-    if (this.photos.length >= 2) {
+    if (this.photos.length >= 3) {
       //只能上传三张照片
-      this.noticeService.showIonicAlert("只能上传三张照片哦！");
+      this.noticeService.showIonicAlert("只能上传三张照片哦");
       return;
     } else {
       this.useASComponent();
@@ -426,94 +504,94 @@ export class InvAssetMessagePage {
   }
 
 
-  //////////////////////////////////筛选保管人和使用单位的方法/////////////////
-  changeManagerOrOrg(type: string) {
-    this.type = type;
-    this.menuCtrl.open("selectPerson");
-    this.menuCtrl.toggle('right');
-    this.menuCtrl.enable(true, 'selectPerson');
-    this.menuCtrl.enable(false, 'sys');
-    switch (type) {
-      case "MANAGER":
-        this.invService.queryListFromUserSimple().then((data) => {
-          this.userList = data;
-        }, (error) => {
-          alert(error);
-        });
-        break;
-      case "ORGANIZATION":
-        this.invService.queryListFromOrgInfo().then((data) => {
-          this.orgInfo = data;
-          this.items = data;
-        }, (error) => {
-          alert(error);
-        });
-        break;
-      default:
-        break;
-    }
-  }
-  public type: string;    //搜索类型，有两种，查询管理员："MANAGER",查询组织机构："ORGANIZATION"
-  public menu = "selectPerson";
-  orgInfo: Array<OrgInfo> = null;   //备份，查询后保存到这个列表中
-  userList: Array<UserSimple> = new Array<UserSimple>(); //备份，管理员
-  items: any = null;     //用于搜索查询用
+  // //////////////////////////////////筛选保管人和使用单位的方法/////////////////
+  // changeManagerOrOrg(type: string) {
+  //   this.type = type;
+  //   this.menuCtrl.open("selectPerson");
+  //   this.menuCtrl.toggle('right');
+  //   this.menuCtrl.enable(true, 'selectPerson');
+  //   this.menuCtrl.enable(false, 'sys');
+  //   switch (type) {
+  //     case "MANAGER":
+  //       this.invService.queryListFromUserSimple().then((data) => {
+  //         this.userList = data;
+  //       }, (error) => {
+  //         alert(error);
+  //       });
+  //       break;
+  //     case "ORGANIZATION":
+  //       this.invService.queryListFromOrgInfo().then((data) => {
+  //         this.orgInfo = data;
+  //         this.items = data;
+  //       }, (error) => {
+  //         alert(error);
+  //       });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+  // public type: string;    //搜索类型，有两种，查询管理员："MANAGER",查询组织机构："ORGANIZATION"
+  // public menu = "selectPerson";
+  // orgInfo: Array<OrgInfo> = null;   //备份，查询后保存到这个列表中
+  // userList: Array<UserSimple> = new Array<UserSimple>(); //备份，管理员
+  // items: any = null;     //用于搜索查询用
 
-  /**
-   * 搜索功能
-   * @param ev 
-   */
-  filterItems(ev: any) {
-    let val = ev.target.value;
-    switch (this.type) {
-      case "MANAGER":
-        if (val) {
-          //点击叉号后val为undefined，不会执行里面的方法
-          this.items = this.userList.filter(function (item) {
-            let name = item.userName.includes(val);
-            // let workerNumber=item.workerNumber.includes(val);      //防止重名，用员工编号查   不成功，跟数字有关系？
-            return name;
-          })
-        }
-        break;
-
-
-      case "ORGANIZATION":
-        if (val == undefined) {
-          this.items = this.orgInfo;
-        } else {
-          this.items = this.orgInfo.filter(function (item) {
-            return item.orgName.includes(val);
-          })
-        }
-        break;
+  // /**
+  //  * 搜索功能
+  //  * @param ev 
+  //  */
+  // filterItems(ev: any) {
+  //   let val = ev.target.value;
+  //   switch (this.type) {
+  //     case "MANAGER":
+  //       if (val) {
+  //         //点击叉号后val为undefined，不会执行里面的方法
+  //         this.items = this.userList.filter(function (item) {
+  //           let name = item.userName.includes(val);
+  //           // let workerNumber=item.workerNumber.includes(val);      //防止重名，用员工编号查   不成功，跟数字有关系？
+  //           return name;
+  //         })
+  //       }
+  //       break;
 
 
-      default:
+  //     case "ORGANIZATION":
+  //       if (val == undefined) {
+  //         this.items = this.orgInfo;
+  //       } else {
+  //         this.items = this.orgInfo.filter(function (item) {
+  //           return item.orgName.includes(val);
+  //         })
+  //       }
+  //       break;
 
-        break;
-    }
 
-  }
+  //     default:
 
-  /**
-   * 点击某一项后关闭并退出
-   * @param item 
-   */
-  close(item) {
-    if (this.type == "MANAGER") {
-      this.invAsset.manager = item.userName;
-      this.invAsset.workerNumber = item.workerNumber;
-    } else if (this.type == "ORGANIZATION") {
-      this.invAsset.useOrgName = item.orgName;
-      this.invAsset.useOrg = item.orgCode;
-    }
+  //       break;
+  //   }
 
-    //this.test3Page.invAsset.manager=item.userName;    
-    this.menuCtrl.close();
+  // }
 
-  }
-  //////////////////////////////////筛选保管人和使用单位的方法END/////////////////
+  // /**
+  //  * 点击某一项后关闭并退出
+  //  * @param item 
+  //  */
+  // close(item) {
+  //   if (this.type == "MANAGER") {
+  //     this.invAsset.manager = item.userName;
+  //     this.invAsset.workerNumber = item.workerNumber;
+  //   } else if (this.type == "ORGANIZATION") {
+  //     this.invAsset.useOrgName = item.orgName;
+  //     this.invAsset.useOrg = item.orgCode;
+  //   }
+
+  //   //this.test3Page.invAsset.manager=item.userName;    
+  //   this.menuCtrl.close();
+
+  // }
+  // //////////////////////////////////筛选保管人和使用单位的方法END/////////////////
 
 
 }

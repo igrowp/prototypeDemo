@@ -34,13 +34,14 @@
         "@ngx-translate/http-loader": "^0.1.0",
         "com.synconset.imagepicker": "~2.1.8",
         "cordova-android": "^6.2.3",
+        "cordova-ios": "^4.4.0",
+        "cordova-plugin-add-swift-support": "^1.6.0",
         "cordova-plugin-camera": "^2.4.1",
         "cordova-plugin-compat": "^1.1.0",
         "cordova-plugin-console": "^1.0.5",
         "cordova-plugin-device": "1.1.4",
         "cordova-plugin-file": "^4.3.3",
         "cordova-plugin-file-transfer": "^1.7.0",
-        "cordova-plugin-jcore": "^1.1.10",
         "cordova-plugin-photo-library": "^2.1.0",
         "cordova-plugin-read-rfid": "e:/ReadRFID",
         "cordova-plugin-splashscreen": "~4.0.1",
@@ -52,7 +53,6 @@
         "ionic-plugin-keyboard": "~2.2.1",
         "ionic2-jpush": "0.0.5",
         "ionicons": "3.0.0",
-        "jpush-phonegap-plugin": "^3.2.11",
         "phonegap-plugin-barcodescanner": "^6.0.8",
         "rfid": "file:///e:\\ReadRFID",
         "rxjs": "5.4.0",
@@ -77,22 +77,20 @@
             "ionic-plugin-keyboard": {},
             "phonegap-plugin-barcodescanner": {},
             "cordova-sqlite-storage": {},
-            "jpush-phonegap-plugin": {
-                "APP_KEY": "fe03fc4c524ec310ff4c0b48"
-            },
             "cordova-plugin-read-rfid": {},
             "cordova-plugin-compat": {},
             "cordova-plugin-camera": {},
             "com.synconset.imagepicker": {
                 "PHOTO_LIBRARY_USAGE_DESCRIPTION": "select photos to update"
             },
-            "cordova-plugin-file": {},
             "cordova-plugin-photo-library": {
                 "PHOTO_LIBRARY_USAGE_DESCRIPTION": "To choose photos"
-            }
+            },
+            "cordova-plugin-file": {}
         },
         "platforms": [
-            "android"
+            "android",
+            "ios"
         ]
     }
 }

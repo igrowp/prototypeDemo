@@ -114,7 +114,7 @@ export class DBService {
     }else if(this.newVersion < this.oldVersion){
       //低版本覆盖高版本的情况
       //先不做，目前思路是重新创建数据库,弹出提示框，是否愿意这样做
-      //this.noticeService.showIonicAlertWithTitle("提示","低版本数据库覆盖高版本数据库，将清空数据库信息！")
+      //this.noticeService.showIonicAlertWithTitle("提示","低版本数据库覆盖高版本数据库，将清空数据库信息")
 
     }
   }
@@ -263,13 +263,13 @@ export class DBService {
   TIME_STAMP timestamp,
   ASSET_NAME varchar(32),
   ASSET_TYPE varchar(32),
-  IS_SIGNATURED varchar(2) default '0',
+  IS_SIGNATURED integer default 0,
   REMARK varchar(100),
   PHOTO_PATH varchar(512),
   SIGNATURE_PATH varchar(128),
   SIGNATURE varcahr(32),
   PRE_WORKER_NUMBER varchar(32))`, {})//建表
-          .then(() => console.log('创建资产盘点记录表成功！'))
+          .then(() => console.log('创建资产盘点记录表成功'))
           .catch(e => alert("创建资产盘点记录表" + e.message));
 
         //建立本地固定资产台账表
@@ -303,9 +303,9 @@ INSTALL_LOCATION varchar(512),
 REMARK varchar(512),
 TWO_DIMENSION_CODE varchar(100),
 RFID varchar(100),
-RECORD_FLAG integer DEFAULT '0',
-IS_CHECKED varchar(4) DEFAULT '0',
-IS_TRANS varchar(4) DEFAULT '0',
+RECORD_FLAG integer DEFAULT 0,
+IS_CHECKED integer DEFAULT 0,
+IS_SYNCHRO integer DEFAULT 0,
 SELF_NUMBER varchar(100),
 ASSET_CODE varchar(32),
 ORIGINAL_VALUE deciman(20,8),
@@ -318,7 +318,7 @@ CHANGE_WORKER_NUMBER varchar(20),
 MANUFACTURER varchar(100),
 SERIAL_NUMBER varchar(100),
 FUND_CHANNEL varchar(100))`, {})//建表
-          .then(() => console.log('建立本地固定资产台账表成功！'))
+          .then(() => console.log('建立本地固定资产台账表成功'))
           .catch(e => alert(e.message));
         //创建账户表
         db.executeSql('drop table if exists sys_login_account', {});
@@ -328,7 +328,7 @@ LOGIN_NAME varchar(100),
 LOGIN_PWD varchar(100),
 ACCT_STATUS varchar(32),
 WORKER_NUMBER varchar(20))`, {})//建表
-          .then(() => console.log('创建账户表成功！'))
+          .then(() => console.log('创建账户表成功'))
           .catch(e => alert(e.message));
 
         //创建用户信息表
@@ -354,7 +354,7 @@ WORKER_NUMBER varchar(20))`, {})//建表
         PRESENT_ADDRESS varchar(100),
         REMARK varchar(512),
         SYNCHRO_TIME varchar(32))`, {})//建表
-          .then(() => console.log('创建用户信息表成功！'))
+          .then(() => console.log('创建用户信息表成功'))
           .catch(e => alert(e.message));
 
         //创建日志表
@@ -367,7 +367,7 @@ WORKER_NUMBER varchar(20))`, {})//建表
         CHANGE_PERSON varchar(32),
         CHANGE_TIME timestamp,
         STATE varchar(20))`, {})//建表
-          .then(() => console.log('创建组织结构表成功！'))
+          .then(() => console.log('创建组织结构表成功'))
           .catch(e => alert(e.message));
 
 
@@ -380,7 +380,7 @@ WORKER_NUMBER varchar(20))`, {})//建表
         ORG_NAME varchar(100),
         PARENT_ORG_ID varchar(32),
         RECORD_FLAG integer)`, {})//建表
-          .then(() => console.log('创建组织结构表成功！'))
+          .then(() => console.log('创建组织结构表成功'))
           .catch(e => alert(e.message));
 
         //创建员工精简信息表
@@ -390,7 +390,7 @@ WORKER_NUMBER varchar(20))`, {})//建表
         USER_NAME varchar(100),
         WORK_IN_ORG varchar(32),
         USER_ID varchar(32))`, {})//建表
-          .then(() => console.log('创建员工精简信息表成功！'))
+          .then(() => console.log('创建员工精简信息表成功'))
           .catch(e => alert(e.message));
 
         //创建盘点通知表
@@ -405,7 +405,7 @@ WORKER_NUMBER varchar(20))`, {})//建表
         TIME_FINISH datetime,
         STATE varchar(32))`, {})//建表
           .then(() => {
-            console.log('创建盘点通知表成功！');
+            console.log('创建盘点通知表成功');
           })
           .catch(e => alert(e.message));
         //创建非安领用通知表
@@ -420,7 +420,7 @@ WORKER_NUMBER varchar(20))`, {})//建表
         NOTICE_STATE varchar(32),
         RECORD_FLAG int)`, {})//建表
           .then(() => {
-            console.log('创建非安领用通知表成功！');
+            console.log('创建非安领用通知表成功');
           })
           .catch(e => alert(e.message));
 
@@ -441,7 +441,7 @@ WORKER_NUMBER varchar(20))`, {})//建表
     OUT_DATE datetime,
     RECORD_FLAG int)`, {})//建表
           .then(() => {
-            console.log('创建非安领用通知表成功！');
+            console.log('创建非安领用通知表成功');
           })
           .catch(e => alert(e.message));
 
@@ -462,19 +462,55 @@ WORKER_NUMBER varchar(20))`, {})//建表
         RECEIVE_NAME varchar(32),
         SIGNATURE_PATH varchar(128),
         SIGNATURE_NAME varcahr(32))`, {})//建表
-          .then(() => console.log('创建非安设备转产资产领用表成功！'))
+          .then(() => console.log('创建非安设备转产资产领用表成功'))
           .catch(e => alert(e.message));
 
-        //创建数据字典
+        //创建闲置表
+        db.executeSql('DROP TABLE IF EXISTS idle_apply_device', {});
+        db.executeSql(`CREATE TABLE idle_apply_device (
+          IDLE_ID varchar(32) NOT NULL,
+          ASSET_ID varchar(32),
+          INSTALL_LOCATION varchar(100),
+          OLD_INSTALL_LOCATION varchar(100),
+          STOP_REASON varchar(200),
+          ASSET_DESC varchar(200),
+          TEST_RESULT varchar(200),
+          TEST_ORG varchar(32),
+          APPLY_STATE integer DEFAULT 0,
+          PHOTO_PATH varchar(512),
+          RECORD_FLAG integer DEFAULT 0,
+          PRIMARY KEY (IDLE_ID)
+        )`, {})//建表
+          .then(() => console.log('创建闲置表成功'))
+          .catch(e => alert(e.message));
+
+          //创建报废表
+        db.executeSql('DROP TABLE IF EXISTS scrap_apply_fix', {});
+        db.executeSql(`CREATE TABLE scrap_apply_fix (
+          SCRAP_ID varchar(32) NOT NULL,
+          ASSET_ID varchar(32),
+          SCRAP_CATEGORY varchar(100),
+          UNPRODUCTION_TIME date,
+          STORAGE_LOCATION varchar(100),
+          ASSET_BRIEF varchar(100),
+          SCRAP_REASON varchar(100),
+          APPLY_STATE integer DEFAULT 0,
+          RECORD_FLAG integer DEFAULT 0,
+          PRIMARY KEY (SCRAP_ID)
+        )`, {})//建表
+          .then(() => console.log('创建报废表成功'))
+          .catch(e => alert(e.message));
+
+        //创建数据字典表
         db.executeSql('DROP TABLE IF EXISTS sys_dict', {});
         db.executeSql(`CREATE TABLE sys_dict (
           DICT_ID varchar(32) NOT NULL,
           CATEGORY_CODE varchar(100) DEFAULT NULL,
           CATEGORY_DESC varchar(100) DEFAULT NULL,
-          RECORD_FLAG int(11) DEFAULT '0',
+          RECORD_FLAG int(11) DEFAULT 0,
           PRIMARY KEY (DICT_ID)
         )`, {})//建表
-          .then(() => console.log('创建数据字典成功！'))
+          .then(() => console.log('创建数据字典表成功'))
           .catch(e => alert(e.message));
 
           //创建数据字典附加表
@@ -487,11 +523,11 @@ WORKER_NUMBER varchar(20))`, {})//建表
           CODE_TYPE varchar(20) DEFAULT NULL,
           CODE_SIZE varchar(20) DEFAULT NULL,
           REMARK varchar(100) DEFAULT NULL,
-          RECORD_FLAG int(11) DEFAULT '0',
+          RECORD_FLAG int(11) DEFAULT 0,
           PRIMARY KEY (DICT_DETAIL_ID)
         ) `, {})//建表
           .then(() => {
-            console.log('创建数据字典附加表成功！');
+            console.log('创建数据字典附加表成功');
             resolve(db);
           })
           .catch(e => alert(e.message));

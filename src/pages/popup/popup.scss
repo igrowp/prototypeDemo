@@ -1,17 +1,18 @@
 page-popup {
-    .border-radius {
-        border-radius: 5px;
-        padding: 5px;
-        border: 1px solid #ddd;
-    }
-    #div_content {
-        text-align: center;
+    .full{
+        width: 100;
         height: 100%;
     }
-    #message {
+    .center{
+        text-align: center;
+    }
+    .margin-top {
         margin-top: 40%;
     }
-    #prompt {
+    .margin{
+        margin:30px;
+    }
+    .bottom {
         position: absolute;
         bottom: 10%;
     }

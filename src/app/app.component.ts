@@ -1,3 +1,4 @@
+import { PubConstant } from './../providers/entity/constant.provider';
 import { HttpUtils } from './../providers/utils/httpUtils';
 import { Component } from '@angular/core';
 import { ModalController, Platform } from 'ionic-angular';
@@ -22,10 +23,14 @@ export class MyApp {
      private dbService:DBService,
     ) {
       //创建数据库
-      this.dbService.initDB().then(()=>{
-        //初始化一些数据
-        this.init();
-      });
+    this.dbService.initDB().then(() => {
+      //初始化一些数据
+      this.init();
+
+      //暂时不用
+      let modal = this.modalCtrl.create("PopupPage");
+      modal.present();
+    });
 
       // platform.ready().then(() => {
       //   // Okay, so the platform is ready and our plugins are available.
@@ -37,21 +42,14 @@ export class MyApp {
 
     if(this.rootPage==null){
 
-      //暂时不用
-    let modal=this.modalCtrl.create("PopupPage");
-    modal.present();
-
-    
-
-
-    this.dbService.getFromStorage("account").then((userName)=>{
+    this.dbService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_ACCOUNT).then((userName)=>{
         if(userName==null||userName==""){
           this.rootPage = "LoginPage";
           return;
         }else{
           //说明有账户在，直接登陆
-          this.dbService.getFromStorage("password").then((password)=>{
-            this.dbService.getFromStorage("signIn").then((isSigned)=>{
+          this.dbService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_PASSWORD).then((password)=>{
+            this.dbService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_SIGN_IN).then((isSigned)=>{
               if(isSigned=="true"){
                 this.rootPage="HomePage";
               }else{
@@ -70,12 +68,12 @@ export class MyApp {
 
   init(){
     //初始化服务器地址
-    this.dbService.getFromStorage("urlAddress").then((address)=>{
+    this.dbService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS).then((address)=>{
       if(address==null||address==""){
         //本地没有服务器设置，服务器设为默认值
         HttpUtils.setDefaultUrlToProperties();
       }else{
-        this.dbService.getFromStorage("urlPort").then((port)=>{
+        this.dbService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT).then((port)=>{
           HttpUtils.setUrlToProperties(address,port);
         })
       }

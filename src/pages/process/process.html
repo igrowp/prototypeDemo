@@ -1,0 +1,89 @@
+<!--
+  Generated template for the ProcessPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="title">
+    <ion-title class="border-left-white">待办流程</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content class="bg-content">
+  <div *ngIf="hasData">
+
+    <ion-list>
+      <ion-item *ngFor="let item of todoEventList;let i=index" (click)="handleDetail(item)">
+        <!-- <ion-label (click)="scan(item)">
+                <h2>{{item.eventName}}</h2>
+                <h4 class="sub-title">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</h4>
+            </ion-label> -->
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventPerson}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="convertList.length>0">
+      <ion-item-divider>
+        转产发放审批
+      </ion-item-divider>
+      <ion-item *ngFor="let item of convertList;let i=index" (click)="handleDetail(item)">
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventPerson}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+    <ion-list *ngIf="allocateList.length>0">
+      <ion-item-divider>
+        资产调拨
+      </ion-item-divider>
+      <ion-item *ngFor="let item of allocateList;let i=index" (click)="handleDetail(item)">
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventPerson}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+
+  </div>
+  <div class="no-data center-absolute" *ngIf="!hasData">
+    <!-- <img class="no-data-img" src="./assets/imgs/cry.png"> -->
+    <h2>{{errorMessage}}</h2>
+  </div>
+
+</ion-content>

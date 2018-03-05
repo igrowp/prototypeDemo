@@ -1,9 +1,7 @@
 import { AssetWebProvider } from './../web/asset.web.provider';
 import { ChangeRecord, FixedAsset, InvAsset } from './../entity/entity.provider';
-import { Http } from '@angular/http';
 import { AlertController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
 import { PubDBProvider } from '../storage/pub.db.provider';
 import { InvDBProvider } from '../storage/inv.db.provider';
 import { InvWebProvider } from '../web/inv.web.provider';
@@ -16,25 +14,37 @@ import { InvWebProvider } from '../web/inv.web.provider';
 */
 @Injectable()
 export class AssetService {
-  
-  Local_URL:String="";    //服务器地址加项目名，例如http://10.88.133.45:8080/ionicApp
 
   constructor(
-            public http:Http,
-            public alertCtrl:AlertController,
             public pubDBProvider:PubDBProvider,
             public invDbProvider:InvDBProvider,
             public assetWebProvider:AssetWebProvider,
             private invWebProvider:InvWebProvider,) {
   }
 
-  testhttp(){
-    // return new Promise((resolve,reject)=>{
-    //   this.webService.testhttp().then((data)=>{
-    //     resolve(data);
-
-    //   })
-    // })
+  /**
+   * 同步盘点数据
+   */
+  public synchroInvData(workerNumber:string) {
+    return new Promise((resolve,reject)=>{
+      if(workerNumber==null||workerNumber==""){
+        resolve();
+      }else{
+        this.queryAssetsFromFixed(workerNumber, 1).then().then((fixedAssets) => {
+          this.queryAssetsFromInv(workerNumber, 2).then().then((invAssets) => {
+            this.queryListFromChangeRecord(workerNumber).then((changeRecords) => {
+              if(fixedAssets.length==0&&invAssets.length==0&&changeRecords.length==0){
+                resolve();
+              }else{
+                this._syncDBToServer(fixedAssets, invAssets, changeRecords).then((data) => {
+                  resolve();
+                }, (error) => {reject(error);})
+              }
+            }, err => {reject("获取日志表失败：" + err);})
+          }, err => {reject("获取盘点记录失败：" + err);})
+        }, err => {reject("获取台账失败：" + err);})
+      }   
+    })
   }
 
 
@@ -43,8 +53,9 @@ export class AssetService {
    * 只会接受一次数据，如果本地已经存储了数据将不会从服务器中获取
    */
   downloadAndSaveData(workerNumber:string){
+    var lastRequestTime="";//先暂定每次下载所有的数据
     return new Promise((resolve,reject)=>{
-      this.assetWebProvider.getListFormFixedByWorkerNumber(workerNumber).then((data)=>{
+      this.assetWebProvider.getListFormFixedByWorkerNumber(workerNumber,lastRequestTime).then((data)=>{
         if(data.length==0){
           //没有数据
           resolve();
@@ -68,6 +79,8 @@ export class AssetService {
                 }
               },error=>{reject(error)});
             }else{
+              fixAsset.isChecked=asset.isChecked;
+              fixAsset.isSynchro=asset.isSynchro;
               this.pubDBProvider.updateToFixed(fixAsset).then(()=>{
                 if(fixAsset.assetId==data[data.length-1].assetId){
                   resolve("同步成功")
@@ -77,9 +90,13 @@ export class AssetService {
           })
         }
       },error=>{
-        reject("连接服务器失败，请确认当前为内网环境！");
+        reject("连接服务器失败，请确认当前为内网环境");
       });
     });
+  }
+
+  syncFixedToServer(fixedAssets:Array<FixedAsset>){
+    return this.assetWebProvider.syncFixedToServer(fixedAssets);
   }
 
 
@@ -88,69 +105,84 @@ export class AssetService {
    * @param fixedAssets 
    * @param invAssets 
    */
-  syncDBToServer(fixedAssets:Array<FixedAsset>,invAssets:Array<InvAsset>,changeRecords:Array<ChangeRecord>){
+  private _syncDBToServer(fixedAssets:Array<FixedAsset>,invAssets:Array<InvAsset>,changeRecords:Array<ChangeRecord>){
     return new Promise((resolve,reject)=>{
-      this.changeCusAndWorkerInFixed(fixedAssets).then((fixeds)=>{
-      this.assetWebProvider.syncFixedToServer(fixeds).then((data)=>{
+      // this.changeCusAndWorkerInFixed(fixedAssets).then((fixeds)=>{
+      this.assetWebProvider.syncFixedToServer(fixedAssets).then((data)=>{
         this.invWebProvider.syncInvToServer(invAssets).then((data)=>{
           //同步资产盘点记录表成功
           this.assetWebProvider.syncChangeRecordToServer(changeRecords).then(()=>{
             //同步日志表成功
-            resolve("同步成功！");
+            resolve("同步成功");
+            //修改台账同步状态
+            this._changeAssetsState(fixedAssets,invAssets);
           },(error)=>{
-            reject("同步日志表失败"+error);
+            reject("同步日志表失败<br>网络连接超时");
           })
         },(error)=>{
-          reject("同步盘点记录表失败"+error);
+          reject("同步盘点记录表失败<br>网络连接超时");
         })
       },(error)=>{
-        reject("同步资产台账表失败："+error);
+        reject("同步资产台账表失败<br>网络连接超时");
       });
-    },(error)=>{
-      reject("修改保管人失败："+error);
-    })
+    // },(error)=>{
+    //   reject("修改保管人失败："+error);
+    // })
     })
     
   }
 
-  /**
-   * 如果保管人发生变化，本地进行修改
-   * @param fixedAssets 
-   */
-  changeCusAndWorkerInFixed(fixedAssets:Array<FixedAsset>){
-
-    let assets=new Array<FixedAsset>();
-    return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      if(fixedAssets.length==0){
-        resolve(fixedAssets);
-      }
-      for(var i=0;i<fixedAssets.length;i++){
-        var fixedAsset=fixedAssets[i];
-        if(fixedAsset.changeCustodian!=null&&fixedAsset.changeCustodian!=""&&fixedAsset.changeWorkerNumber!=null&&fixedAsset.changeWorkerNumber!=""){
-          //说明更改了保管人，本地进行修改
-          fixedAsset.custodian=fixedAsset.changeCustodian;
-          fixedAsset.workerNumber=fixedAsset.changeWorkerNumber;
-          fixedAsset.changeCustodian="";
-          fixedAsset.changeWorkerNumber="";
-          this.pubDBProvider.updateToFixed(fixedAsset).then(()=>{
-            fixedAsset.isChecked="0";
-            assets.push(fixedAsset);
-            if(fixedAsset.assetId==fixedAssets[fixedAssets.length-1].assetId){
-              resolve(assets);
-            }
-          },(error)=>{
-            reject(error);
-          })
-        }else{
-          fixedAsset.isChecked="0";
-          assets.push(fixedAsset);
-          if(fixedAsset.assetId==fixedAssets[fixedAssets.length-1].assetId){
-            resolve(assets);
-          }
-        }
-      }
-    })
+  private _changeAssetsState(fixedAssets:Array<FixedAsset>,invAssets:Array<InvAsset>){
+    for(var i=0;i<fixedAssets.length;i++){
+      let fixedAsset=fixedAssets[i];
+      fixedAsset.isSynchro=0;
+      this.pubDBProvider.updateToFixed(fixedAsset);
+    }
+    for(var j=0;j<invAssets.length;j++){
+      let invAsset=invAssets[j];
+      invAsset.isSignatured=0;
+      this.invDbProvider.updateToInv(invAsset);
+    }
   }
+
+  // /**
+  //  * 如果保管人发生变化，本地进行修改
+  //  * @param fixedAssets 
+  //  */
+  // changeCusAndWorkerInFixed(fixedAssets:Array<FixedAsset>){
+
+  //   let assets=new Array<FixedAsset>();
+  //   return new Promise<Array<FixedAsset>>((resolve,reject)=>{
+  //     if(fixedAssets.length==0){
+  //       resolve(fixedAssets);
+  //     }
+  //     for(var i=0;i<fixedAssets.length;i++){
+  //       var fixedAsset=fixedAssets[i];
+  //       if(fixedAsset.changeCustodian!=null&&fixedAsset.changeCustodian!=""&&fixedAsset.changeWorkerNumber!=null&&fixedAsset.changeWorkerNumber!=""){
+  //         //说明更改了保管人，本地进行修改
+  //         fixedAsset.custodian=fixedAsset.changeCustodian;
+  //         fixedAsset.workerNumber=fixedAsset.changeWorkerNumber;
+  //         fixedAsset.changeCustodian="";
+  //         fixedAsset.changeWorkerNumber="";
+  //         this.pubDBProvider.updateToFixed(fixedAsset).then(()=>{
+  //           fixedAsset.isChecked=0;
+  //           assets.push(fixedAsset);
+  //           if(fixedAsset.assetId==fixedAssets[fixedAssets.length-1].assetId){
+  //             resolve(assets);
+  //           }
+  //         },(error)=>{
+  //           reject(error);
+  //         })
+  //       }else{
+  //         fixedAsset.isChecked=0;
+  //         assets.push(fixedAsset);
+  //         if(fixedAsset.assetId==fixedAssets[fixedAssets.length-1].assetId){
+  //           resolve(assets);
+  //         }
+  //       }
+  //     }
+  //   })
+  // }
 
   // /**
   //  * 根据员工编号从服务器中获取用户的详细信息
@@ -165,7 +197,7 @@ export class AssetService {
   //         resolve(user);
   //       }
   //   },(error)=>{
-  //     reject("网络连接超时，请确认当前为内网环境！");
+  //     reject("网络连接超时，请确认当前为内网环境");
   //   })
   //   })
   // }
@@ -178,9 +210,9 @@ export class AssetService {
   /**
    * 从本地固定资产台账中获得数据
    */
-  queryAssetsFromFixed(workerNumber:string,isChecked:string){
+  queryAssetsFromFixed(workerNumber:string,isSynchro?:number){
     return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      this.pubDBProvider.queryAssetsFromFixed(workerNumber,isChecked).then((data)=>{
+      this.pubDBProvider.queryAssetsFromFixed(workerNumber,isSynchro).then((data)=>{
         resolve(data);
       },(err)=>{
         reject(err);
@@ -208,7 +240,7 @@ export class AssetService {
   /**
    * 从本地固定资产台账中获得数据
    */
-  queryAssetsFromInv(preWorkerNumber:string,isSignatured:string){
+  queryAssetsFromInv(preWorkerNumber:string,isSignatured:number){
     return new Promise<Array<InvAsset>>((resolve,reject)=>{
       this.invDbProvider.queryAssetsFromInv(preWorkerNumber,isSignatured).then((data)=>{
         resolve(data);
@@ -226,23 +258,9 @@ export class AssetService {
   queryAssetFromFixedByIdAndCode(assetId,code){
     return new Promise<FixedAsset>((resolve,reject)=>{
       this.pubDBProvider.queryFromFixedByIdAndCode(assetId,code).then((data)=>{
-        if(data==null){
-
-          this.alertCtrl.create({
-              title:"提醒",
-              subTitle:"设备和二维码不一致，请确认后重新尝试！",
-              buttons:["确定"]
-            }).present();
-          return null;
-        }
         resolve(data);
       },(error)=>{
-        this.alertCtrl.create({
-              title:"提醒",
-              subTitle:"查询数据失败:"+error,
-              buttons:["确定"]
-            }).present();
-        reject(error);
+        reject("查询数据失败:"+error);
       })
     })
   }
@@ -340,12 +358,7 @@ export class AssetService {
       this.invDbProvider.insertToInv(asset).then((data)=>{
         resolve(data);
       },(error)=>{
-        this.alertCtrl.create({
-              title:"提醒",
-              subTitle:"插入数据失败:"+error,
-              buttons:["确定"]
-            }).present();
-        reject(error);
+        reject("插入数据失败:"+error);
       })
     })
   }

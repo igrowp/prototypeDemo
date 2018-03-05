@@ -20,8 +20,7 @@
                     <div class="yellow cover opacity" (click)="navToCvt()">
                             <div class="icon-content-size center">
                                     <img class="icon-size  center" src="./assets/imgs/home-cvt.png">
-                                    <ion-badge class="right-top" color="danger" *ngIf="badgeValueCvt!=null&&badgeValueCvt!=0">{{badgeValueCvt}}</ion-badge>
-                                    <ion-badge class="right-top" color="danger" *ngIf="isGranting==true">1</ion-badge>
+                                    <ion-badge class="right-top" color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
                                 </div>
                         <h5 class="item-title" *ngIf="isGranting==false">资产领用</h5>
                         <h5 class="item-title" *ngIf="isGranting==true">资产发放</h5>
@@ -120,30 +119,36 @@
     </ion-navbar>
 </ion-header>
 
-<ion-content style="background-color:#F7F6F6" #content>
-    <button ion-button (click)="test()">测试</button>
+<ion-content class="bg-content" #content>
+    <!-- <button ion-button (click)="test()">测试</button> -->
+    <!-- <button ion-button block (click)="test()">Toggle Menu</button> -->
+    <!-- <button ion-button (click)="test11()">目前的结果</button> -->
+
     <ion-card>
         <ion-card-content>
             <ion-row>
-                <ion-col col-3 id="nav_col" (click)="navToMyAsset()">
+                <ion-col col-3 class="center" (click)="navToMyAsset()">
 
                     <img src="./assets/imgs/myAsset.png" />
                     <h2 style="margin-top:10px;">我的资产</h2>
                 </ion-col>
-                <ion-col col-3 id="nav_col" (click)="navToSynchro()">
-                    <img src="./assets/imgs/synchro1.png" />
-                    <h2 style="margin-top:10px;">数据同步</h2>
-                </ion-col>
-                <ion-col col-3 id="nav_col" (click)="navToCvt()">
-                    <img src="./assets/imgs/cvt.png" />
-                    <h2 style="margin-top:10px;">资产领用
+                <ion-col col-3 class="center" (click)="navToProcess()">
+                    <img src="./assets/imgs/process.png" />
+                    <h2 style="margin-top:10px;">流程审批
                         <sup>
-                            <ion-badge color="danger" *ngIf="badgeValueCvt!=null&&badgeValueCvt!=0">{{badgeValueCvt}}</ion-badge>
-                            <ion-badge color="danger" *ngIf="isGranting">1</ion-badge>
+                            <ion-badge color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
                         </sup>
                     </h2>
                 </ion-col>
-                <ion-col col-3 id="nav_col" (click)="navToInv()">
+                <ion-col col-3 class="center" (click)="navToCvt()">
+                    <img src="./assets/imgs/cvt.png" />
+                    <h2 style="margin-top:10px;">资产领用
+                        <sup>
+                            <ion-badge color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
+                        </sup>
+                    </h2>
+                </ion-col>
+                <ion-col col-3 class="center" (click)="navToInv()">
                     <img src="./assets/imgs/inv.png" />
                     <h2 style="margin-top:10px;">资产盘点
                         <sup>
@@ -169,35 +174,38 @@
                 </ion-item>
             </ion-card-content>
         </ion-card> -->
-    
-    <ion-card *ngIf="isGranting" (click)="navToCvt()">
-        <ion-card-content>
-            <ion-card-title>
-                待完成项
-            </ion-card-title>
-            <ion-item>
-                <ion-thumbnail item-start>
-                    <img src="./assets/imgs/cvt.png">
-                </ion-thumbnail>
-                <h1 style="padding:3px;">资产发放
-                </h1>
-            </ion-item>
-        </ion-card-content>
-    </ion-card>
-    <ion-card *ngIf="badgeValueCvt==1" (click)="navToCvt()">
-        <ion-card-content>
-            <ion-card-title>
-                待完成项
-            </ion-card-title>
-            <ion-item>
-                <ion-thumbnail item-start>
-                    <img src="./assets/imgs/cvt.png">
-                </ion-thumbnail>
-                <h1 style="padding:3px;">资产领用</h1>
-                <h2 style="padding:3px;">发料单号：{{cvtNotice.workOrderNumber}}</h2>
-            </ion-item>
-        </ion-card-content>
-    </ion-card>
+    <div *ngIf="listGranting!=null&&listGranting.length!=0">
+        <ion-card (click)="navTo(item)" *ngFor="let item of listGranting" >
+            <ion-card-content>
+                <ion-card-title>
+                    待完成项
+                </ion-card-title>
+                <ion-item>
+                    <ion-thumbnail item-start>
+                        <img src="./assets/imgs/cvt.png">
+                    </ion-thumbnail>
+                    <h1 style="padding:3px;">资产发放</h1>
+                    <h2 style="padding:3px;">发料单号：{{item.workOrderNumber}}</h2>
+                </ion-item>
+            </ion-card-content>
+        </ion-card>
+    </div>
+    <div *ngIf="listConvert!=null&&listConvert.length!=0">
+        <ion-card (click)="navTo(item)" *ngFor="let item of listConvert" >
+            <ion-card-content>
+                <ion-card-title>
+                    待完成项
+                </ion-card-title>
+                <ion-item>
+                    <ion-thumbnail item-start>
+                        <img src="./assets/imgs/cvt.png">
+                    </ion-thumbnail>
+                    <h1 style="padding:3px;">资产领用</h1>
+                    <h2 style="padding:3px;">发料单号：{{item.workOrderNumber}}</h2>
+                </ion-item>
+            </ion-card-content>
+        </ion-card>
+    </div>
 
     <ion-card *ngIf="badgeValueInv==1" (click)="navToInv()">
         <ion-card-content>
@@ -210,48 +218,47 @@
                 </ion-thumbnail>
                 <h1 style="padding:3px;">资产盘点
                 </h1>
+                <h2 style="padding:3px;">截止时间：{{finishTime}}</h2>
             </ion-item>
         </ion-card-content>
     </ion-card>
 
 </ion-content>
 
-
 <ion-menu [content]="content">
-
-    <ion-grid id="grid">
-        <ion-row id="left_top">
-            <ion-col col-5 id="col_avatar">
-                <img id="avatar" src="./assets/imgs/avatar.png" />
-            </ion-col>
-            <ion-col colr-7 id="col_user">
-                <h3 id="user_unit">{{wFOAddress}}</h3>
-                <h4 id="user_name">{{userName}}</h4>
-            </ion-col>
-        </ion-row>
-        <ion-row>
-            <hr id="divider" />
-        </ion-row>
-
-        <ion-row id="left_buttons">
-            <button id="left_bottom_button" ion-button (click)="navToMyAsset()">
-                <img src="./assets/imgs/myAsset.png"> 我的资产
-            </button>
-        </ion-row>
-
-        <ion-row id="left_buttons">
-            <button id="left_bottom_button" ion-button (click)="navToProcess()">
-                <img src="./assets/imgs/process.png"> 流程审批
-            </button>
-        </ion-row>
-        <ion-row id="left_buttons">
-            <button id="left_bottom_button" ion-button (click)="navToSynchro()">
-                <img src="./assets/imgs/synchro.png"> 数据同步
-            </button>
-        </ion-row>
-        <ion-row id="left_buttons">
-            <button id="left_bottom_button" ion-button (click)="exit()">退出</button>
-        </ion-row>
-
-    </ion-grid>
+    <ion-list inset>
+        <ion-item no-lines>
+            <ion-avatar item-left>
+                <img src="./assets/imgs/avatar.png">
+            </ion-avatar>
+            <h1>{{userName}}</h1>
+            <h2>{{wFOAddress}}</h2>
+        </ion-item>
+        <ion-item-divider></ion-item-divider>
+        <ion-item>
+                <ion-icon name="list-box" item-start></ion-icon>
+                <label (click)="navToMyAsset(true)">我的资产</label>
+        </ion-item>
+        <ion-item>
+            <ion-icon name="clipboard" item-start></ion-icon>
+            <h2 (click)="navToProcess(true)">流程审批</h2>
+        </ion-item>
+        <ion-item no-lines>
+            <!-- <ion-avatar item-left>
+                <img class="thumbnail" src="./assets/imgs/synchro.png">
+            </ion-avatar> -->
+            <ion-icon name="cloud-upload" item-start></ion-icon>
+            <label (click)="navToSynchro()">数据同步</label>
+        </ion-item>
+        <ion-item-divider></ion-item-divider>
+        <ion-item>
+            <ion-icon name="settings" item-start></ion-icon>
+            <h2 (click)="navToSetting(true)">设置</h2>
+        </ion-item>
+        <ion-item no-lines>
+                <ion-icon name="power" item-start></ion-icon>
+                <label (click)="exit()">退出</label>
+        </ion-item>
+        <ion-item-divider></ion-item-divider>
+    </ion-list>
 </ion-menu>

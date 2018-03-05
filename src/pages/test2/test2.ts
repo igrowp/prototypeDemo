@@ -23,45 +23,8 @@ export class Test2Page {
            private alertCtrl:AlertController) {
 
   }
-
-  presentPopover(myEvent) {
-    let popover = this.popoverCtrl.create("Test3Page");
-    popover.present({
-      ev: myEvent
-    });
-  }
-
-  
-  webTest(){
-      // this.dbService.getSqliteObject().then((db)=>{
-      //   alert(db);
-      // })
-      alert();
-  }
-  alert(){
-    var a=this.alertCtrl.create({
-      title:'同步数据',
-      message:"上次同步时间：2017年7月10日",
-      cssClass:"text-align: center",
-      buttons:[
-        {
-          text:'取消',
-          role:'concel',
-          handler:()=>{
-
-          }
-        },
-        {
-          text:'确定',
-          cssClass:"border:1px",
-          handler:()=>{
-            
-            
-          }
-        }
-
-      ]
-    }).present();
+  navToMyAsset(){
+    alert("测试");
   }
 
 

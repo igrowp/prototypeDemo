@@ -28,6 +28,10 @@ import { CvtDBProvider } from '../providers/storage/cvt.db.provider';
 import { LoginWebProvider } from '../providers/web/login.web.provider';
 import { InvWebProvider } from '../providers/web/inv.web.provider';
 import { AttachmentWebProvider } from '../providers/web/attachment.web.provider';
+import { AssetHandleService } from '../providers/service/asset.handle.service';
+import { AssetHandleDBProvider } from '../providers/storage/asset.handle.db.provider';
+import { AssetHandleWebProvider } from '../providers/web/asset.handle.web.provider';
+import { WorkflowWebProvider } from '../providers/web/workflow.web.provider';
 @NgModule({
   declarations: [
     MyApp,
@@ -55,6 +59,7 @@ import { AttachmentWebProvider } from '../providers/web/attachment.web.provider'
     LoginService,
     
     PhotoLibrary,
+    AssetHandleService,
     CvtService,
     InvService,
     NoticeService,
@@ -63,6 +68,7 @@ import { AttachmentWebProvider } from '../providers/web/attachment.web.provider'
     Test3Page,
     DBService,
     LoginDBProvider,
+    AssetHandleDBProvider,
     PubDBProvider,
     InvDBProvider,
     CvtDBProvider,
@@ -70,7 +76,9 @@ import { AttachmentWebProvider } from '../providers/web/attachment.web.provider'
     InvWebProvider,
     AssetWebProvider,
     CvtWebProvider,
-    AttachmentWebProvider
+    AttachmentWebProvider,
+    AssetHandleWebProvider,
+    WorkflowWebProvider,
   ]
 })
 export class AppModule {}

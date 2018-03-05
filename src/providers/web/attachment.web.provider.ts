@@ -5,6 +5,7 @@ import { Observable } from "rxjs";
 import { File, FileEntry } from '@ionic-native/file';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
+import { PubConstant } from '../entity/constant.provider';
 
 @Injectable()
 export class AttachmentWebProvider{
@@ -12,7 +13,7 @@ export class AttachmentWebProvider{
         private file: File) {
     }
     getUrl(){
-      return HttpUtils.getUrlFromProperties()+"/upload";
+      return HttpUtils.getFileUploadUrlFromProperties()+"/upload";
     }
   
 
@@ -32,6 +33,7 @@ export class AttachmentWebProvider{
     return new Promise((resolve, reject) => {
       this.http.post(this.getUrl() + "/signature", fd)
         .map(res => res.json())
+        .timeout(PubConstant.HTTP_TIME_OUT_LONG)
         .subscribe((data) => {
           resolve(data);
         }, err => {
@@ -42,8 +44,6 @@ export class AttachmentWebProvider{
   }
 
   /////////////////////提交签名END/////////////////
-
-
   formData = new FormData();
   private upload(filePaths: Array<string>): Observable<any> {
     //每个文件上传任务创建一个信号
@@ -65,7 +65,7 @@ export class AttachmentWebProvider{
             reader.readAsArrayBuffer(file);
           });
         })
-          .catch(error => alert('报错了' + JSON.stringify(error) + "\n"));
+          .catch(error => alert('报错了' + JSON.stringify(error) + "<br>"));
       });
 
       observables.push(observable);
@@ -86,9 +86,7 @@ export class AttachmentWebProvider{
         fail.call(context, error);
       });
     }, error => {
-      alert('文件处理失败' + "\n");
+      alert('文件处理失败' + "<br>");
     });
   }
-
-  
 }

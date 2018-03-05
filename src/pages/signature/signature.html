@@ -6,8 +6,15 @@
 -->
 <ion-header>
     <ion-navbar color="title">
-        <ion-title id="title">手写签名</ion-title>
+        <ion-title class="border-left-white">手写签名</ion-title>
+        <ion-buttons right>
+            <button class="btn-submit" ion-button icon-left (click)="handleSetting()">
+                <!-- <ion-icon  name="ios-settings"></ion-icon> -->
+                设为默认签名
+            </button>
+        </ion-buttons>
     </ion-navbar>
+    
 </ion-header>
 
 
@@ -15,8 +22,9 @@
 
 
     <div id="signature-pad" class="signature-pad">
-        <div class="signature-pad--body">
+        <div disabled="true" class="signature-pad--body">
             <canvas id="canvas"></canvas>
+            <canvas *ngIf="isShowDefaultSignature" id="canvas-default"></canvas>
         </div>
         <div class="signature-pad--footer">
             <h4 class="description">请在上面签名</h4>
@@ -33,18 +41,19 @@
         <ion-grid>
             <ion-row>
                 <ion-col col-6>
-                    <button large full round ion-button color="primary" id="clear">清除</button>
+                    <button large block round ion-button [color]="buttonColor" id="clear">清除</button>
                 </ion-col>
                 <ion-col col-6>
-                    <button large full round ion-button color="primary" id="undo">撤销</button>
+                    <button large block round ion-button [color]="buttonColor" id="undo">撤销</button>
                 </ion-col>
             </ion-row>
             <ion-row>
                 <ion-col col-6>
-                    <button large full round ion-button color="primary" id="save-png" (click)="handleBack()">返回</button>
+                    <button large block round *ngIf="!isShowDefaultSignature" ion-button color="primary" (click)="handleGetDefaultSignature()">使用默认签名</button>
+                    <button large block round *ngIf="isShowDefaultSignature" ion-button color="primary" (click)="handleRemoveDefaultSignature()">取消默认签名</button>
                 </ion-col>
                 <ion-col col-6>
-                    <button large full round ion-button color="primary" id="save-png" (click)="save()">保存</button>
+                    <button large block round ion-button color="primary" id="save-png" (click)="save()">保存</button>
                 </ion-col>
             </ion-row>
         </ion-grid>

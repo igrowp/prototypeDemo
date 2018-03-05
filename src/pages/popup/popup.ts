@@ -1,3 +1,4 @@
+import { PubConstant } from './../../providers/entity/constant.provider';
 import { HttpUtils } from './../../providers/utils/httpUtils';
 import { LoginService } from './../../providers/service/login.service';
 import { Component } from '@angular/core';
@@ -41,35 +42,40 @@ export class PopupPage {
       content:"正在从服务器获取数据..."
     })
     loading.present();
-    this.loginService.initDB().then(() => {
-      this.loginService.downloadOrgInfoIfEmpty().then(() => {
-        loading.setContent("正在同步数据字典......")
-        this.loginService.downloadDictIfEmpty().then(() => {
-          this.loginService.downloadDictDetailIfEmpty().then(() => {
-            loading.setContent("正在同步组织机构数据......")
-           this.loginService.downloadUserSimpleIfEmpty().then(() => {
-              //更新完成可以退出了
-              loading.setContent("同步成功");
-              loading.dismiss();
-              this.viewCtrl.dismiss();
+    this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME).then((lastRequestTime) => {
+      if (lastRequestTime == null) {
+        lastRequestTime = "";
+        this.loginService.getAndSaveOrgInfoFromServe(lastRequestTime).then(() => {
+          loading.setContent("正在同步数据字典......")
+          this.loginService.downloadDictIfEmpty().then(() => {
+            this.loginService.getAndSaveDictDetailFromServe(lastRequestTime).then(() => {
+              loading.setContent("正在同步组织机构数据......")
+              this.loginService.getAndSaveUserSimpleFromServe(lastRequestTime).then(() => {
+                //更新完成可以退出了
+                this.loginService.getAndSaveCurrentTimeFromServe();
+                loading.setContent("同步成功");
+                loading.dismiss();
+                this.viewCtrl.dismiss();
+              }, (error) => {
+                this.uploadFailed(error);
+                loading.dismiss();
+              })
             }, (error) => {
               this.uploadFailed(error);
               loading.dismiss();
             })
-          },(error)=>{
+          }, (error) => {
             this.uploadFailed(error);
             loading.dismiss();
           })
-
-        },(error)=>{
+        }, (error) => {
           this.uploadFailed(error);
           loading.dismiss();
         })
-     },(error)=>{
-      this.uploadFailed(error);
-      loading.dismiss();
-    })
-
+      }else{
+        loading.dismiss();
+        this.viewCtrl.dismiss();
+      }
     })
   }
 
@@ -86,6 +92,7 @@ export class PopupPage {
 
   //重试
   handleReTry(){
+    this.hidden=!this.hidden;
     this.init();
   }
 
@@ -113,25 +120,25 @@ export class PopupPage {
           text:'恢复默认值',
           handler:data=>{
             HttpUtils.setDefaultUrlToProperties();
-            this.noticeService.showNativeToast("设置成功！");
+            this.noticeService.showNativeToast("设置成功");
           }
         },
         {
           text: '确定',
           handler: data => {
             if (data.address == "") {
-              this.noticeService.showNativeToast("服务器地址为空！");
+              this.noticeService.showNativeToast("服务器地址为空");
             } else if (data.port == "") {
-              this.noticeService.showNativeToast("服务器端口为空！");
+              this.noticeService.showNativeToast("服务器端口为空");
             } else {
               if (!data.address.includes("http://") && !data.address.includes("https://")) {
                 data.address = "http://" + data.address;
               }
               HttpUtils.setUrlToProperties(data.address, data.port);
               //保存到本地
-              this.loginService.setInStorage("urlAddress", data.address);
-              this.loginService.setInStorage("urlPort", data.port);
-              this.noticeService.showNativeToast("设置成功！");
+              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS, data.address);
+              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT, data.port);
+              this.noticeService.showNativeToast("设置成功");
             }
           }
         }

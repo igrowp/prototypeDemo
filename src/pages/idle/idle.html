@@ -1,0 +1,59 @@
+<!--
+  Generated template for the IdlePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="title">
+    <ion-title class="border-left-white">资产闲置</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content class="bg-content">
+  <ion-list>
+      <ion-item>
+          <p class="item-head">现存放地点：</p>
+          <input item-end class="item-body default input" [(ngModel)]="idle.installLocation" type="text" placeholder="存放地点">
+      </ion-item>
+      <ion-item>
+          <p class="item-head">检定结果：</p>
+          <div>
+              <textarea class="input-reason" [(ngModel)]="idle.testResult" rows="3"></textarea>
+          </div>
+      </ion-item>
+      <ion-item>
+          <p class="item-head">停用原因及目前保护措施：</p>
+          <div>
+              <textarea class="input-reason" [(ngModel)]="idle.stopReason" rows="3"></textarea>
+          </div>
+      </ion-item>
+      <ion-item>
+          <p class="item-head">资产现状：</p>
+          <div>
+              <textarea class="input-reason" [(ngModel)]="idle.assetDesc" rows="3"></textarea>
+          </div>
+      </ion-item>
+      <ion-item>
+          <p class="item-head">上传图片({{photos.length}}/3)：</p>
+          <ion-row>
+              <ion-col col-4 class="img-content" *ngFor="let item of photos;let i=index">
+                  <img id="imgss" [src]="item" (click)="isDeleteImg(i)" />
+              </ion-col>
+              <ion-col col-4 class="img-content" *ngIf="photos.length<3" style="border: 1px dashed #9C9C9C;">
+                  <img class="imgs-add" (click)="add()" src="./assets/imgs/add.png" />
+              </ion-col>
+          </ion-row>
+      </ion-item>
+  </ion-list>
+
+</ion-content>
+
+<ion-footer>
+  <ion-buttons start >
+    <button ion-button block (click)="handleSubmit()">
+      提交
+    </button>
+  </ion-buttons>
+</ion-footer>

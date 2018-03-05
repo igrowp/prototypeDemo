@@ -1,264 +1,278 @@
 <ion-header>
     <ion-navbar color="title">
-        <ion-title id="title">资产信息</ion-title>
-        <ion-buttons right style="width:20%">
-            <button ion-button (click)="submit()" id="btn_submit" color="light">
-        提交
-      </button>
+        <ion-title class="border-left-white">资产信息</ion-title>
+        <ion-buttons right>
+            <button ion-button (click)="submit()" class="btn-submit" color="light">
+                提交
+            </button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
 
 
 <ion-content padding #sele_content>
-    <div padding id="navbar">
+    <div padding>
         <ion-segment [(ngModel)]="segment">
-            <ion-segment-button id="segment" value="changeMessage">
-                盘点信息
+            <ion-segment-button value="changeMessage">
+                <h3>盘点信息</h3>
             </ion-segment-button>
-            <ion-segment-button id="segment" value="basicMassage">
-                基本信息
+            <ion-segment-button value="basicMassage">
+                <h3>基本信息</h3>
             </ion-segment-button>
         </ion-segment>
     </div>
 
-   
+
     <div [ngSwitch]="segment">
-    <ion-list *ngSwitchCase="'changeMessage'">
-        <ion-item>
-            <ion-row>
-                <ion-col col-6 id="th" class="fixedMessage">
-                    资产名称：
-                </ion-col>
-                <ion-col col-6 id="td" class="fixedMessage">
-                    {{fixedAsset.assetName}}
-                </ion-col>
-            </ion-row>
-        </ion-item>
-        <ion-item>
-            <ion-row>
-                <ion-col col-6 id="th" class="fixedMessage">
-                    车牌井号：
-                </ion-col>
-                <ion-col col-6 id="td" class="fixedMessage">
-                    {{fixedAsset.licenseplatWellno}}
-                </ion-col>
-            </ion-row>
-        </ion-item>
-        <!-- <ion-item (click)="changeManagerOrOrg('MANAGER')"> -->
-        <ion-item>
-            <h3 id="th_p">保管人:</h3>
-            <h3 id="td_p">{{invAsset.manager}}</h3>
-        </ion-item>
-        <!-- 使用单位默认为保管人的所属单位 -->
-        <!-- <ion-item (click)="changeManagerOrOrg('ORGANIZATION')"> -->
-        <ion-item>
-            <h3 id="th_p">使用单位:</h3>
-            <h3 id="td_p">{{invAsset.useOrgName}}</h3>
-        </ion-item>
-        <ion-item>
-            <ion-label id="select">技术状况：</ion-label>
-            <ion-select id="td-select" [(ngModel)]="fixedAsset.techStatus" placeholder="选择" interface="popover">
-                <ion-option *ngFor="let item of techStates" [value]="item.dictCode">
-                    {{item.dictCodeDesc}}
-                </ion-option>
-            </ion-select>
-        </ion-item>
-        <ion-item>
-            <ion-label id="select">使用状况：</ion-label>
-            <ion-select id="td-select" [(ngModel)]="fixedAsset.useState" placeholder="选择" interface="popover">
-                <ion-option *ngFor="let item of useStates" [value]="item.dictCode">
-                    {{item.dictCodeDesc}}
-                </ion-option>
-            </ion-select>
-        </ion-item>
-        <ion-item>
-            <ion-label id="select">技术状况：</ion-label>
-            <ion-select id="td-select" [(ngModel)]="fixedAsset.securityState" placeholder="选择" interface="popover">
-                <ion-option *ngFor="let item of securityStates" [value]="item.dictCode">
-                    {{item.dictCodeDesc}}
-                </ion-option>
-            </ion-select>
-        </ion-item>
-
-            <ion-item>
-
-                <ion-label id="select">闲置/停产日期</ion-label>
-                <ion-datetime id="td-select" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消" [(ngModel)]="invAsset.handleDate"></ion-datetime>
+        <ion-list *ngSwitchCase="'changeMessage'">
+            <ion-item no-lines>
+                <ion-label class="item-head">资产名称：</ion-label>
+                <p class="item-body default" item-end>{{fixedAsset.assetName}}</p>
             </ion-item>
+
+            <ion-item no-lines>
+                <ion-label class="item-head">车牌井号：</ion-label>
+                <p class="item-body default" *ngIf="fixedAsset.licenseplatWellno!=null&&fixedAsset.licenseplatWellno!=''" item-end>{{fixedAsset.licenseplatWellno}}</p>
+                <p class="item-body default" *ngIf="fixedAsset.licenseplatWellno==null||fixedAsset.licenseplatWellno==''" item-end>无</p>
+            </ion-item>
+
+            <!-- <ion-item (click)="changeManagerOrOrg('MANAGER')"> -->
+            <ion-item no-lines>
+                <ion-label class="item-head">使用（保管）人：</ion-label>
+                <p class="item-body default" *ngIf="invAsset.manager!=null&&invAsset.manager!=''" item-end>{{invAsset.manager}}</p>
+                <p class="item-body default" *ngIf="invAsset.manager==null||invAsset.manager==''" item-end>无</p>
+            </ion-item>
+
+            <!-- 使用单位默认为保管人的所属单位 -->
+            <!-- <ion-item (click)="changeManagerOrOrg('ORGANIZATION')"> -->
+            <ion-item no-lines>
+                <ion-label class="item-head">所属单位：</ion-label>
+                <p class="item-body default" *ngIf="invAsset.useOrgName!=null&&invAsset.useOrgName!=''" item-end>{{invAsset.useOrgName}}</p>
+                <p class="item-body default" *ngIf="invAsset.useOrgName==null||invAsset.useOrgName==''" item-end>无</p>
+            </ion-item>
+            <ion-item-divider></ion-item-divider>
+
             <ion-item>
+                <ion-label class="item-head">技术状况：</ion-label>
+                <ion-select class="item-body" [(ngModel)]="fixedAsset.techStatus" placeholder="选择" interface="popover">
+                    <ion-option *ngFor="let item of techStates" [value]="item.dictCode">
+                        {{item.dictCodeDesc}}
+                    </ion-option>
+                </ion-select>
+            </ion-item>
+            <!-- 报废 -->
+
+            <div *ngIf="isScrap==false&&fixedAsset.techStatus=='99'">
+                    <ion-card>
+                        <ion-card-content>
+                            <ion-card-title>
+                                资产报废卡片
+                            </ion-card-title>
+                            <ion-item>
+                                <ion-label class="item-head">报废类别：</ion-label>
+                                <ion-select class="item-body" [(ngModel)]="scrap.scrapCategory" placeholder="选择" interface="popover">
+                                    <ion-option [value]="0">非正常</ion-option>
+                                    <ion-option [value]="1">正常</ion-option>
+                                </ion-select>
+                            </ion-item>
+                            <hr>
+                            <ion-item>
+                                <ion-label class="item-head">闲置/停产日期：</ion-label>
+                                <p class="item-body default" *ngIf="scrap.unproductionTime==null||scrap.unproductionTime==''" item-end>选择日期</p>
+                                <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消"
+                                    [(ngModel)]="scrap.unproductionTime"></ion-datetime>
+                            </ion-item>
+                            <hr>
+                            <ion-item>
+                                <p class="item-head">存放地点：</p>
+                                <input item-end class="item-body input" type="text" [(ngModel)]="scrap.storageLocation" placeholder="存放地点">
+                            </ion-item>
+                            <hr>
+                            <ion-item>
+                                <p class="item-head">资产简况：</p>
+                                <div>
+                                    <textarea class="input-reason" rows="3" [(ngModel)]="scrap.assetBrief"></textarea>
+                                </div>
+                            </ion-item>
+                            <hr>
+                            <ion-item>
+                                <p class="item-head">报废原因：</p>
+                                <div>
+                                    <textarea class="input-reason" rows="3"  [(ngModel)]="scrap.scrapReason"></textarea>
+                                </div>
+                            </ion-item>
+                            </ion-card-content>
+                            
+                            </ion-card>
+                            </div>
+
+
+            <ion-item>
+                <ion-label class="item-head">使用状况：</ion-label>
+                <ion-select class="item-body" [(ngModel)]="fixedAsset.useState" placeholder="选择" interface="popover">
+                    <ion-option *ngFor="let item of useStates" [value]="item.dictCode">
+                        {{item.dictCodeDesc}}
+                    </ion-option>
+                </ion-select>
+            </ion-item>
+
+            <!-- 闲置 -->
+
+            <div *ngIf="isIdle==false&&fixedAsset.useState=='0204'">
+                <ion-card>
+                    <ion-card-content>
+                        <ion-card-title>
+                            资产闲置卡片
+                        </ion-card-title>
+                        <ion-item>
+                            <ion-label class="item-head">现存放地点：</ion-label>
+                            <input item-end class="item-body input" type="text" placeholder="存放地点"  [(ngModel)]="idle.installLocation">
+                        </ion-item>
+                        <hr>
+                        <ion-item>
+                            <p class="item-head">检定结果：</p>
+                            <div>
+                                <textarea class="input-reason"  [(ngModel)]="idle.testResult" rows="3"></textarea>
+                            </div>
+                        </ion-item>
+                        <hr>
+                        <ion-item>
+                            <p class="item-head">停用原因及目前保护措施：</p>
+                            <div>
+                                <textarea class="input-reason"  [(ngModel)]="idle.stopReason" rows="3"></textarea>
+                            </div>
+                        </ion-item>
+                        <hr>
+                        <ion-item>
+                            <p class="item-head">资产现状：</p>
+                            <div>
+                                <textarea class="input-reason"  [(ngModel)]="idle.assetDesc" rows="3"></textarea>
+                            </div>
+                        </ion-item>
+                    </ion-card-content>
+                </ion-card>
+            </div>
+
+            <ion-item>
+                <ion-label class="item-head">安全现状：</ion-label>
+                <ion-select class="item-body" [(ngModel)]="fixedAsset.securityState" placeholder="选择" interface="popover">
+                    <ion-option *ngFor="let item of securityStates" [value]="item.dictCode">
+                        {{item.dictCodeDesc}}
+                    </ion-option>
+                </ion-select>
+            </ion-item>
+
+            <ion-item>
+                <ion-label class="item-head">闲置/停产日期：</ion-label>
+                <p class="item-body default" *ngIf="invAsset.handleDate==null||invAsset.handleDate==''" item-end>选择日期</p>
+                <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消"
+                    [(ngModel)]="invAsset.handleDate"></ion-datetime>
+            </ion-item>
+
+            <ion-item>
+                <ion-label class="item-head">安装地点：</ion-label>
+                <input item-end class="item-body input" type="text" [(ngModel)]="invAsset.installLocation" placeholder="安装地点">
+            </ion-item>
+
+            <ion-item>
+                <p class="item-head">上传图片({{photos.length}}/3)：</p>
                 <ion-row>
-                    <ion-col col-6 id="input_content">
-                        安装地点：
+                    <ion-col col-4 class="img-content" *ngFor="let item of photos;let i=index">
+                        <img id="imgss" [src]="item" (click)="isDeleteImg(i)" />
                     </ion-col>
-                    <ion-col col-6 end id="td">
-                        <input id="td_input" type="text" [(ngModel)]="invAsset.installLocation" placeholder="安装地点">
+                    <ion-col col-4 class="img-content" *ngIf="photos.length<3" style="border: 1px dashed #9C9C9C;">
+                        <img class="imgs-add" (click)="add()" src="./assets/imgs/add.png" />
                     </ion-col>
                 </ion-row>
             </ion-item>
-
             <ion-item>
-                <h3 id="th_img">上传图片({{photos.length}}/2):</h3>
-                <div id="imgs_content" *ngFor="let item of photos;let i=index">
-                    <img id="imgs" [src]="item" (click)="isDeleteImg(i)" />
+                <p class="item-head">盘点情况说明：</p>
+                <div>
+                    <textarea class="input-reason" rows="5" [(ngModel)]="invAsset.handleReason"></textarea>
                 </div>
-                <div id="imgs_content" *ngIf="photos.length<3" style="border: 1px dashed #9C9C9C;">
-                    <img id="imgs_add" (click)="add()" src="./assets/imgs/add.png" />
-                </div>
-            </ion-item>
-            <ion-item>
-                <ion-row>
-                    <P id="input_content">修改原因:</P>
-                    <textarea id="td_input_reason" rows="5" [(ngModel)]="invAsset.handleReason"></textarea>
-                </ion-row>
             </ion-item>
 
         </ion-list>
         <div [ngSwitch]="segment">
-                <ion-list *ngSwitchCase="'basicMassage'">
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                资产名称：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.assetName}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                车牌井号：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.licenseplatWellno}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                规格型号：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.assetType}}
-                            </ion-col>
-                        </ion-row>
-                    
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                出厂日期：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.manufactureDate}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                投产日期：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.productionTime}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                尚可使用月数：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage" *ngIf="fixedAsset.remainingLife!=0">
-                                {{fixedAsset.remainingLife}}个月
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage" *ngIf="fixedAsset.remainingLife==0">
-                                无
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                计量单位：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.unit}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                单台数量：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.singleQuantity}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                复合数量：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.complexQuantity}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                产权证号:
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.certificateNumber}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                资产原值：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.originalValue}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                    <ion-item>
-                        <ion-row>
-                            <ion-col col-6 id="th" class="fixedMessage">
-                                资产净值：
-                            </ion-col>
-                            <ion-col col-6 id="td" class="fixedMessage">
-                                {{fixedAsset.netWorth}}
-                            </ion-col>
-                        </ion-row>
-                    </ion-item>
-        
-                </ion-list>
-            </div>
-        
+            <ion-list *ngSwitchCase="'basicMassage'">
+                <ion-item>
+                    <ion-label class="item-head">资产名称：</ion-label>
+                    <p class="item-body" item-end>{{fixedAsset.assetName}}</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">车牌井号：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.licenseplatWellno!=null&&fixedAsset.licenseplatWellno!=''" item-end>{{fixedAsset.licenseplatWellno}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.licenseplatWellno==null||fixedAsset.licenseplatWellno==''" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">规格型号：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.assetType!=null&&fixedAsset.assetType!=''" item-end>{{fixedAsset.assetType}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.assetType==null||fixedAsset.assetType==''" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">出厂日期：</ion-label>
+                    <p *ngIf="fixedAsset.manufactureDate!='NaN-NaN-NaN'" class="item-body" item-end>{{fixedAsset.manufactureDate}}</p>
+                    <p *ngIf="fixedAsset.manufactureDate=='NaN-NaN-NaN'" class="item-body" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">投产日期：</ion-label>
+                    <p *ngIf="fixedAsset.productionTime!='NaN-NaN-NaN'" class="item-body" item-end>{{fixedAsset.productionTime}}</p>
+                    <p *ngIf="fixedAsset.productionTime=='NaN-NaN-NaN'" class="item-body" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">尚可使用月数：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.remainingLife!=null&&fixedAsset.remainingLife!=0" item-end>{{fixedAsset.remainingLife}}个月</p>
+                    <p class="item-body" *ngIf="fixedAsset.remainingLife==null||fixedAsset.remainingLife==0" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">计量单位：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.unit!=null&&fixedAsset.unit!=''" item-end>{{fixedAsset.unit}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.unit==null||fixedAsset.unit==''" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">单台数量：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.singleQuantity!=null&&fixedAsset.singleQuantity!=''" item-end>{{fixedAsset.singleQuantity}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.singleQuantity==null||fixedAsset.singleQuantity==''" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">复合数量：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.complexQuantity!=null&&fixedAsset.complexQuantity!=''" item-end>{{fixedAsset.complexQuantity}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.complexQuantity==null||fixedAsset.complexQuantity==''" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">产权证号：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.certificateNumber!=null&&fixedAsset.certificateNumber!=''" item-end>{{fixedAsset.certificateNumber}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.certificateNumber==null||fixedAsset.certificateNumber==''" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">资产原值（元）：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.originalValue!=null&&fixedAsset.originalValue!=''" item-end>￥{{fixedAsset.originalValue}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.originalValue==null||fixedAsset.originalValue==''" item-end>无</p>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label class="item-head">资产净值（元）：</ion-label>
+                    <p class="item-body" *ngIf="fixedAsset.netWorth!=null&&fixedAsset.netWorth!=''" item-end>￥{{fixedAsset.netWorth}}</p>
+                    <p class="item-body" *ngIf="fixedAsset.netWorth==null||fixedAsset.netWorth==''" item-end>无</p>
+                </ion-item>
+            </ion-list>
+        </div>
+
     </div>
 
 </ion-content>
 
-<ion-menu [content]="sele_content" id="selectPerson" side="right">
+<!-- <ion-menu [content]="sele_content" id="selectPerson" side="right">
     <ion-header>
         <ion-navbar color="title">
             <ion-toolbar>
@@ -268,7 +282,6 @@
     </ion-header>
     <ion-content>
         <ion-list>
-            <!-- <ion-scroll id="list_scroll" scrollY="true"> -->
             <div *ngIf="type=='MANAGER'">
                 <ion-item *ngFor="let item of items" (click)="close(item)">
                     {{ item.userName}} / {{item.workerNumber}}
@@ -283,10 +296,9 @@
             <ion-item *ngIf="items!=null&&items.length==0">
                 没有搜索到该结果
             </ion-item>
-            <!-- </ion-scroll> -->
         </ion-list>
 
-        
+
 
     </ion-content>
-</ion-menu>
+</ion-menu> -->

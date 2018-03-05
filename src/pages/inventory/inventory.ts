@@ -24,11 +24,12 @@ export class InventoryPage {
   private workerNumber;
   public isHaveData;   //判断是否有数据
 
+  public startTime;  //开始时间
   public finishTime;  //通知终止时间
 
   private selectedIndex;  //记录点击盘点的资产索引号
   private isInToSignaturePage=false;  //记录是否进入了签名页，如果进入则全部数据进行刷新
-
+  public isShow=false;
 
   constructor(
     public navCtrl: NavController,
@@ -45,6 +46,7 @@ export class InventoryPage {
     this.workerNumber=this.navParams.get("workerNumber");
     this.platform.ready().then(()=>{
       this.finishTime=DateUtil.formatDate(new Date(this.invNotice.timeFinish));
+      this.startTime=DateUtil.formatDate(new Date(this.invNotice.timeStart));
     })
     this.init();
   }
@@ -70,7 +72,7 @@ export class InventoryPage {
   ionViewDidEnter(){
     // let loading=this.loadingCtrl.create({
     //   spinner:'bubbles',
-    //   content:'正在加载中，请稍候！',
+    //   content:'正在加载中，请稍候',
     //   duration:10000
     // });
     //  loading.present();
@@ -94,10 +96,11 @@ export class InventoryPage {
       fab.close();
     },200);
     }
-    this.assetService.queryAssetsFromInv(this.workerNumber,"1").then((invAssets)=>{
+    this.assetService.queryAssetsFromInv(this.workerNumber,1).then((invAssets)=>{
       this.navCtrl.push("SignaturePage",{
         invAssets:invAssets,
-        signatureType:"inv"
+        signatureType:"inv",
+        workerNumber:this.workerNumber
       });
     })
     this.isInToSignaturePage=true;
@@ -114,11 +117,11 @@ export class InventoryPage {
     if(this.recordData==null){
       let loading=this.loadingCtrl.create({
       spinner:'bubbles',
-      content:'正在加载中，请稍候！'
+      content:'正在加载中，请稍候'
     });
      loading.present();
     // 重新刷新
-    this.assetService.queryAssetsFromFixed(this.workerNumber,"-1").then((data)=>{
+    this.assetService.queryAssetsFromFixed(this.workerNumber).then((data)=>{
       //进行筛选
       this.recordData=data;
     // if(val&&val.trim!=""){
@@ -155,13 +158,6 @@ export class InventoryPage {
     }else if(this.judge==true){
       this.judge=false;
     }
-    // let searchbar=document.getElementById("searchbar");
-    // if(searchbar.style.display=="none"){
-    //   searchbar.style.display="inline";
-    // }
-    // else{
-    //   searchbar.style.display="none";
-    // }
   }
 
 
@@ -179,7 +175,7 @@ export class InventoryPage {
         this.platform.ready().then(()=>{
           this.assetService.queryAssetFromFixedByCode(code).then((fixedAsset)=>{
             if(fixedAsset==null){
-              this.showAlert("查询资产失败,请确认二维码是否正确！");
+              this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
               return;
             }
             this.assetService.queryAssetFromInvByIdAndNoticeId(fixedAsset.assetId,this.invNotice.noticeId).then((invAsset)=>{
@@ -195,7 +191,6 @@ export class InventoryPage {
      });
   }
    
-
   //盘点
   scan(item,i){
     this.selectedIndex=i;
@@ -206,7 +201,7 @@ export class InventoryPage {
       this.platform.ready().then(()=>{
         this.assetService.queryAssetFromFixedById(id).then((fixedAsset)=>{
           if(fixedAsset==null){
-            this.showAlert("查询资产失败，不存在该资产！");
+            this.noticeService.showIonicAlert("查询资产失败，不存在该资产");
             return;
           }
           this.assetService.queryAssetFromInvByIdAndNoticeId(id,this.invNotice.noticeId).then((invAsset)=>{
@@ -228,7 +223,7 @@ export class InventoryPage {
         this.platform.ready().then(()=>{
           this.assetService.queryAssetFromFixedByIdAndCode(id,code).then((fixedAsset)=>{
             if(fixedAsset==null){
-              this.showAlert("查询资产失败,请确认二维码是否正确！");
+              this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
               return;
             }
             this.assetService.queryAssetFromInvByIdAndNoticeId(id,this.invNotice.noticeId).then((invAsset)=>{
@@ -244,20 +239,14 @@ export class InventoryPage {
      });
     }
   }
-  showAlert(msg:String){
-    this.alertCtrl.create({
-      title:"提醒",
-      subTitle:msg+"",
-      buttons:["确定"]
-    }).present();
-  }
 
  
   //重新盘点
   reScan(item,i){
     var alert=this.alertCtrl.create({
       title:'提示',
-      message:'该资产已经盘点，是否重新进行盘点？',
+      subTitle:'该资产已经盘点，是否重新进行盘点？',
+      cssClass:'alert-conform',
       buttons:[
         {
           text:'取消',
@@ -302,13 +291,13 @@ scanrfid(fab: FabContainer) {
       fab.close();
     },200);
     }
-  this.noticeService.showIonicAlert("该设备没有硬件支持，不能扫描RFID码！");
+  this.noticeService.showIonicAlert("该设备没有硬件支持，不能扫描RFID码");
 }
 
   scanRFID(){
      let loading=this.loadingCtrl.create({
       spinner:'bubbles',
-      content:'正在读取RFID码，请稍后！',
+      content:'正在读取RFID码，请稍后',
       duration:10000
     });
      loading.present();
@@ -323,7 +312,7 @@ scanrfid(fab: FabContainer) {
         this.platform.ready().then(()=>{
           this.assetService.queryAssetFromFixedByRFID(rfid).then((fixedAsset)=>{
             if(fixedAsset==null){
-              this.showAlert("查询资产失败,请确认二维码是否正确！");
+              this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
               return;
             }
             this.assetService.queryAssetFromInvByIdAndNoticeId(fixedAsset.assetId,this.invNotice.noticeId).then((invAsset)=>{
@@ -339,10 +328,10 @@ scanrfid(fab: FabContainer) {
         ReadRFID.release();
         loading.dismiss();
       },(error)=>{
-        this.showAlert("启动失败"+error)
+        this.noticeService.showIonicAlert("启动失败"+error)
       })
     },(err)=>{
-      this.showAlert("连接失败"+err);
+      this.noticeService.showIonicAlert("连接失败"+err);
     });
   }
 
@@ -399,6 +388,10 @@ scanrfid(fab: FabContainer) {
       }
       this.pageIndex++;
       infiniteScroll.complete();
+
+      if(newData==null||newData.length<this.pageSize){
+        infiniteScroll.enable(false);
+      }
     })
     },500);
   }

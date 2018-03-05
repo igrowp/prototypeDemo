@@ -1,3 +1,4 @@
+import { PubConstant } from './../entity/constant.provider';
 import { Dict, DictDetail } from './../entity/pub.entity';
 import { ChangeRecord } from './../entity/entity.provider';
 import { Http, Headers, RequestOptions } from '@angular/http';
@@ -18,8 +19,8 @@ export class AssetWebProvider {
   /**
  * 获取资产列表数据
  */
-  getListFormFixedByWorkerNumber(workerNumber: string) {
-    let params = "?workerNumber=" + workerNumber;
+  getListFormFixedByWorkerNumber(workerNumber: string,lastRequestTime: string) {
+    let params = "?workerNumber=" + workerNumber+"&lastRequestTime=" + lastRequestTime;
     return new Promise<Array<FixedAsset>>((resolve, reject) => {
       this.http.get(this.getUrl() + '/fixed/list' + params)
         .map(res => res.json())
@@ -53,6 +54,7 @@ export class AssetWebProvider {
       } else {
         this.http.post(this.getUrl() + "/fixed/update", HttpUtils.toQueryString(obj), options)
           .map(res => res.json())
+          .timeout(PubConstant.HTTP_TIME_OUT_LONG)
           .subscribe((data) => {
             resolve(data);
           }, err => {
@@ -84,6 +86,7 @@ export class AssetWebProvider {
       } else {
         this.http.post(this.getUrl() + "/record", HttpUtils.toQueryString(obj), options)
           .map(res => res.json())
+          .timeout(PubConstant.HTTP_TIME_OUT_LONG)
           .subscribe((data) => {
             resolve(data);
           }, err => {
@@ -98,9 +101,10 @@ export class AssetWebProvider {
   /**
   * 从服务器获取组织机构信息
   */
-  getOrgInfoListFromServe() {
+  getOrgInfoListFromServe(lastRequestTime:string) {
     return new Promise<Array<OrgInfo>>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/org/list')
+      let params = "?lastRequestTime=" + lastRequestTime;
+      this.http.get(this.getUrl() + '/org/list'+params)
         .map(res => res.json())
         .subscribe((data) => {
           resolve(data);
@@ -113,9 +117,10 @@ export class AssetWebProvider {
   /**
    * 从服务器获取简单用户信息
    */
-  getUserSimpleListFromServe() {
+  getUserSimpleListFromServe(lastRequestTime:string) {
     return new Promise<Array<UserSimple>>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/user/simple/list')
+      let params = "?lastRequestTime=" + lastRequestTime;
+      this.http.get(this.getUrl() + '/user/simple/list'+params)
         .map(res => res.json())
         .subscribe((data) => {
           resolve(data);
@@ -143,9 +148,10 @@ export class AssetWebProvider {
    /**
    * 从服务器获取数据字典明细
    */
-  getDictDetailListFromServe() {
+  getDictDetailListFromServe(lastRequestTime:string) {
     return new Promise<Array<DictDetail>>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/dict/detail/list')
+      let params = "?lastRequestTime=" + lastRequestTime;
+      this.http.get(this.getUrl() + '/dict/detail/list'+params)
         .map(res => res.json())
         .subscribe((data) => {
           resolve(data);
@@ -155,7 +161,20 @@ export class AssetWebProvider {
     })
   }
 
-
+  /**
+   * 获取服务器时间
+   */
+  getCurrentTimeFromServe() {
+    return new Promise<string>((resolve, reject) => {
+      this.http.get(this.getUrl() + '/current/time')
+        .map(res => res.json())
+        .subscribe((data) => {
+          resolve(data.currentTime);
+        }, error => {
+          reject(error.message);
+        })
+    })
+  }
 
 
 }

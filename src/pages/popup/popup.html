@@ -14,21 +14,21 @@
 </ion-header>
 
 
-<ion-content padding id="div_content">
-        <ion-item no-lines [hidden]="hidden">
-                <ion-note item-end class="border-radius" (click)="setting()">
-                    <ion-icon name="ios-settings-outline"> 设置</ion-icon>
-                </ion-note>
-            </ion-item>
-    
-    <h1 id="message">{{message}}</h1>
-    
-    
-    <h4 >{{messageSub}}</h4>
-    <div [hidden]="hidden" style="text-align: center; margin-left: 30px; margin-right: 30px;margin-top:40px;">
-            <button ion-button block round color="default" (click)="handleReTry()">
-                重试
-            </button>
-        </div>
-        <h3 [hidden]="!hidden" id="prompt">首次登录可能会消耗一定的时间，请耐心等候!</h3>
+<ion-content padding class="full center">
+    <ion-item no-lines [hidden]="hidden">
+        <ion-note item-end class="border-radius" (click)="setting()">
+            <ion-icon name="ios-settings-outline"> 设置</ion-icon>
+        </ion-note>
+    </ion-item>
+
+    <h1 [hidden]="hidden" class="margin-top">{{message}}</h1>
+
+
+    <h4 [hidden]="hidden">{{messageSub}}</h4>
+    <div [hidden]="hidden" class="margin center">
+        <button ion-button block round color="default" (click)="handleReTry()">
+            重试
+        </button>
+    </div>
+    <h3 [hidden]="!hidden" class="bottom">首次登录可能会消耗一定的时间，请耐心等候!</h3>
 </ion-content>

@@ -84,7 +84,7 @@ export class GrantingBindPage {
         }
         this.cvtService.queryFromUserSimpleByUserId(code).then((userSimple)=>{
           if(userSimple==null){
-            this.noticeSer.showIonicAlert("无法识别该二维码！");
+            this.noticeSer.showIonicAlert("无法识别该二维码");
           } else {
             this.receiveOrg = userSimple.workInOrg;
             this.receivePerson = userSimple.userName;
@@ -102,6 +102,7 @@ export class GrantingBindPage {
     this.alertCtrl.create({
       title:'提示',
       subTitle:'是否要删除该资产？',
+      cssClass:'alert-conform',
       buttons:[
         {
           text:'取消',

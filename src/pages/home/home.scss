@@ -1,28 +1,16 @@
 page-home {
-    #content {
-        background-image: url(./../assets/imgs/background.jpg);
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-    #left {
-        background-image: url(./../assets/imgs/bgSide.png);
-        background-repeat: no-repeat;
-        background-size: cover;
-        width: 25%;
-        height: 100%;
-        float: left;
-        box-shadow: 2px 0px 8px #6484fb;
-    }
-    #grid {
-        padding: 0px;
-        margin: 0px;
+    .full{
         height: 100%;
         width: 100%;
+    }
+    .bg-menu{
         background-image: url(./../assets/imgs/bgSide.png);
         background-repeat: no-repeat;
         background-size: cover;
         box-shadow: 2px 0px 8px #6484fb;
     }
+    
+
     #left_top {
         padding: 0px;
         margin: 0px;
@@ -91,58 +79,12 @@ page-home {
         height: 60%;
         margin-right: 6%;
     }
-    #right {
-        float: right;
-        width: 75%;
-        height: 100%;
-    }
-    #right_top {
-        float: left;
-        margin-top: 5%;
-        text-align: center;
-        width: 100%;
-    }
-    #trans {
-        margin-left: 10%;
-        float: left;
-        width: 40%;
-        height: 100%;
-        padding-top: 2%;
-        padding-bottom: 2%;
-        background-image: url(./../assets/imgs/bgTrans.png);
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-    #trans img {
-        width: 30%;
-    }
-    #trans p {
-        font-size: 1.8rem;
-        margin-bottom: 0px;
-        margin-top: 4%;
-    }
-    #inv {
-        float: left;
-        width: 40%;
-        height: 100%;
-        padding-top: 2%;
-        padding-bottom: 2%;
-        background-image: url(./../assets/imgs/bgInv.png);
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-    #inv img {
-        width: 30%;
-    }
-    #inv p {
-        font-size: 1.8rem;
-        margin-bottom: 0px;
-        margin-top: 4%;
-    }
-    #nav_col{
+
+
+    .center{
         text-align: center;
     }
-    #nav_col img{
+    .center img{
         max-width: 128px;
     }
 

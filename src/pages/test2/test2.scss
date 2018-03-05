@@ -1,1 +1,22 @@
-page-test2 {}
+page-test2 {
+    .full{
+        height: 100%;
+        width: 100%;
+    }
+    .full-helf{
+        height: 100%;
+        width: 60%;
+        border:1px solid #000;
+    }
+    .bg-menu{
+        background-image: url(./../assets/imgs/bgSide.png);
+        background-repeat: no-repeat;
+        background-size: cover;
+        box-shadow: 2px 0px 8px #6484fb;
+    }
+    .thumbnail{
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+}

@@ -1,3 +1,4 @@
+import { PubConstant } from './../entity/constant.provider';
 import { CvtNonNotice, CvtNonNoticeSub,CvtNonReceive } from './../entity/cvt.entity.provider';
 import { FixedAsset } from './../entity/entity.provider';
 import { Http, Headers,RequestOptions } from '@angular/http';
@@ -17,8 +18,8 @@ export class CvtWebProvider{
     }
 
   //从服务器根据员工编号得到资产，，，领用人的
-  getAllCvtAsset(workerNumber:string){
-    let params= "?workerNumber="+workerNumber;
+  getAllCvtAsset(workerNumber:string,noticeId:string){
+    let params= "?workerNumber="+workerNumber+"&noticeId="+noticeId;
     return new Promise<Array<CvtNonReceive>>((resolve,reject)=>{
       this.http.get(this.getUrl()+'/receive/list'+params)
       .map(res=>res.json())
@@ -37,11 +38,29 @@ export class CvtWebProvider{
    */
   getCvtNoticeByRecipient(recipient:string){
     let params= "?recipient="+recipient;
+    return new Promise<Array<CvtNonNotice>>((resolve,reject)=>{
+      this.http.get(this.getUrl()+'/notice/list'+params)
+      .map(res=>res.json())
+      .subscribe((data)=>{
+          resolve(data);
+      },err=>{
+        reject(err);
+      })
+    })
+  }
+
+  /**
+   * 获取通知单内容
+   * @param recipient 
+   * @param orgId 
+   */
+  getCvtNoticeByNoticeId(noticeId:string){
+    let params= "?noticeId="+noticeId;
     return new Promise<CvtNonNotice>((resolve,reject)=>{
       this.http.get(this.getUrl()+'/notice'+params)
       .map(res=>res.json())
       .subscribe((data)=>{
-        if(JSON.stringify(data)=="{}"){
+        if(data=="{}"){
           resolve(null);
         }else{
           resolve(data);
@@ -51,13 +70,16 @@ export class CvtWebProvider{
       })
     })
   }
+
+
+  
   getCvtNonNoticeSub(noticeId:string){
     let params= "?noticeId="+noticeId;
     return new Promise<Array<CvtNonNoticeSub>>((resolve,reject)=>{
-      this.http.get(this.getUrl()+'/notice/sub'+params)
+      this.http.get(this.getUrl()+'/notice/sub/list'+params)
       .map(res=>res.json())
       .subscribe((data)=>{
-        if(JSON.stringify(data)=="{}"){
+        if(JSON.stringify(data)=="[]"){
           resolve(null);
         }else{
           resolve(data);
@@ -93,7 +115,7 @@ export class CvtWebProvider{
   getCvtAssetBySubNoticeId(subNoticeId:string){
     let params= "?subNoticeId="+subNoticeId;
     return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      this.http.get(this.getUrl()+'/asset/list/sub'+params)
+      this.http.get(this.getUrl()+'/fixed/list/sub'+params)
       .map(res=>res.json())
       .subscribe((data)=>{
         resolve(data);
@@ -122,7 +144,7 @@ export class CvtWebProvider{
   syncCvtNonReceiveToServer(cvtNonReceives: Array<CvtNonReceive>) {
     let headers = new Headers();
     headers.append("Accept", 'application/json');
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    headers.append('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
 
     let options = new RequestOptions({
       headers: headers
@@ -139,16 +161,17 @@ export class CvtWebProvider{
       }
       this.http.post(this.getUrl() + "/receive", HttpUtils.toQueryString(obj), options)
         .map(res => res.json())
+        .timeout(PubConstant.HTTP_TIME_OUT_LONG)
         .subscribe((data) => {
           var receiveId = cvtNonReceives[cvtNonReceives.length - 1].receiveId;
           for (var i = 0; i < cvtNonReceives.length; i++) {
-            //图片上传成功！
+            //图片上传成功
             //传签名
             let cvtNonReceive = cvtNonReceives[i];
             let signatureParams = new Map<string, string>();
             signatureParams.set("workerNumber", cvtNonReceive.receivePerson);
             signatureParams.set("recordId", cvtNonReceive.receiveId);
-            signatureParams.set("attachmentType", "cvt_signature"); //转产凭证、资产附件、转产照片、盘点
+            signatureParams.set("attachmentType", PubConstant.SIGNATURE_TYPE_CVT_SIGNATURE); //转产凭证、资产附件、转产照片、盘点
             this.photoLibrary.getPhoto(cvtNonReceive.signaturePath).then((blob) => {
               this.attaWebProvider.uploadSignature(blob, cvtNonReceive.signatureName, signatureParams).then(() => {
                 if (cvtNonReceive.receiveId == receiveId) {
@@ -156,7 +179,7 @@ export class CvtWebProvider{
                   resolve("同步成功");
                 }
               }, error => {
-                reject(error + "\n")
+                reject(error + "<br>")
               })
             })
           }

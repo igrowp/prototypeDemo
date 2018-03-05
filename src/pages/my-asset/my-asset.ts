@@ -2,9 +2,10 @@ import { FixedAsset } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { Component, ViewChild } from '@angular/core';
-import { AlertController, InfiniteScroll, IonicPage, NavController, LoadingController,NavParams, Platform } from 'ionic-angular';
+import { AlertController, InfiniteScroll, IonicPage, NavController, LoadingController, NavParams, Platform, FabContainer } from 'ionic-angular';
 import { ChangeDetectorRef } from '@angular/core';
 import { Content } from 'ionic-angular/components/content/content';
+import { NoticeService } from '../../providers/service/notice.service';
 declare let ReadRFID: any;
 
 /**
@@ -24,12 +25,12 @@ export class MyAssetPage {
   private pageIndex:number;
   private pageSize=20;
   private workerNumber="";
-  public isHaveData;   //判断是否有数据
   private selectedIndex; //记录点击盘点的资产索引号
 
   constructor(public navCtrl: NavController,
     private alertCtrl: AlertController,
     private platform: Platform,
+    private noticeService:NoticeService,
     private barcodeScanner: BarcodeScanner,
     private cd: ChangeDetectorRef,
     private loadingCtrl: LoadingController,
@@ -45,12 +46,6 @@ export class MyAssetPage {
       }
       this.pageIndex++;
       // loading.dismiss();
-      if (data.length == 0) {
-        //说明没有数据
-        this.isHaveData = false;
-      } else {
-        this.isHaveData = true;
-      }
     })
   }
 
@@ -69,45 +64,58 @@ export class MyAssetPage {
   scan(item){
     let id=item.assetId;
     let code=item.twoDimensionCode;  //应该是扫码获得的ID
-    if(code==""||code==null){
-      //没有二维码标签，直接进入资产信息页
-      this.platform.ready().then(()=>{
-        this.assetService.queryAssetFromFixedById(id).then((fixedAsset)=>{
-          if(fixedAsset==null){
-            this.showAlert("查询资产失败，不存在该资产！");
-            return;
-          }
-          this.navCtrl.push("MyAssetMessagePage",{
-               fixedAsset:fixedAsset
-          })
-        })
-      })
-    }else{
-      this.barcodeScanner.scan().then((result)=>{
-        code=result.text;
-        if(code==""){
+    //没有二维码标签，直接进入资产信息页
+    this.platform.ready().then(()=>{
+      this.assetService.queryAssetFromFixedById(id).then((fixedAsset)=>{
+        if(fixedAsset==null){
+          this.noticeService.showIonicAlert("查询资产失败，不存在该资产");
           return;
         }
-        this.platform.ready().then(()=>{
-          this.assetService.queryAssetFromFixedByIdAndCode(id,code).then((fixedAsset)=>{
-            if(fixedAsset==null){
-              this.showAlert("查询资产失败,请确认二维码是否正确！");
-              return;
-            }
-            this.navCtrl.push("MyAssetMessagePage",{
-               fixedAsset:fixedAsset
-            })
-          })
-      });
-     });
-    }
+        this.navCtrl.push("MyAssetMessagePage",{
+             fixedAsset:fixedAsset
+        })
+      })
+    })
+    // if(code==""||code==null){
+    //   //没有二维码标签，直接进入资产信息页
+    //   this.platform.ready().then(()=>{
+    //     this.assetService.queryAssetFromFixedById(id).then((fixedAsset)=>{
+    //       if(fixedAsset==null){
+    //         this.noticeService.showIonicAlert("查询资产失败，不存在该资产");
+    //         return;
+    //       }
+    //       this.navCtrl.push("MyAssetMessagePage",{
+    //            fixedAsset:fixedAsset
+    //       })
+    //     })
+    //   })
+    // }else{
+    //   this.barcodeScanner.scan().then((result)=>{
+    //     code=result.text;
+    //     if(code==""){
+    //       return;
+    //     }
+    //     this.platform.ready().then(()=>{
+    //       this.assetService.queryAssetFromFixedByIdAndCode(id,code).then((fixedAsset)=>{
+    //         if(fixedAsset==null){
+    //           this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
+    //           return;
+    //         }
+    //         this.navCtrl.push("MyAssetMessagePage",{
+    //            fixedAsset:fixedAsset
+    //         })
+    //       })
+    //   });
+    //  });
+    // }
   }
 
   //重新绑定
   reBind(item,i){
     const alert=this.alertCtrl.create({
       title:'提示',
-      message:'该资产已绑定二维码，是否重新绑定？',
+      subTitle:'该资产已绑定二维码，是否重新绑定？',
+      cssClass:'alert-conform',
       buttons:[
         {
           text:'取消',
@@ -128,7 +136,8 @@ export class MyAssetPage {
   reBindRFID(item){
     const alert=this.alertCtrl.create({
       title:'提示',
-      message:'该资产已绑定RFID，是否重新绑定？',
+      subTitle:'该资产已绑定RFID，是否重新绑定？',
+      cssClass:'alert-conform',
       buttons:[
         {
           text:'取消',
@@ -160,25 +169,25 @@ export class MyAssetPage {
         if(code!=""){
           this.assetService.queryAssetFromFixedByRFID(code).then((data)=>{
             if(data!=null){
-              this.showAlert("请求失败！已经存在该RFID，请重新选择!");
+              this.noticeService.showIonicAlert("请求失败已经存在该RFID，请重新选择!");
               return;
             }else{
               this.assetService.queryAssetFromFixedById(id).then((asset)=>{
                 if(asset==null){
-                  this.showAlert("不存在该资产，请确认资产编号！")
+                  this.noticeService.showIonicAlert("不存在该资产，请确认资产编号")
                   return;
                 }
                 if(asset.rfid==""||asset.rfid==null){
                   asset.rfid=code;
                   this.assetService.updateToFixed(asset).then((data)=>{
                     //判断资产清点记录中是否有该资产，有的话进行更新
-                    this.showAlert("RFID绑定成功！");
+                    this.noticeService.showIonicAlert("RFID绑定成功");
                   })
                 }else{
                   asset.rfid=code;
                   this.assetService.updateToFixed(asset).then((data)=>{
                     //判断资产清点记录中是否有该资产，有的话进行更新
-                    this.showAlert("RFID重新绑定成功！");
+                    this.noticeService.showIonicAlert("RFID重新绑定成功");
                   })
                 }
               })
@@ -197,14 +206,6 @@ export class MyAssetPage {
     //   alert("连接失败"+err);
     // });
   }
-
-  showAlert(msg:String){
-    this.alertCtrl.create({
-      title:"提醒",
-      subTitle:msg+"",
-      buttons:["确定"]
-    }).present();
-  }
 ////////////////搜索////////////////
   isHiddenSearch=true;
   /**
@@ -221,6 +222,7 @@ export class MyAssetPage {
   }
 
   private recordData:Array<FixedAsset>=null;
+  
    /**
    * 搜索功能
    * @param ev 
@@ -230,11 +232,11 @@ export class MyAssetPage {
     if(this.recordData==null){
       let loading=this.loadingCtrl.create({
       spinner:'bubbles',
-      content:'正在加载中，请稍候！'
+      content:'正在加载中，请稍候'
     });
      loading.present();
     // 重新刷新
-    this.assetService.queryAssetsFromFixed(this.workerNumber,"-1").then((data)=>{
+    this.assetService.queryAssetsFromFixed(this.workerNumber).then((data)=>{
       //进行筛选
       this.recordData=data;
     // if(val&&val.trim!=""){
@@ -270,25 +272,25 @@ export class MyAssetPage {
         if(code!=""){
           this.assetService.queryAssetFromFixedByCode(code).then((data)=>{
             if(data!=null){
-              this.showAlert("请求失败！已经存在该二维码，请重新选择!");
+              this.noticeService.showIonicAlert("请求失败已经存在该二维码，请重新选择!");
               return;
             }else{
               this.assetService.queryAssetFromFixedById(id).then((asset)=>{
                 if(asset==null){
-                  this.showAlert("不存在该资产，请确认资产编号！")
+                  this.noticeService.showIonicAlert("不存在该资产，请确认资产编号")
                   return;
                 }
                 if(asset.twoDimensionCode==""||asset.twoDimensionCode==null){
                   asset.twoDimensionCode=code;
                   this.assetService.updateToFixed(asset).then((data)=>{
                     //判断资产清点记录中是否有该资产，有的话进行更新
-                    this.showAlert("二维码绑定成功！");
+                    this.noticeService.showIonicAlert("二维码绑定成功");
                   })
                 }else{
                   asset.twoDimensionCode=code;
                   this.assetService.updateToFixed(asset).then((data)=>{
                     //判断资产清点记录中是否有该资产，有的话进行更新
-                    this.showAlert("二维码重新绑定成功！");
+                    this.noticeService.showIonicAlert("二维码重新绑定成功");
                   })
                 }
               })
@@ -310,13 +312,43 @@ export class MyAssetPage {
       }
       this.pageIndex++;
       infiniteScroll.complete();
+
+      if(newData==null||newData.length<this.pageSize){
+        infiniteScroll.enable(false);
+      }
     })
     },500);
   }
 
   rfid(){
-    this.showAlert("该设备没有硬件支持，不能扫描RFID码！");
+    this.noticeService.showIonicAlert("该设备没有硬件支持，不能扫描RFID码");
   }
-  
+
+  scanTwoDimensionCode(fab:FabContainer){
+    if (fab != null) {
+      setTimeout(() => {
+        fab.close();
+      }, 200);
+    }
+    this.barcodeScanner.scan().then((result) => {
+      var code = result.text;
+      if (code == "") {
+        return;
+      }
+      this.platform.ready().then(() => {
+        this.assetService.queryAssetFromFixedByCode(code).then((fixedAsset) => {
+          if (fixedAsset == null) {
+            this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
+            return;
+          } else {
+            this.navCtrl.push("MyAssetMessagePage", {
+              fixedAsset: fixedAsset
+            })
+          }
+        })
+      });
+    });
+  }
+
 
 }

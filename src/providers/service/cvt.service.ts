@@ -1,5 +1,5 @@
 import { CvtDBProvider } from './../storage/cvt.db.provider';
-import { PubContanst } from './../entity/constant.provider';
+import { PubConstant } from './../entity/constant.provider';
 import { AssetWebProvider } from './../web/asset.web.provider';
 import { CvtNonReceive, CvtNonNotice,CvtNonNoticeSub } from './../entity/cvt.entity.provider';
 import { PhotoLibrary } from '@ionic-native/photo-library';
@@ -31,10 +31,40 @@ export class CvtService {
 
 
   /**
+   * 同步转产数据
+   * @param cvtNoticeList 
+   */
+  synchroCvtData(cvtNoticeList:Array<CvtNonNotice>){
+    return new Promise((resolve,reject)=>{
+      if(cvtNoticeList==null||cvtNoticeList.length==0){
+        resolve();
+      } else {
+        let lastNoticeId=cvtNoticeList[cvtNoticeList.length-1].noticeId;
+        for (let i = 0; i < cvtNoticeList.length; i++) {
+          let cvtNotice = cvtNoticeList[i];
+          this.queryFromCvtNonReceive(cvtNotice.noticeId, 1).then((cvtNonReceives) => {
+            this._syncCvtDBToServer(cvtNonReceives, cvtNotice.noticeId).then((data) => {
+              if(cvtNotice.noticeId==lastNoticeId){
+                resolve();
+              }
+            }, (error) => {
+              reject("同步失败" + error);
+            })
+          }, (error) => {
+            reject("获取领用表失败：" + error);
+          })
+        }
+      }
+    })
+    
+  }
+
+
+  /**
    * 从本地查找通知单
    */
   queryFromCvtNonNoticeByWorkerNumber(workerNumber:string){
-    return new Promise<CvtNonNotice>((resolve,reject)=>{
+    return new Promise<Array<CvtNonNotice>>((resolve,reject)=>{
       if(workerNumber==null||workerNumber==""){
         resolve(null);
       }
@@ -82,68 +112,51 @@ export class CvtService {
 
 
   /**
-   * 从本地查找通知单如果没有则从服务器获取
+   * 根据员工编号获得非安转产通知
+   * @param workerNumber
    */
-  getCvtNonNoticeByWorkerNumberFromServe(workerNumber:string){
-    return new Promise<CvtNonNotice>((resolve,reject)=>{
-      if(workerNumber==null||workerNumber==""){
+  getCvtNonNoticeByWorkerNumberFromServe(workerNumber: string) {
+    return new Promise<Array<CvtNonNotice>>((resolve, reject) => {
+      if (workerNumber == null || workerNumber == "") {
         resolve(null);
-      }
-      this.cvtDBProvider.queryFromCvtNonNoticeByWorkerNumber(workerNumber).then((data)=>{
-        if(data!=null){
-          resolve(data);
-        }else{
-          //从服务器获取
-          this.getCvtNoticeByworkerNumberFromServe(workerNumber).then((data1)=>{
-            resolve(data1);
-          },(error)=>{
-            reject(error);
-          })
-        }
-      },(error)=>{
-        reject("本地查找通知单出错：\n"+error);
-      })
-    })
-  }
-  /**
-   * 根据员工编号和所在单位获得非安转产通知
-   * @param workerNumber 
-   * @param orgId 
-   */
-  getCvtNoticeByworkerNumberFromServe(workerNumber:string){
-    return new Promise<CvtNonNotice>((resolve,reject)=>{
-      if(workerNumber==null||workerNumber==""){
-        resolve(null);
-        return;
-      }
-      this.cvtWebProvider.getCvtNoticeByRecipient(workerNumber).then((notice)=>{
-        if(notice==null||notice.recipient==""){
-          resolve(null);
-        }else{
-          this.cvtDBProvider.queryFromCvtNonNoticeByWorkerNumber(notice.recipient).then((cvtNonNotice)=>{
-            if(cvtNonNotice==null){
-              //本地没有存储，存到本地
-              this.cvtDBProvider.insertToCvtNonNotice(notice).then(()=>{
-                resolve(notice);
-              },(error)=>{
-                reject("插入本地非安转产通知错误："+error);
-              })
-            }else{
-              //本地有通知，更新
-              this.cvtDBProvider.updateToCvtNonNotice(notice).then(()=>{
-                resolve(notice);
-              },(error)=>{
-                reject("更新本地非安转产通知错误："+error);
+      } else {
+        this.cvtWebProvider.getCvtNoticeByRecipient(workerNumber).then((noticeList) => {
+          if (noticeList == null || noticeList.length == 0) {
+            resolve(null);
+          } else {
+            let lastNoticeId = noticeList[noticeList.length - 1].noticeId;
+            for (let i = 0; i < noticeList.length; i++) {
+              let notice = noticeList[i];
+              this.cvtDBProvider.queryFromCvtNonNoticeByNoticeId(notice.noticeId).then((cvtNonNotice) => {
+                if (cvtNonNotice == null) {
+                  //本地没有存储，存到本地
+                  this.cvtDBProvider.insertToCvtNonNotice(notice).then(() => {
+                    if (notice.noticeId == lastNoticeId) {
+                      resolve(noticeList);
+                    }
+                  }, (error) => {
+                    reject("插入本地非安转产通知错误：" + error);
+                  })
+                } else {
+                  //本地有通知，更新
+                  this.cvtDBProvider.updateToCvtNonNotice(notice).then(() => {
+                    if (notice.noticeId == lastNoticeId) {
+                      resolve(noticeList);
+                    }
+                  }, (error) => {
+                    reject("更新本地非安转产通知错误：" + error);
+                  })
+                }
+              }, (error) => {
+                reject("查询本地非安转产通知错误：" + error);
               })
             }
-          },(error)=>{
-            reject("查询本地非安转产通知错误："+error);
-          })
-        }
-      },(err)=>{
-        resolve(null);  //没有网默认没有通知
-        //reject("网络连接超时，请确认当前为内网环境！");
-      });
+          }
+        }, (err) => {
+          resolve(null);  //没有网默认没有通知
+          //reject("网络连接超时，请确认当前为内网环境");
+        });
+      }
     });
   }
 
@@ -224,10 +237,10 @@ export class CvtService {
     return new Promise((resolve, reject) => {
       this.cvtWebProvider.receiverNoGranting(cvtNonNotice.noticeId, recipient).then((data) => {
         if (data != null) {
-          this.uploadSignature(recipient, signaturePath, signatureName, null, data,null, PubContanst.SIGNATURE_TYPE_CVT_RECEIVER_NO_GRANTING).then(() => {
+          this.uploadSignature(recipient, signaturePath, signatureName, null, data,null, PubConstant.SIGNATURE_TYPE_CVT_RECEIVER_NO_GRANTING).then(() => {
 
           }, (error) => {
-            reject("上传签名失败，请检查网络是否通畅！");
+            reject("上传签名失败，请检查网络是否通畅");
           })
         }
         //删除本地通知单
@@ -248,7 +261,7 @@ export class CvtService {
   updateStateToCvtNotice(cvtNotice:CvtNonNotice){
     return new Promise<string>((resolve,reject)=>{
       this.cvtDBProvider.updateToCvtNonNotice(cvtNotice).then((data)=>{
-        resolve("修改成功！");
+        resolve("修改成功");
       },(err)=>{
         reject(err);
       });
@@ -303,7 +316,7 @@ export class CvtService {
         signatureParams.set("noticeId", cvtNonNoticeId);
       }else{
         //没有签名附件主键的情况
-        reject("缺少附件表主键！");
+        reject("缺少附件表主键");
       }
       signatureParams.set("attachmentType",attachmentType); //转产凭证、资产附件、转产照片、盘点
       this.photoLibrary.getPhoto(signaturePath).then((blob) => {
@@ -319,12 +332,12 @@ export class CvtService {
    * @param noticeId 
    * @param workInOrg 
    */
-  saveCvtAssetsFromServe(workerNumber: string) {
+  saveCvtAssetsFromServe(workerNumber: string,noticeId:string) {
     return new Promise<Array<CvtNonReceive>>((resolve, reject) => {
       if (workerNumber == null || workerNumber == "") {
         reject("参数为空");
       }
-      this.cvtWebProvider.getAllCvtAsset(workerNumber).then((nonReceives) => {
+      this.cvtWebProvider.getAllCvtAsset(workerNumber,noticeId).then((nonReceives) => {
         if (nonReceives == null || nonReceives.length == 0) {
           resolve(null);
         } else {
@@ -342,7 +355,6 @@ export class CvtService {
                 resolve(nonReceives);
               }
             }, (error) => {
-              this.noticeService.showIonicAlert(error);
               reject(error);
             })
           }
@@ -385,7 +397,7 @@ export class CvtService {
    * @param cvtNonReceives 
    * @param changeRecords 
    */
-  syncCvtDBToServer(cvtNonReceives: Array<CvtNonReceive>, noticeId: string) {
+  private _syncCvtDBToServer(cvtNonReceives: Array<CvtNonReceive>, noticeId: string) {
     return new Promise((resolve, reject) => {
       if (cvtNonReceives.length == 0) {
         resolve();
@@ -406,7 +418,7 @@ export class CvtService {
             } else {
               this.cvtDBProvider.deleteFromCvtNonReceiveByNoticeId(noticeId).then(() => {
                 //更新服务器通知单状态
-                this.cvtWebProvider.updateStateToCvtNotice(PubContanst.CVT_NON_NOTICE_STATE_COMPLETED, noticeId).then(() => {
+                this.cvtWebProvider.updateStateToCvtNotice(PubConstant.CVT_NON_NOTICE_STATE_COMPLETED, noticeId).then(() => {
                   //删除本地通知单和附加表
                   this.cvtDBProvider.deleteFromCvtNonNoticeByNoticeId(noticeId).then(() => {
                     this.cvtDBProvider.deleteFromCvtNonNoticeSubByNoticeId(noticeId).then(() => {
@@ -432,12 +444,9 @@ export class CvtService {
           this.cvtDBProvider.insertToCvtNonReceive(cvtNonReceive).then(() => {
             resolve();
           }, err => reject(err))
+        }else{
+          resolve();
         }
-        //  else {
-        //   this.cvtDBProvider.updateToCvtNonReceive(cvtNonReceive).then(() => {
-        //     resolve();
-        //   }, err => reject(err))
-        // }
       }, err => reject(err))
     })
   }

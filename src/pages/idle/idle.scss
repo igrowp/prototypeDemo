@@ -1,0 +1,48 @@
+page-idle {
+    ion-list{
+        padding-top:20px;
+    }
+
+    .item-head{
+        font-size: 2rem;
+        color: #9A9A9A;
+        font-weight: 600;
+    }
+    .item-body{
+        font-size: 2rem;
+        font-weight: 600;
+        color:#000;
+        padding-right: 2%;
+        text-align: right;
+    }
+
+    .input{
+        border-style: none;
+        background-color: #fff;
+        width: 50%;
+    }
+
+    .input-reason {
+        // border-style: none;
+        margin-left: 5%;
+        padding: 5px;
+        margin-top: 15px;
+        border-style: none;
+        border: 1px solid #9A9A9A;
+        background-color: #fff;
+        font-size: 1.8rem;
+        width: 90%;
+    }
+
+    .img-content{
+        margin-top: 15px;
+        border-radius:10px;
+        text-align: center;
+        width:100px;
+        height:100px;
+    }
+    .imgs-add {
+        margin-top: 15px;
+    }
+
+}

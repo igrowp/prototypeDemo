@@ -20,10 +20,6 @@ body {
     font-family: Helvetica, Sans-Serif;
 }
 
-#title {
-    border-left: 1px solid white;
-}
-
 .signature-pad {
     position: relative;
     display: -webkit-box;
@@ -117,10 +113,10 @@ body {
     }
 }
 
-#clear,
-#undo {
-    float: left;
+.default-signature{
+    font-size: 1.7rem;
 }
+
 ion-grid{
     height:40%;
     padding-top:10%;
@@ -128,5 +124,4 @@ ion-grid{
 ion-col{
     padding-left:10%;
     padding-right:10%;
-
 }

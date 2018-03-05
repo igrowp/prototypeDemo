@@ -1,8 +1,15 @@
+import { RequestOptions, Headers } from '@angular/http';
 import { Properties } from './../properties/properties';
 export class HttpUtils {
 
     public static getUrlFromProperties(){
+        // return Properties.webConfig.address+":"+Properties.webConfig.port;//+"/"+Properties.webConfig.project;
         return Properties.webConfig.address+":"+Properties.webConfig.port+"/"+Properties.webConfig.project;
+    }
+
+    public static getFileUploadUrlFromProperties(){
+        return Properties.fileUploadURL;
+
     }
 
     public static getUrlAddressFromProperties(){
@@ -36,11 +43,21 @@ export class HttpUtils {
         }
     }
 
+    public static getRequestOptions() {
+        let headers = new Headers();
+        //headers.append("Accept", 'application/json');
+        headers.append('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
+        let options = new RequestOptions({
+            headers: headers,
+        });
+        return options;
+    }
+
     //使用以下方法将json进行参数化
     public static toQueryString(obj) {
         let result = [];
         for (let key in obj) {
-            //key = encodeURIComponent(key);
+            key = encodeURIComponent(key); //注释
             let values = obj[key];
             if (values && values.constructor == Array) {
                 let queryValues = [];
@@ -59,8 +76,8 @@ export class HttpUtils {
         if (typeof value == 'undefined') {
             return key;
         }
-        //return key + '=' + encodeURIComponent(value === null ? '' : String(value));
-        return key + '=' + (value === null ? '' : String(value));
+        return key + '=' + encodeURIComponent(value === null ? '' : String(value));  //注释   通过MAS接口
+        //return key + '=' + (value === null ? '' : String(value));
     }
 
 }

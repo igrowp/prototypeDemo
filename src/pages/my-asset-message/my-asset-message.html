@@ -1,144 +1,154 @@
 <ion-header>
     <ion-navbar color="title">
-        <ion-title id="title">资产信息</ion-title>
+        <ion-title class="border-left-white">资产信息</ion-title>
+        <ion-buttons right>
+            <button *ngIf="handleType=='完善资产信息'" ion-button (click)="handleSubmit()" class="btn-submit" color="light">
+                {{handleType}}
+            </button>
+            <button *ngIf="handleType=='提交'" ion-button (click)="handleBack()" class="btn-submit" color="light">
+                    返回
+                </button>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 
 
-<ion-content padding #sele_content>
+<ion-content class="full" class="bg-content">
+    <ion-list *ngIf="handleType=='提交'">
+        <ion-item>
+            <ion-label class="item-head">资产名称：</ion-label>
+            <p class="item-body" item-end>{{fixedAsset.assetName}}</p>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">车牌井号：</ion-label>
+            <input item-end class="item-body input" type="text" [(ngModel)]="fixedAsset.licenseplatWellno" placeholder="请输入">
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">自编号：</ion-label>
+            <input item-end class="item-body input" type="text" [(ngModel)]="fixedAsset.selfNumber" placeholder="请输入">
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">出厂编号：</ion-label>
+            <input item-end class="item-body input" type="text" [(ngModel)]="fixedAsset.manufacturer" placeholder="请输入">
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                资产名称：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.assetName}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">出厂日期：</ion-label>
+            <p class="item-body default" *ngIf="fixedAsset.manufactureDate=='NaN-NaN-NaN'" item-end>选择日期</p>
+            <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" doneText="确定" cancelText="取消" [(ngModel)]="fixedAsset.manufactureDate"></ion-datetime>
+            <!-- <input item-end class="item-body input" *ngIf="fixedAsset.manufactureDate!=null&&fixedAsset.manufactureDate!=''"  type="text" [(ngModel)]="fixedAsset.manufactureDate">
+                <input item-end class="item-body default input" *ngIf="fixedAsset.manufactureDate==null||fixedAsset.manufactureDate==''"  type="text" [(ngModel)]="fixedAsset.manufactureDate" placeholder="请输入"> -->
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">安装地点：</ion-label>
+            <input item-end class="item-body input" type="text" [(ngModel)]="fixedAsset.installLocation" placeholder="请输入">
+        </ion-item>
+        <ion-item>
+                <p class="item-head">上传图片({{photos.length}}/3)：</p>
+                <ion-row>
+                    <ion-col col-4 class="img-content" *ngFor="let item of photos;let i=index">
+                        <img id="imgss" [src]="item" (click)="isDeleteImg(i)" />
+                    </ion-col>
+                    <ion-col col-4 class="img-content" *ngIf="photos.length<3" style="border: 1px dashed #9C9C9C;">
+                        <img class="imgs-add" (click)="add()" src="./assets/imgs/add.png" />
+                    </ion-col>
+                </ion-row>
+            </ion-item>
+    </ion-list>
+    <ion-list *ngIf="handleType=='完善资产信息'">
+        <ion-item>
+            <ion-label class="item-head">资产名称：</ion-label>
+            <p class="item-body" item-end>{{fixedAsset.assetName}}</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                规格型号：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.assetType}}
-            </ion-col>
-        </ion-row>
+        <ion-item>
+            <ion-label class="item-head">车牌井号：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.licenseplatWellno!=null&&fixedAsset.licenseplatWellno!=''" item-end>{{fixedAsset.licenseplatWellno}}</p>
+            <p class="item-body" *ngIf="fixedAsset.licenseplatWellno==null||fixedAsset.licenseplatWellno==''" item-end>无</p>
+        </ion-item>
 
-    </ion-item>
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                车牌井号：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.licenseplatWellno}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">规格型号：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.assetType!=null&&fixedAsset.assetType!=''" item-end>{{fixedAsset.assetType}}</p>
+            <p class="item-body" *ngIf="fixedAsset.assetType==null||fixedAsset.assetType==''" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                出厂日期：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.manufactureDate}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">出厂日期：</ion-label>
+            <p *ngIf="fixedAsset.manufactureDate!='NaN-NaN-NaN'" class="item-body" item-end>{{fixedAsset.manufactureDate}}</p>
+            <p *ngIf="fixedAsset.manufactureDate=='NaN-NaN-NaN'" class="item-body" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                投产日期：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.productionTime}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">投产日期：</ion-label>
+            <p *ngIf="fixedAsset.productionTime!='NaN-NaN-NaN'" class="item-body" item-end>{{fixedAsset.productionTime}}</p>
+            <p *ngIf="fixedAsset.productionTime=='NaN-NaN-NaN'" class="item-body" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                尚可使用月数：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage" *ngIf="fixedAsset.remainingLife!=0">
-                {{fixedAsset.remainingLife}}个月
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage" *ngIf="fixedAsset.remainingLife==0">
-                无
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">尚可使用月数：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.remainingLife!=null&&fixedAsset.remainingLife!=0" item-end>{{fixedAsset.remainingLife}}个月</p>
+            <p class="item-body" *ngIf="fixedAsset.remainingLife==null||fixedAsset.remainingLife==0" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                计量单位：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.unit}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">计量单位：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.unit!=null&&fixedAsset.unit!=''" item-end>{{fixedAsset.unit}}</p>
+            <p class="item-body" *ngIf="fixedAsset.unit==null||fixedAsset.unit==''" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                单台数量：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.singleQuantity}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">单台数量：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.singleQuantity!=null&&fixedAsset.singleQuantity!=''" item-end>{{fixedAsset.singleQuantity}}</p>
+            <p class="item-body" *ngIf="fixedAsset.singleQuantity==null||fixedAsset.singleQuantity==''" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                复合数量：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.complexQuantity}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">复合数量：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.complexQuantity!=null&&fixedAsset.complexQuantity!=''" item-end>{{fixedAsset.complexQuantity}}</p>
+            <p class="item-body" *ngIf="fixedAsset.complexQuantity==null||fixedAsset.complexQuantity==''" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                产权证号:
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.certificateNumber}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">产权证号：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.certificateNumber!=null&&fixedAsset.certificateNumber!=''" item-end>{{fixedAsset.certificateNumber}}</p>
+            <p class="item-body" *ngIf="fixedAsset.certificateNumber==null||fixedAsset.certificateNumber==''" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                资产原值：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.originalValue}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">资产原值（元）：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.originalValue!=null&&fixedAsset.originalValue!=''" item-end>￥{{fixedAsset.originalValue}}</p>
+            <p class="item-body" *ngIf="fixedAsset.originalValue==null||fixedAsset.originalValue==''" item-end>无</p>
+        </ion-item>
 
-    <ion-item>
-        <ion-row>
-            <ion-col col-6 id="th" class="fixedMessage">
-                资产净值：
-            </ion-col>
-            <ion-col col-6 id="td" class="fixedMessage">
-                {{fixedAsset.netWorth}}
-            </ion-col>
-        </ion-row>
-    </ion-item>
+        <ion-item>
+            <ion-label class="item-head">资产净值（元）：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.netWorth!=null&&fixedAsset.netWorth!=''" item-end>￥{{fixedAsset.netWorth}}</p>
+            <p class="item-body" *ngIf="fixedAsset.netWorth==null||fixedAsset.netWorth==''" item-end>无</p>
+        </ion-item>
+    </ion-list>
+    
 </ion-content>
+<ion-footer>
+    <ion-buttons start>
+        <ion-row *ngIf="handleType=='完善资产信息'">
+            <ion-col col-6>
+                <button ion-button block (click)="handleIdle()">
+                    资产闲置
+                </button>
+            </ion-col>
+            <ion-col col-6>
+                <button ion-button block (click)="handleScrap()">
+                    资产报废
+                </button>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngIf="handleType=='提交'">
+                <ion-col>
+                    <button ion-button block (click)="handleSubmit()">
+                        {{handleType}}
+                    </button>
+                </ion-col>
+            </ion-row>
+    </ion-buttons>
+</ion-footer>

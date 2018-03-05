@@ -1,7 +1,8 @@
-import { AlertController } from 'ionic-angular';
+import { AlertController, LoadingController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { ToastController } from 'ionic-angular';
 import 'rxjs/add/operator/map';
+import { LoadingOptions } from 'ionic-angular/components/loading/loading-options';
 declare let ReadRFID: any;
 
 
@@ -11,7 +12,25 @@ export class NoticeService {
     static TOAST_POS_MIDDLE: string = 'middle';
 
     constructor(private toastCtrl: ToastController,
+        private loadingCtrl:LoadingController,
         private alertCtrl: AlertController) {
+    }
+
+
+    /**
+     * 加载框
+     * @param content 
+     * @param duration 
+     */
+    showIonicLoading(content:string,duration?:number){
+        // let options:LoadingOptions;
+        let loading=this.loadingCtrl.create({
+            content:content,
+            duration:duration,
+            spinner: 'bubbles',
+            //dismissOnPageChange:true,
+          });
+        return loading;
     }
 
     /**
@@ -37,6 +56,7 @@ export class NoticeService {
         this.alertCtrl.create({
             title: titleString,
             subTitle: message + "",
+            cssClass:'alert-alert',
             buttons: ["确定"]
         }).present();
     }
@@ -72,15 +92,15 @@ export class NoticeService {
         let m = '';
 
         if (msg && msg.length > 0) {
-            if (msg.charAt(msg.length - 1) == '!' || msg.charAt(msg.length - 1) == '！') {
+            if (msg.charAt(msg.length - 1) == '!' || msg.charAt(msg.length - 1) == '') {
                 msg = msg.substr(0, msg.length - 1);
             }
         }
 
         if (code == 1) {
-            m = "提示：" + msg + "！";
+            m = "提示：" + msg + "";
         } else {
-            m = "错误" + code + "：" + msg + "！";
+            m = "错误" + code + "：" + msg + "";
         }
 
         return this.showToast(m);

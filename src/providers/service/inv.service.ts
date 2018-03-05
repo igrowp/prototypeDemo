@@ -12,10 +12,9 @@ import { InvWebProvider } from '../web/inv.web.provider';
 export class InvService {
 
   constructor(
-    public alertCtrl:AlertController,
-    private invWebProvider:InvWebProvider,
-    private pubDBProvider:PubDBProvider,
-    private invDBProvider:InvDBProvider,
+    private invWebProvider: InvWebProvider,
+    private pubDBProvider: PubDBProvider,
+    private invDBProvider: InvDBProvider,
   ) {
   }
 
@@ -55,15 +54,15 @@ export class InvService {
    * 判断盘点通知单是否可用
    * @param invNotice 
    */
-  noticeIsAvailable(invNotice):boolean{
-    if(invNotice!=null&&invNotice.state=="ISSUED"){
+  noticeIsAvailable(invNotice): boolean {
+    if (invNotice != null && invNotice.state == "ISSUED") {
       //说明本地有通知，判断一下时间，
-      var timeStart=new Date(invNotice.timeStart);
-      var timeFinish=new Date(invNotice.timeFinish);
-      var timeNow=new Date();
-      var flag=this.isDateBetween(timeNow,timeStart,timeFinish);
+      var timeStart = new Date(invNotice.timeStart);
+      var timeFinish = new Date(invNotice.timeFinish);
+      var timeNow = new Date();
+      var flag = this.isDateBetween(timeNow, timeStart, timeFinish);
       return flag;
-    }else{
+    } else {
       return false;
     }
   }
@@ -71,56 +70,68 @@ export class InvService {
   /**
    * 获取通知,先从本地寻找，如果本地没有则从服务器进行下载
    */
-  getInvNoticeByLeadingOrgOrFromServe(leadingOrg:string){
-    return new Promise<InvNotice>((resolve,reject)=>{
-      if(leadingOrg==null||leadingOrg==""){
+  getInvNoticeByLeadingOrgFromServe(leadingOrg: string, workerNumber: string) {
+    return new Promise<InvNotice>((resolve, reject) => {
+      if (leadingOrg == null || leadingOrg == "") {
         resolve(null);
       }
-      this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice)=>{
-        var data:InvNotice=null;
+      this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice) => {
+        var data: InvNotice = null;
         //说明本地有通知，判断一下时间，
         var flag = this.noticeIsAvailable(dataNotice);
         if (flag) {
           //说明在时间范围内，可以盘点
           data = dataNotice;
         }
-        if(data!=null){
+        if (data != null) {
           resolve(data);
-        }else{
+        } else {
           //说明本地没有通知，向服务器找找
-          this.invWebProvider.getInvNoticeByOrg(leadingOrg).then((noticeServer)=>{
-            var notice:InvNotice=null;
-            var flag1=this.noticeIsAvailable(noticeServer);
-            if(flag1){
-              notice=noticeServer;
+          this.invWebProvider.getInvNoticeByOrg(leadingOrg).then((noticeServer) => {
+            var notice: InvNotice = null;
+            var flag1 = this.noticeIsAvailable(noticeServer);
+            if (flag1) {
+              notice = noticeServer;
             }
-            if(notice==null){
+            if (notice == null) {
               //说明没有存在该通知
               resolve(null);
-            }else{
-              if(notice.timeStart!=null){
-                notice.timeStart=new Date(notice.timeStart);
+            } else {
+              if (notice.timeStart != null) {
+                notice.timeStart = new Date(notice.timeStart);
               }
-              if(notice.timeFinish!=null){
-                notice.timeFinish=new Date(notice.timeFinish);
+              if (notice.timeFinish != null) {
+                notice.timeFinish = new Date(notice.timeFinish);
               }
-              notice.state="ISSUED";
+              notice.state = "ISSUED";
 
               //有该通知，看本地数据库是否存储，没有的话存下去
-              this.invDBProvider.queryFromInvNoticeByLeadingOrg(notice.leadingOrg).then((invNotice)=>{
-              if(invNotice==null){
-                //本地没有存储，存到本地
-                this.invDBProvider.insertToInvNotice(notice).then(()=>{
-                  //清除本地该作业区下已经盘点的数据
-                  // this.invDBProvider.deleteFromInv
-                  // this.invDBProvider.deleteFromInv(notice.leadingOrg).then(()=>{
-                  //   resolve(notice);
-                  // },(error)=>{
-                  //   reject(error);
-                  // })
-                },(error)=>{
-                  reject(error)
-                    });
+              this.invDBProvider.queryFromInvNoticeByLeadingOrg(notice.leadingOrg).then((invNotice) => {
+                if (invNotice == null) {
+                  //本地没有存储，存到本地
+                  this.invDBProvider.insertToInvNotice(notice).then(() => {
+                    resolve(notice);
+                    //对该设备下的资产进行初始化
+                    this.pubDBProvider.queryAssetsFromFixed(workerNumber).then((fixedAssets) => {
+                      if (fixedAssets) {
+                        for (let i = 0; i < fixedAssets.length; i++) {
+                          let fixedAsset = fixedAssets[i];
+                          fixedAsset.isSynchro = 0;
+                          fixedAsset.isChecked = 0;
+                          this.pubDBProvider.updateToFixed(fixedAsset);
+                        }
+                      }
+                    })
+                    //清除本地该作业区下已经盘点的数据
+                    // this.invDBProvider.deleteFromInv
+                    // this.invDBProvider.deleteFromInv(notice.leadingOrg).then(()=>{
+                    //   resolve(notice);
+                    // },(error)=>{
+                    //   reject(error);
+                    // })
+                  }, (error) => {
+                    reject(error)
+                  });
                 } else {
                   //每个作业区只会有一个通知记录
                   if (data != null && invNotice.noticeId != data.noticeId) {
@@ -129,89 +140,44 @@ export class InvService {
                   }
                   this.invDBProvider.updateToInvNotice(notice).then(() => {
                     resolve(notice);
+                    //对该设备下的资产进行初始化
+                    this.pubDBProvider.queryAssetsFromFixed(workerNumber).then((fixedAssets) => {
+                      if (fixedAssets) {
+                        for (let i = 0; i < fixedAssets.length; i++) {
+                          let fixedAsset = fixedAssets[i];
+                          fixedAsset.isSynchro = 0;
+                          fixedAsset.isChecked = 0;
+                          this.pubDBProvider.updateToFixed(fixedAsset);
+                        }
+                      }
+                    })
                   }, (error) => {
                     reject(error);
                   })
                 }
               }, error => {
-              reject(error);
-            })
+                reject(error);
+              })
             }
-          },(error)=>{
-            reject("网络连接失败，请确认当前为内网环境！")
+          }, (error) => {
+            reject("网络连接失败，请确认当前为内网环境")
           })
         }
-      },(error)=>{
-        reject("获取本地通知表失败！")
+      }, (error) => {
+        reject("获取本地通知表失败")
       })
     })
 
   }
 
-
-  // /**
-  //  * 根据所属单位获取盘点通知，服务器会判断当前时间下有没有通知
-  //  * @param leadingOrg 员工所属单位编号
-  //  */
-  // getInvNoticeByOrgFromServe(leadingOrg:string){
-  //   return new Promise<InvNotice>((resolve,reject)=>{
-  //     this.invWebProvider.getInvNoticeByOrg(leadingOrg).then((data)=>{
-  //       if(data==null){
-  //         //说明没有存在该通知
-  //         resolve(data);
-  //       }else{
-  //         if(data.timeStart!=null){
-  //           data.timeStart=new Date(data.timeStart);
-  //         }
-  //         if(data.timeFinish!=null){
-  //           data.timeFinish=new Date(data.timeFinish);
-  //         }
-  //         data.state="ISSUED";
-  //         //有该通知，看本地数据库是否存储，没有的话存下去
-  //         this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((invNotice)=>{
-  //           if(invNotice==null){
-  //             //本地没有存储，存到本地
-  //             this.invDBProvider.insertToInvNotice(data).then(()=>{
-  //               this.invDBProvider.deleteFromInv(leadingOrg).then(()=>{
-  //                 resolve(data);
-  //               },(error)=>{
-  //                 reject(error);
-  //               })
-  //             },(error)=>{
-  //               reject(error);
-  //             });
-  //           }else{
-  //             if(invNotice.noticeId!=data.noticeId){
-  //               //说明不是一个通知了，删除本地数据
-  //               this.invDBProvider.deleteFromInv(leadingOrg).then();
-  //             }
-  //             //每个作业区只会有一个通知记录
-  //             this.invDBProvider.updateToInvNotice(data).then(()=>{
-                
-  //               resolve(data);
-  //             },(error)=>{
-  //               reject(error);
-  //             })
-  //           }
-  //         },error=>{
-  //           reject(error);
-  //         })
-  //       }
-  //     },(err)=>{
-  //       reject(err);
-  //     });
-  //   });
-  // }
-
-
   /**
    * 根据组织编号获取组织信息
    */
-  queryFromOrgInfoByOrgCode(orgCode:string){
-    return new Promise<OrgInfo>((resolve,reject)=>{
-      this.pubDBProvider.queryFromOrgInfoByOrgCode(orgCode).then((data)=>{
+  queryFromOrgInfoByOrgCode(orgCode: string) {
+    return new Promise<OrgInfo>((resolve, reject) => {
+      this.pubDBProvider.queryFromOrgInfoByOrgCode(orgCode).then((data) => {
         resolve(data);
-      },(error)=>{
+      }, (error) => {
         reject(error);
       })
     })
@@ -220,12 +186,12 @@ export class InvService {
   /**
    * 根据通知ID获取通知单
    */
-  queryFromInvNoticeByLeadingOrg(leadingOrg:string){
-    return new Promise<InvNotice>((resolve,reject)=>{
-      if(leadingOrg==null||leadingOrg==""){
+  queryFromInvNoticeByLeadingOrg(leadingOrg: string) {
+    return new Promise<InvNotice>((resolve, reject) => {
+      if (leadingOrg == null || leadingOrg == "") {
         resolve(null);
       }
-      this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice)=>{
+      this.invDBProvider.queryFromInvNoticeByLeadingOrg(leadingOrg).then((dataNotice) => {
         var data: InvNotice = null;
         //说明本地有通知，判断一下时间，
         var flag = this.noticeIsAvailable(dataNotice);
@@ -233,12 +199,12 @@ export class InvService {
           //说明在时间范围内，可以盘点
           data = dataNotice;
         }
-        if(data!=null){
+        if (data != null) {
           resolve(data);
-        }else{
+        } else {
           resolve(null);
         }
-      },(error)=>{
+      }, (error) => {
         reject(error);
       })
     })
@@ -249,11 +215,11 @@ export class InvService {
   /**
    * 从本地数据库中查询所有的组织机构
    */
-  queryListFromOrgInfo(){
-    return new Promise<Array<OrgInfo>>((resolve,reject)=>{
-      this.pubDBProvider.queryListFromOrgInfo(0,0).then((data)=>{
+  queryListFromOrgInfo() {
+    return new Promise<Array<OrgInfo>>((resolve, reject) => {
+      this.pubDBProvider.queryListFromOrgInfo(0, 0).then((data) => {
         resolve(data);
-      },(error)=>{
+      }, (error) => {
         reject(error);
       })
     })
@@ -262,11 +228,11 @@ export class InvService {
   /**
    * 从本地数据库中查询所有的组织机构
    */
-  queryListFromUserSimple(){
-    return new Promise<Array<UserSimple>>((resolve,reject)=>{
-      this.pubDBProvider.queryListFromUserSimple(0,0).then((data)=>{
+  queryListFromUserSimple() {
+    return new Promise<Array<UserSimple>>((resolve, reject) => {
+      this.pubDBProvider.queryListFromUserSimple(0, 0).then((data) => {
         resolve(data);
-      },(error)=>{
+      }, (error) => {
         reject(error);
       })
     })
@@ -315,19 +281,19 @@ export class InvService {
  * @param timeStart 日期
  * @param timeFinish 比较的日期
  */
-  private dateCompare(timeStart:Date,timeFinish:Date){
-    if(timeStart==null||timeFinish==null){
+  private dateCompare(timeStart: Date, timeFinish: Date) {
+    if (timeStart == null || timeFinish == null) {
       //有毛病
       alert("解析日期出错");
       return -2;
     }
-    var start=timeStart.getTime();
-    var finish=timeFinish.getTime();
-    if(finish>start){
+    var start = timeStart.getTime();
+    var finish = timeFinish.getTime();
+    if (finish > start) {
       return 1;
-    }else if(finish==start){
+    } else if (finish == start) {
       return 0;
-    }else{
+    } else {
       return -1;
     }
 
@@ -340,17 +306,17 @@ export class InvService {
  * @param timeFinish 区间结束日期
  * @returns {Number}
  */
-  private isDateBetween(timeNow:Date,timeStart:Date,timeFinish:Date){
-    if(timeNow==null||timeStart==null||timeFinish==null){
+  private isDateBetween(timeNow: Date, timeStart: Date, timeFinish: Date) {
+    if (timeNow == null || timeStart == null || timeFinish == null) {
       //有毛病
       alert("解析日期出错");
       return;
     }
-    var flag=false;
-    var startFlag=(this.dateCompare(timeNow,timeStart)<1);
-    var endFlag=(this.dateCompare(timeNow,timeFinish)>-1);
-    if(startFlag&&endFlag){
-      flag=true;
+    var flag = false;
+    var startFlag = (this.dateCompare(timeNow, timeStart) < 1);
+    var endFlag = (this.dateCompare(timeNow, timeFinish) > -1);
+    if (startFlag && endFlag) {
+      flag = true;
     }
     return flag;
   }
@@ -358,4 +324,3 @@ export class InvService {
   ////////////进行时间判断END///////////////////////
 
 }
- 

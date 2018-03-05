@@ -12,3 +12,111 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+
+//弹出框样式
+.alert-conform{
+    .alert-wrapper{
+        border-radius: 10px;
+    }
+    .alert-head{
+        padding:0px 15px 0px 15px !important;
+        text-align: center;
+    }
+    .alert-title{
+        // text-align: center;
+        padding-top:15px;
+        padding-bottom:15px;
+        border-bottom:3px solid #eee;
+    }
+    .alert-sub-title{
+        padding-top:20px;
+        padding-bottom:30px;
+        font-size:2rem;
+    }
+    .alert-message{
+        padding-bottom: 10px !important;
+    }
+    .alert-button-group{
+        border-top: 2px solid #eee;
+        justify-content: center !important;
+        padding-left:0px;
+        padding-right: 0px;
+
+
+    }
+    .alert-button{
+        width:50%;
+        font-size: 2rem;
+        padding-right:15%;
+        padding-left: 0px;
+        margin:0 auto;
+        border-right:2px solid #eee;
+    }
+}
+
+
+.alert-alert{
+    .alert-wrapper{
+        border-radius: 10px;
+    }
+    .alert-head{
+        padding:0px 15px 0px 15px !important;
+        text-align: center;
+    }
+    .alert-title{
+        // text-align: center;
+        padding-top:15px;
+        padding-bottom:15px;
+        border-bottom:3px solid #eee;
+    }
+    .alert-sub-title{
+        padding-top:20px;
+        padding-bottom:30px;
+        font-size:2rem;
+    }
+    .alert-message{
+        padding-bottom: 10px !important;
+    }
+    .alert-button-group{
+        border-top: 2px solid #eee;
+        justify-content: center !important;
+        padding-left:0px;
+        padding-right: 0px;
+    }
+    .alert-button{
+        width:100%;
+        font-size: 2rem;
+        padding-right:40%;
+        padding-left: 0px;
+        margin:0 auto;
+    }
+
+
+
+}
+
+
+.border-left-white {
+    border-left: 1px solid white;
+}
+//标题栏右侧图标使用
+.border-radius {
+    border-radius: 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+}
+
+.btn-submit {
+    font-size: 1.7rem;
+    margin-right: 15px;
+    border: 1px solid white;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.bg-content{
+    background-color:#F7F6F6;
+}
+
+
+

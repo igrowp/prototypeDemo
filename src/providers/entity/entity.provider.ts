@@ -66,7 +66,7 @@ export class FixedAsset{
 	  rfid;               //RFID码
     recordFlag;         //删除标志      怎么标识   目前0未删，1删了
     isChecked;          //标志位，是否被盘点 ，0未签名，未确认；1未签名，已确认；2已签名，已确认
-    isTrans;            //标志位，是否被转产，0为转产，1代签字，2转产完成
+    isSynchro;          //标志位，是否已同步，0初始状态，1未同步，2已同步
     selfNumber;         //自编码
     assetCode;          //资产编码
     originalValue;      //资产原值

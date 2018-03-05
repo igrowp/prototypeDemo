@@ -19,12 +19,12 @@ import { Checkbox } from 'ionic-angular/components/checkbox/checkbox';
   templateUrl: 'granting.html',
 })
 export class GrantingPage {
-  public checked=true;   //用于已经选择了的资产，显示不可选中状态
+  checked=true;   //用于已经选择了的资产，显示不可选中状态
   public cvtNotice:CvtNonNotice;  //非安设备转产通知
   public isShow:boolean=true;  //是否显示通知单详细信息
   public noticeSubArray:Array<CvtNonNoticeSub>=new Array<CvtNonNoticeSub>(); //用于选择资产的数据记录
   public assets:Array<any>;  //用于存放某一项资产下的资产列表
-  
+
   private assetArray:Array<CvtNonReceive>=new Array<CvtNonReceive>();  //用于数据备份，备份数据库查询得到的数据
   public cvtNonReceives:Array<CvtNonReceive>=new Array<CvtNonReceive>();   //记录某人勾选的所有资产
 
@@ -117,7 +117,7 @@ export class GrantingPage {
    */
   navToBind(item){
     if(this.cvtNonReceives.length==0){
-      this.noticeSer.showIonicAlert("未选定资产！");
+      this.noticeSer.showIonicAlert("未选定资产");
       return;
     }else{
       this.navCtrl.push("GrantingBindPage",{

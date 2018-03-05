@@ -1,75 +1,41 @@
 page-inventory {
-    #title {
-        border-left: 1px solid white;
-    }
-    #title_icon {
-        font-size: 2rem;
-        height: 80%;
-        margin-right: 5%;
-    }
-    #content {
-        background-size: 100%;
-        background-image: url(./../assets/imgs/background.jpg);
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-    #list_content {
-        //height: 100%;
-        padding: 0% 3% 0% 3%;
-    }
-    #list {
-       // height: 100%;
-    }
-    
-    #list_label {
-        padding-left: 3%;
-    }
-    #list-item-head {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #000;
-    }
-    #list-item-bottom {
-        font-size: 1rem;
-        font-weight: 400;
-        margin-top: 1%;
-    }
-    #list_row_right {
-        margin-right: 3%;
-    }
-    #list_row_button {
-        margin-top: 10px;
-        margin-bottom: 10px;
-        font-size: 1.4rem;
-        height: 60%;
-    }
-    #list_row_img {
-        margin-right: 3%;
-        padding-right: 10px;
-        font-size: 3rem;
-    }
-    #noData {
-        padding-top: 20%;
-        text-align: center;
+    .full{
+        height: 100%;
         width: 100%;
     }
-    #noData img {
-        width: 150px;
+    .sub-title{
+        font-weight: 400;
+        margin-top: 3px;
+        color:#9A9A9A;
     }
-    #fab_two {
-        background-image: url(./../assets/imgs/two_blue.png);
-        background-size: 80%;
-        background-repeat: no-repeat;
-        background-position: center center;
+    .no-data{
+        text-align: center;
+        height:300px;
+        width: 300px;
     }
-    #fab_rfid {
-        background-image: url(./../assets/imgs/rfid_2.png);
-        background-size: 80%;
-        background-repeat: no-repeat;
-        background-position: center center;
+    .no-data-img{
+        height: 120px;
+        width:120px;
     }
-    #fab_signature {
+    .center{
+        position: absolute;
+        top:0px;
+        bottom:0px;
+        left:0px;
+        right:0px;
+        margin:auto;
+    }
+    
+    .fab-two {
+        background-image: url(./../assets/imgs/scan.png);
+    }
+    .fab-rfid {
+        background-image: url(./../assets/imgs/RFID_2.png);
+    }
+    .fab-signature {
         background-image: url(./../assets/imgs/signature.png);
+    }
+    .fab-control{
         background-size: 80%;
         background-repeat: no-repeat;
         background-position: center center;

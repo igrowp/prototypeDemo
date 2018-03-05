@@ -6,10 +6,13 @@ export class CvtNonNotice{
     investplanId:string;     //计划表主键
     orgName:string;          //用料单位
     workOrderNumber:string;  //发料单号
-    recipient:string;        //领料人
+    recipient:string;        //领料人员工编号
+    recipientName:string;        //领料人名称
     storeroomKeeper:string;         //库房保管员
     noticeState:string;      //通知单状态
-    recordFlag:number=0;   //逻辑删除标志
+	recordFlag:number=0;   //逻辑删除标志
+	createTime;  //制单日期
+	docNumber;  //计划文号
 }
 
 /**
@@ -32,6 +35,11 @@ export class CvtNonNoticeSub {
 	residualQuantity;  //剩余数量
 	quantity;    //记录每次进入界面时的数量，用于计算已选数量
 }
+interface a{
+
+}
+
+
 
 /**
  * 非安资产领用    

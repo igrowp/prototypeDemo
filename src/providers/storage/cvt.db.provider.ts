@@ -17,17 +17,33 @@ export class CvtDBProvider {
 
     /////////非安转产通知单//////////
     /**
-      * 根据员工编号获取非安设备转产通知单
+      * 根据通知单ID获取非安设备转产通知单
       * @param noticeId 
       */
-    queryFromCvtNonNoticeByWorkerNumber(workerNumber: string) {
+      queryFromCvtNonNoticeByNoticeId(noticeId: string) {
         return new Promise<CvtNonNotice>((resolve, reject) => {
-            this.dbService.executeSql('select * from cvt_noninstall_notice where RECIPIENT=?', [workerNumber])
+            this.dbService.executeSql('select * from cvt_noninstall_notice where NOTICE_ID=?', [noticeId])
                 .then((data) => {
-                    var notice: CvtNonNotice = this._getCvtNonNoticeFromDBResult(data);
+                    var notice = this._getCvtNonNoticeFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
-                    reject("数据库操作：\n查询非安设备通知表失败\n" + error.message);
+                    reject("数据库操作：<br>查询非安设备通知表失败<br>" + error.message);
+                })
+        })
+    }
+
+    /**
+      * 根据员工编号获取非安设备转产通知单
+      * @param workerNumber 
+      */
+    queryFromCvtNonNoticeByWorkerNumber(workerNumber: string) {
+        return new Promise<Array<CvtNonNotice>>((resolve, reject) => {
+            this.dbService.executeSql('select * from cvt_noninstall_notice where RECIPIENT=?', [workerNumber])
+                .then((data) => {
+                    var notice = this._getCvtNonNoticeListFromDBResult(data);
+                    resolve(notice);
+                }, (error) => {
+                    reject("数据库操作：<br>查询非安设备通知表失败<br>" + error.message);
                 })
         })
     }
@@ -38,13 +54,13 @@ export class CvtDBProvider {
      */
     updateToCvtNonNotice(cvtNonNotice: CvtNonNotice) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql("update cvt_noninstall_notice set NOTICE_ID=?,INVESTPLAN_ID=?,ORG_NAME=? ,WORK_ORDER_NUMBER=?, STOREROOM_KEEPER=?,NOTICE_STATE=?,RECORD_FLAG=? where RECIPIENT=?",
-                [cvtNonNotice.noticeId, cvtNonNotice.investplanId, cvtNonNotice.orgName, cvtNonNotice.workOrderNumber, cvtNonNotice.storeroomKeeper, cvtNonNotice.noticeState, cvtNonNotice.recordFlag, cvtNonNotice.recipient])
+            this.dbService.executeSql("update cvt_noninstall_notice set INVESTPLAN_ID=?,ORG_NAME=? ,WORK_ORDER_NUMBER=?, STOREROOM_KEEPER=?,NOTICE_STATE=?,RECORD_FLAG=? where NOTICE_ID=?",
+                [cvtNonNotice.investplanId, cvtNonNotice.orgName, cvtNonNotice.workOrderNumber, cvtNonNotice.storeroomKeeper, cvtNonNotice.noticeState, cvtNonNotice.recordFlag, cvtNonNotice.noticeId])
                 .then((data) => {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新非安设备转产通知单失败\n" + error.message);
+                    reject("数据库操作：<br>更新非安设备转产通知单失败<br>" + error.message);
                 })
         })
     }
@@ -59,7 +75,7 @@ export class CvtDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n删除非安设备转产通知单失败\n" + error.message);
+                    reject("数据库操作：<br>删除非安设备转产通知单失败<br>" + error.message);
                 })
         })
     }
@@ -72,15 +88,17 @@ export class CvtDBProvider {
         return new Promise((resolve, reject) => {
             if (cvtNonNotice == null) {
                 resolve();
-            }
+            }else{
+                
             this.dbService.executeSql('insert into cvt_noninstall_notice values (?,?,?,?,?,?,?,?)',
                 [cvtNonNotice.noticeId, cvtNonNotice.investplanId, cvtNonNotice.orgName, cvtNonNotice.workOrderNumber, cvtNonNotice.recipient,
                 cvtNonNotice.storeroomKeeper, cvtNonNotice.noticeState, cvtNonNotice.recordFlag])
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入非安资产领用通知表失败\n" + error.message);
+                    reject("数据库操作：<br>插入非安资产领用通知表失败<br>" + error.message);
                 })
+            }
         })
     }
 
@@ -100,7 +118,7 @@ export class CvtDBProvider {
                     var notice = this._getCvtNonNoticeSubFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
-                    reject("数据库操作：\n查询非安设备通知表失败\n" + error.message);
+                    reject("数据库操作：<br>查询非安设备通知表失败<br>" + error.message);
                 })
         })
     }
@@ -116,7 +134,7 @@ export class CvtDBProvider {
                     var notice = this._getCvtNonNoticeSubsFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
-                    reject("数据库操作：\n查询非安设备通知表失败\n" + error.message);
+                    reject("数据库操作：<br>查询非安设备通知表失败<br>" + error.message);
                 })
         })
     }
@@ -131,7 +149,7 @@ export class CvtDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n删除非安设备转产通知单附加表失败\n" + error.message);
+                    reject("数据库操作：<br>删除非安设备转产通知单附加表失败<br>" + error.message);
                 })
         })
     }
@@ -148,7 +166,7 @@ export class CvtDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入非安资产领用通知附加表失败\n" + error.message);
+                    reject("数据库操作：<br>插入非安资产领用通知附加表失败<br>" + error.message);
                 })
         })
     }
@@ -176,7 +194,7 @@ export class CvtDBProvider {
                     var notice = this._getCvtNonReceivesFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
-                    reject("数据库操作：\n查询非安转产领用表失败\n" + error.message);
+                    reject("数据库操作：<br>查询非安转产领用表失败<br>" + error.message);
                 })
         })
     }
@@ -185,13 +203,13 @@ export class CvtDBProvider {
       * 获取领用表资产信息
       */
       queryFromCvtNonReceiveByReceiveId(receiveId: string) {
-        return new Promise<CvtNonReceive>((resolve, reject) => {
+        return new Promise<CvtNonReceive>((resolve, reject) =>{
             this.dbService.executeSql('select * from cvt_noninstall_receive where RECEIVE_ID=?', [receiveId])
                 .then((data) => {
                     var notice = this._getCvtNonReceiveFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
-                    reject("数据库操作：\n查询非安转产领用表失败\n" + error.message);
+                    reject("数据库操作：<br>查询非安转产领用表失败<br>" + error.message);
                 })
         })
     }
@@ -208,7 +226,7 @@ export class CvtDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新非安设备转产领用单失败\n" + error.message);
+                    reject("数据库操作：<br>更新非安设备转产领用单失败<br>" + error.message);
                 })
         })
     }
@@ -222,7 +240,7 @@ export class CvtDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n删除非安设备转产领用单失败\n" + error.message);
+                    reject("数据库操作：<br>删除非安设备转产领用单失败<br>" + error.message);
                 })
         })
     }
@@ -237,7 +255,7 @@ export class CvtDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入非安资产领用记录表失败\n" + error.message);
+                    reject("数据库操作：<br>插入非安资产领用记录表失败<br>" + error.message);
                 })
         })
     }
@@ -266,6 +284,29 @@ export class CvtDBProvider {
             cvtNonNotice.recordFlag = data.rows.item(0).RECORD_FLAG;
         }
         return cvtNonNotice;
+    }
+
+    /**
+     * 从数据库查询结果中返回CvtNonNotice的值
+     * @param data 
+     */
+    private _getCvtNonNoticeListFromDBResult(data): Array<CvtNonNotice> {
+        var cvtNonNotices: Array<CvtNonNotice> = new Array<CvtNonNotice>();
+        if (data.rows.length > 0) {
+            for (var i = 0; i < data.rows.length; i++) {
+                var cvtNonNotice = new CvtNonNotice();
+                cvtNonNotice.noticeId = data.rows.item(i).NOTICE_ID;
+                cvtNonNotice.investplanId = data.rows.item(i).INVESTPLAN_ID;
+                cvtNonNotice.orgName = data.rows.item(i).ORG_NAME;
+                cvtNonNotice.workOrderNumber = data.rows.item(i).WORK_ORDER_NUMBER;
+                cvtNonNotice.recipient = data.rows.item(i).RECIPIENT;
+                cvtNonNotice.storeroomKeeper = data.rows.item(i).STOREROOM_KEEPER;
+                cvtNonNotice.noticeState = data.rows.item(i).NOTICE_STATE;
+                cvtNonNotice.recordFlag = data.rows.item(i).RECORD_FLAG;
+                cvtNonNotices.push(cvtNonNotice);
+            }
+        }
+        return cvtNonNotices;
     }
 
     /**

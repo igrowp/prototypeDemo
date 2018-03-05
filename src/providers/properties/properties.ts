@@ -11,8 +11,8 @@ export class Properties {
 
   static webConfig={
     //address:"http://10.88.133.45",
-    //address:"http://11.10.97.76",
-    address:"http://192.168.1.33",
+    address:"http://11.10.97.76",
+    //address:"http://192.168.1.33",
     port:8080+"",
     project:"eaam-app",
   }
@@ -23,5 +23,10 @@ export class Properties {
     port:8080+"",
     project:"eaam-app",
   }
+
+  /**
+   * 文件上传地址
+   */
+  static fileUploadURL="http://11.10.97.76:8080/eaam-app";
 
 }

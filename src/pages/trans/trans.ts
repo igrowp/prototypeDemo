@@ -1,9 +1,11 @@
-import { CvtNonNotice, CvtNonNoticeSub } from './../../providers/entity/cvt.entity.provider';
+import { LoginService } from './../../providers/service/login.service';
 import { CvtService } from './../../providers/service/cvt.service';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Slides } from 'ionic-angular/components/slides/slides';
-import { AlertController } from 'ionic-angular/components/alert/alert-controller';
+import { CvtNonNotice } from '../../providers/entity/cvt.entity.provider';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { NoticeService } from '../../providers/service/notice.service';
+import { PubConstant } from '../../providers/entity/constant.provider';
 
 /**
  * Generated class for the TransPage page.
@@ -19,126 +21,48 @@ import { AlertController } from 'ionic-angular/components/alert/alert-controller
   templateUrl: 'trans.html',
 })
 export class TransPage {
-  public dataTable: Array<CvtNonNoticeSub> = new Array<CvtNonNoticeSub>();
-  public cvtNotice:CvtNonNotice;
-  public workerType: number = 1; //员工类型，0代表普通员工，1代表领用人
-  public isShow=false;
-  public custodian;
+  public listConvert:Array<CvtNonNotice>=new Array<CvtNonNotice>();
+  public listGranting:Array<CvtNonNotice>=new Array<CvtNonNotice>();
   private workerNumber;
-  public slideActivityIndex=1;
-  public slideSize=0;
-  private workInOrg;
-  @ViewChild(Slides) slides: Slides;
+  private userName;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
-    public cvtService: CvtService,
-    private alertCtrl:AlertController,) {
-    this.cvtNotice = navParams.get("cvtNotice");
-    this.custodian=navParams.get("custodian");
-    this.workInOrg=navParams.get("workInOrg");
-    this.workerNumber=navParams.get("workerNumber");
-    console.log(this.cvtNotice.noticeId);
-    
-
-  }
-
-  ionViewDidLoad() {
-    this.cvtService.getCvtNoticeSubByNoticeId(this.cvtNotice.noticeId).then((data) => {
-      console.log(data);
-      this.dataTable = data;
-      this.slideSize=data.length;
-      
-      // if (this.fixedAssets.length == 0) {
-      //   //没有得到数据，说明不是领用人，一条一条插入
-      //   this.workerType = 0;
-      // } else {
-      //   //领用人
-      //   this.fixedAssets = fixedAssets;
-      //   console.log(this.fixedAssets);
-      //   this.workerType = 1;
-      // }
-    })
-  }
-  //点击详情
-  handleDetail(noticeSub){
-  //   this.convertService.getCvtAssetByAssetName(noticeSub.assetName,noticeSub.purchasingId,this.workInOrg).then((data)=>{
-  //     console.log(data);
-  //     console.log(noticeSub);
-  //     this.navCtrl.push("ConvertNonDetailPage",{
-  //       fixedAssets:data,
-  //       CvtNonNoticeSub:noticeSub
-  //     })
-  //     // this.modalCtrl.create("ConvertNonDetailPage",{
-  //     //   fixedAssets:data,
-  //     //   CvtNonNoticeSub:noticeSub
-  //     // }).present();
-  //   })
-  }
-
-  //签名确认
-  handleSure(){
-    this.showSelect();
+  constructor(public navCtrl: NavController,
+    private loginService:LoginService,
+    private barcodeScanner:BarcodeScanner,
+    private navParams: NavParams,
+    private noticeService:NoticeService,) {
+      this.listConvert=navParams.get("listConvert");
+      this.listGranting=navParams.get("listGranting");
+      this.workerNumber=this.navParams.get("workerNumber");
+      this.userName=this.navParams.get("userName");
   }
 
 
-  showSelect(){
-    this.alertCtrl.create({
-      title:'提示',
-      subTitle:'是否再次发放？',
-      buttons:[
-        // {
-        //   text:'取消',
-        //   role:'concel'
-        // },
-        {
-          text:'否',
-          handler:data=>{
-            this.navCtrl.push("SignaturePage",{
-              signatureType:"convert",
-              cvtNotice:this.cvtNotice,
-              workerType:2,
-              workInOrg:this.workInOrg,
-              workerNumber:this.workerNumber
-            });
-          }
-        },
-        {
-          text:'是',
-          handler:data=>{
-            this.navCtrl.push("SignaturePage",{
-              signatureType:"convert",
-              cvtNotice:this.cvtNotice,
-              workerType:1,
-              workInOrg:this.workInOrg,
-              workerNumber:this.workerNumber,
-              userName:this.custodian
-            });
-          }
-        }
-      ]
-    }).present();
+  navTo(cvtNotice:CvtNonNotice){
+    if (cvtNotice != null && cvtNotice.noticeState == "ISSUED") {
+      //处于领用状态
+      this.navCtrl.push('ConvertPage', {
+        workerNumber: this.userName,
+        cvtNotice: cvtNotice,
+        custodian: this.userName,
+      });
+    } else if (cvtNotice != null && cvtNotice.noticeState == "GRANTING") {
+      //处于发放状态
+      this.navCtrl.push("GrantingPage", {
+        cvtNonNotice: cvtNotice,
+        userName: this.userName,
+      });
+    } else {  //notice==null  统一进入到二维码界面
+      //没有资产通知，说明1.领用人没有领用通知，2.为资产保管人
+      this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_USER_ID).then((userId) => {
+        this.barcodeScanner.encode(this.barcodeScanner.Encode.TEXT_TYPE, userId).then((data) => {
+          //进入页面
+        }, error => {
+          this.noticeService.showIonicAlert(error.message);
+        })
+      }, error => this.noticeService.showIonicAlert(error))
+    }
 
   }
 
-
-  /////////////轮播图方法///////////////
-  //点击详情
-  // handleDetail(){
-  //   let activeIndex=this.slides.getActiveIndex();
-  //   let noticeSub=this.dataTable[activeIndex];
-  //   this.convertService.getCvtAssetByAssetName(noticeSub.specModel,noticeSub.purchasingId,this.workInOrg).then((data)=>{
-  //     console.log(data);
-  //     this.modalCtrl.create("ConvertNonDetailPage",{
-  //       fixedAssets:data
-  //     }).present();
-  //   })
-  // }
-  // //显示当前页签
-  // handleSlideChanged(){
-  //   let currentIndex = this.slides.getActiveIndex()+1;
-  //   if(currentIndex>this.slideSize){
-  //     currentIndex=this.slideSize;
-  //   }
-  //   this.slideActivityIndex=currentIndex;
-  // }
 }

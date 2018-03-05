@@ -1,0 +1,67 @@
+<!--
+  Generated template for the ProcessDetailPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <ion-navbar color="title">
+      <ion-title class="border-left-white">资产发放通知单</ion-title>
+      <ion-buttons right>
+          <button ion-button (click)="handleApprove()" class="btn-submit" color="light">
+                  审批
+              </button>
+      </ion-buttons>
+    </ion-navbar>
+  </ion-header>
+  
+  
+  <ion-content class="bg-content">
+    <ion-list>
+      <ion-list-header>
+        当前步骤：
+      </ion-list-header>
+      <ion-item>
+          <ion-label class="item-head">发料单号：</ion-label>
+          <p class="item-body" item-end>{{cvtNonNotice.workOrderNumber}}</p>
+      </ion-item>
+      <ion-item>
+          <ion-label class="item-head">制单日期：</ion-label>
+          <p class="item-body" item-end>{{cvtNonNotice.createTime}}</p>
+      </ion-item>
+
+      <ion-item>
+          <ion-label class="item-head">用料单位：</ion-label>
+          <p class="item-body" item-end>{{cvtNonNotice.orgName}}</p>
+      </ion-item>
+
+      <ion-item>
+          <ion-label class="item-head">领料人：</ion-label>
+          <p class="item-body" item-end>{{cvtNonNotice.recipientName}}</p>
+      </ion-item>
+
+      
+      <ion-item>
+          <ion-label class="item-head">计划文号：</ion-label>
+          <p class="item-body" item-end>{{cvtNonNotice.docNumber}}</p>
+      </ion-item>
+
+      <ion-item>
+          <ion-label class="item-head">金额合计：</ion-label>
+          <p class="item-body" item-end>待商定</p>
+      </ion-item>
+    </ion-list> 
+    <ion-list>
+      <ion-item-divider>
+          资产信息列表
+      </ion-item-divider>
+      <ion-item *ngFor="let item of cvtNonNoticeSubList;let i=index">
+          <ion-label>
+                <h2>{{item.assetName}}[{{item.specModel}}]</h2>
+                <p>数量：{{item.sentQuantity}}</p>
+          </ion-label>
+          <button ion-button item-end (click)="handleDetail(item)">详情</button>
+          </ion-item>
+    </ion-list>
+
+</ion-content>

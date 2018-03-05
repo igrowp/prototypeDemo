@@ -16,6 +16,7 @@ export class InvDBProvider {
         })
     }
 
+
     /////////盘点通知单操作//////////
 
     /**
@@ -29,7 +30,7 @@ export class InvDBProvider {
                     var invNotice: InvNotice = this._getInvNoticeFromDBResult(data);
                     resolve(invNotice);
                 }, (error) => {
-                    reject("数据库操作：\n查询盘点通知表失败\n" + error.message);
+                    reject("数据库操作：<br>查询盘点通知表失败<br>" + error.message);
                 })
         })
     }
@@ -46,7 +47,7 @@ export class InvDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新盘点通知表失败\n" + error.message);
+                    reject("数据库操作：<br>更新盘点通知表失败<br>" + error.message);
                 })
         })
     }
@@ -61,7 +62,7 @@ export class InvDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入盘点通知表失败\n" + error.message);
+                    reject("数据库操作：<br>插入盘点通知表失败<br>" + error.message);
                 })
         })
     }
@@ -77,7 +78,7 @@ export class InvDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n删除资产盘点通知单失败\n"+error.message);
+                    reject("数据库操作：<br>删除资产盘点通知单失败<br>"+error.message);
                 })
         })
     }
@@ -96,14 +97,14 @@ export class InvDBProvider {
     /**
      * 从资产盘点记录中获取所有资产信息
      */
-    queryAssetsFromInv(preWorkerNumber: string, isSignatured: string) {
+    queryAssetsFromInv(preWorkerNumber: string, isSignatured: number) {
         return new Promise<Array<InvAsset>>((resolve, reject) => {
             this.dbService.executeSql("select * from inv_asset_record where PRE_WORKER_NUMBER=? AND IS_SIGNATURED=?", [preWorkerNumber, isSignatured])
                 .then((data) => {
                     var assets: Array<InvAsset> = this._getInvAssetsFromDBResult(data);
                     resolve(assets);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询盘点记录表失败\n"+error.message);
+                    reject("数据库操作：<br>查询盘点记录表失败<br>"+error.message);
                 });
         })
     }
@@ -119,7 +120,7 @@ export class InvDBProvider {
                     var asset = this._getInvAssetFromDBResult(data);
                     resolve(asset);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询资产信息失败\n"+error.message);
+                    reject("数据库操作：<br>查询资产信息失败<br>"+error.message);
                 });
         })
     }
@@ -141,7 +142,7 @@ export class InvDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新盘点记录信息表失败\n"+error.message);
+                    reject("数据库操作：<br>更新盘点记录信息表失败<br>"+error.message);
                 })
         })
     }
@@ -164,13 +165,13 @@ export class InvDBProvider {
                                     }
                                 })
                                 .catch((error) => {
-                                    reject("数据库操作：\n删除资产盘点记录数据失败\n" + error.message);
+                                    reject("数据库操作：<br>删除资产盘点记录数据失败<br>" + error.message);
                                 })
                         }
                     }
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n查询员工信息失败\n" + error.message);
+                    reject("数据库操作：<br>查询员工信息失败<br>" + error.message);
                 })
         })
     }
@@ -186,7 +187,7 @@ export class InvDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n插入资产盘带你记录表失败\n"+error.message);
+                    reject("数据库操作：<br>插入资产盘带你记录表失败<br>"+error.message);
                 })
         })
     }

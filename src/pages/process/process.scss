@@ -1,0 +1,28 @@
+page-process {
+    ion-list{
+        padding-top:20px;
+    }
+    
+    .center{
+        text-align: center;
+    }
+
+    .no-data{
+        text-align: center;
+        height:300px;
+        width: 300px;
+    }
+    .no-data-img{
+        height: 120px;
+        width:120px;
+    }
+    .center-absolute{
+        position: absolute;
+        top:0px;
+        bottom:0px;
+        left:0px;
+        right:0px;
+        margin:auto;
+    }
+
+}

@@ -34,16 +34,16 @@ export class PubDBProvider {
     /**
          * 获取所有固定资产台账中的数据
          */
-    queryAssetsFromFixed(workerNumber: string, isChecked: string) {
+    queryAssetsFromFixed(workerNumber: string, isSynchro?: number) {
         let sql: string = "";
         let params: any = [];
-        if (isChecked == "-1") {
+        if (isSynchro==null||isSynchro == -1) {
             //搜索全部
             sql = "select * from asset_account_fixed where WORKER_NUMBER=?";
             params = [workerNumber];
         } else {
-            sql = "select * from asset_account_fixed where WORKER_NUMBER=? and IS_CHECKED=?";
-            params = [workerNumber, isChecked];
+            sql = "select * from asset_account_fixed where WORKER_NUMBER=? and IS_SYNCHRO=?";
+            params = [workerNumber, isSynchro];
         }
         return new Promise<Array<FixedAsset>>((resolve, reject) => {
             this.dbService.executeSql(sql, params)
@@ -51,7 +51,7 @@ export class PubDBProvider {
                     var assets: Array<FixedAsset> = this._getFixedAssetsFromDBResult(data)
                     resolve(assets);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>查询固定资产台账表失败<br>" + error.message);
                 });
         })
     }
@@ -70,7 +70,7 @@ export class PubDBProvider {
                     var assets: Array<FixedAsset> = this._getFixedAssetsFromDBResult(data);
                     resolve(assets);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>查询固定资产台账表失败<br>" + error.message);
                 });
         })
     }
@@ -87,7 +87,7 @@ export class PubDBProvider {
                     var asset: FixedAsset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }, (error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>查询固定资产台账表失败<br>" + error.message);
                 })
         })
     }
@@ -103,7 +103,7 @@ export class PubDBProvider {
                     var asset: FixedAsset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }, (error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>查询固定资产台账表失败<br>" + error.message);
                 })
         })
     }
@@ -115,7 +115,7 @@ export class PubDBProvider {
                     var asset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>查询固定资产台账表失败<br>" + error.message);
                 });
         });
     }
@@ -131,7 +131,7 @@ export class PubDBProvider {
                     var asset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
                 }).catch((error) => {
-                    reject("数据库操作：\n查询固定资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>查询固定资产台账表失败<br>" + error.message);
                 });
         });
     }
@@ -151,7 +151,7 @@ export class PubDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n插入固定资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>插入固定资产台账表失败<br>" + error.message);
                 })
         })
     }
@@ -162,12 +162,16 @@ export class PubDBProvider {
      */
     updateToFixed(asset: FixedAsset) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql("update asset_account_fixed set TECH_STATUS=?,USE_STATE=?,QUANTITY=?,INSTALL_LOCATION=?,TWO_DIMENSION_CODE=?,IS_CHECKED=?,IS_TRANS=?,SECURITY_STATE=?,RFID=?,CUSTODIAN=?,WORKER_NUMBER=?,CHANGE_CUSTODIAN=?,CHANGE_WORKER_NUMBER=? where ASSET_ID=?", [asset.techStatus, asset.useState, asset.quantity, asset.installLocation, asset.twoDimensionCode, asset.isChecked, asset.isTrans, asset.securityState, asset.rfid, asset.custodian, asset.workerNumber, asset.changeCustodian, asset.changeWorkerNumber, asset.assetId])
+            this.dbService.executeSql(`update asset_account_fixed 
+                                       set TECH_STATUS=?,USE_STATE=?,QUANTITY=?,INSTALL_LOCATION=?,TWO_DIMENSION_CODE=?,IS_CHECKED=?,IS_SYNCHRO=?,SECURITY_STATE=?,RFID=?,CUSTODIAN=?,WORKER_NUMBER=?,CHANGE_CUSTODIAN=?,CHANGE_WORKER_NUMBER=?,
+                                       LICENSEPLAT_WELLNO=?,SELF_NUMBER=?,MANUFACTURER=?,MANUFACTURE_DATE=?,INSTALL_LOCATION=? where ASSET_ID=?`,
+                                        [asset.techStatus, asset.useState, asset.quantity, asset.installLocation, asset.twoDimensionCode, asset.isChecked, asset.isSynchro, asset.securityState, asset.rfid, asset.custodian, asset.workerNumber, asset.changeCustodian, asset.changeWorkerNumber,
+                                            asset.licenseplatWellno,asset.selfNumber,asset.manufacturer,asset.manufactureDate,asset.installLocation, asset.assetId])
                 .then((data) => {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新资产台账表失败\n" + error.message);
+                    reject("数据库操作：<br>更新资产台账表失败<br>" + error.message);
                 })
         })
 
@@ -188,7 +192,7 @@ export class PubDBProvider {
                     var orgInfo: OrgInfo = this._getOrgInfoFromDBResult(data);
                     resolve(orgInfo);
                 }, (error) => {
-                    reject("数据库操作：\n查询组织机构表失败\n" + error.message);
+                    reject("数据库操作：<br>查询组织机构表失败<br>" + error.message);
                 })
         })
     }
@@ -204,7 +208,7 @@ export class PubDBProvider {
                     var orgInfo: OrgInfo = this._getOrgInfoFromDBResult(data);
                     resolve(orgInfo);
                 }, (error) => {
-                    reject("数据库操作：\n查询组织机构表失败\n" + error.message);
+                    reject("数据库操作：<br>查询组织机构表失败<br>" + error.message);
                 })
         })
     }
@@ -233,7 +237,7 @@ export class PubDBProvider {
                     var orgInfoes: Array<OrgInfo> = this._getOrgInfosFromDBResult(data);
                     resolve(orgInfoes);
                 }, (error) => {
-                    reject("数据库操作：\n查询组织结构表失败\n" + error.message);
+                    reject("数据库操作：<br>查询组织结构表失败<br>" + error.message);
                 })
         })
     }
@@ -249,7 +253,7 @@ export class PubDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新组织机构表失败\n" + error.message);
+                    reject("数据库操作：<br>更新组织机构表失败<br>" + error.message);
                 })
         })
     }
@@ -264,7 +268,7 @@ export class PubDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入组织结构表失败\n" + error.message);
+                    reject("数据库操作：<br>插入组织结构表失败<br>" + error.message);
                 })
         })
     }
@@ -284,7 +288,7 @@ export class PubDBProvider {
                     var userSimple: UserSimple = this._getUserSimpleFromDBResult(data);
                     resolve(userSimple);
                 }, (error) => {
-                    reject("数据库操作：\n查询员工精简表失败\n" + error.message);
+                    reject("数据库操作：<br>查询员工精简表失败<br>" + error.message);
                 })
         })
     }
@@ -312,7 +316,23 @@ export class PubDBProvider {
                     var userSimples: Array<UserSimple> = this._getUserSimplesFromDBResult(data);
                     resolve(userSimples);
                 }, (error) => {
-                    reject("数据库操作：\n查询员工精简表失败\n" + error.message);
+                    reject("数据库操作：<br>查询员工精简表失败<br>" + error.message);
+                })
+        })
+    }
+    
+    /**
+      * 更新数据到员工精简表中
+      * @param UserSimple 
+      */
+      updateToUserSimple(userSimple: UserSimple) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql("update sys_person_info_simple set WORKER_NUMBER=?,USER_NAME=?,WORK_IN_ORG=? where USER_ID=?", [userSimple.workerNumber,userSimple.userName,userSimple.workInOrg,userSimple.userId])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>更新员工精简表失败<br>" + error.message);
                 })
         })
     }
@@ -327,7 +347,7 @@ export class PubDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入员工信息表失败\n" + error.message);
+                    reject("数据库操作：<br>插入员工信息表失败<br>" + error.message);
                 })
         })
     }
@@ -350,7 +370,7 @@ export class PubDBProvider {
                     var dict = this._getDictFromDBResult(data);
                     resolve(dict);
                 }, (error) => {
-                    reject("数据库操作：\n查询数据字典表失败\n" + error.message);
+                    reject("数据库操作：<br>查询数据字典表失败<br>" + error.message);
                 })
         })
     }
@@ -378,7 +398,7 @@ export class PubDBProvider {
                     var userSimples: Array<Dict> = this._getDictListFromDBResult(data);
                     resolve(userSimples);
                 }, (error) => {
-                    reject("数据库操作：\n查询数据字典表失败\n" + error.message);
+                    reject("数据库操作：<br>查询数据字典表失败<br>" + error.message);
                 })
         })
     }
@@ -393,7 +413,7 @@ export class PubDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入数据字典明细表失败\n" + error.message);
+                    reject("数据库操作：<br>插入数据字典明细表失败<br>" + error.message);
                 })
         })
     }
@@ -412,7 +432,7 @@ export class PubDBProvider {
                     var dictDetail = this._getDictDetailFromDBResult(data);
                     resolve(dictDetail);
                 }, (error) => {
-                    reject("数据库操作：\n查询数据字典明细表失败\n" + error.message);
+                    reject("数据库操作：<br>查询数据字典明细表失败<br>" + error.message);
                 })
         })
     }
@@ -428,7 +448,7 @@ export class PubDBProvider {
                     var dictDetails = this._getDictDetailListFromDBResult(data);
                     resolve(dictDetails);
                 }, (error) => {
-                    reject("数据库操作：\n查询数据字典明细表失败\n" + error.message);
+                    reject("数据库操作：<br>查询数据字典明细表失败<br>" + error.message);
                 })
         })
     }
@@ -456,7 +476,24 @@ export class PubDBProvider {
                     var dictDetail: Array<DictDetail> = this._getDictDetailListFromDBResult(data);
                     resolve(dictDetail);
                 }, (error) => {
-                    reject("数据库操作：\n查询数据字典明细表失败\n" + error.message);
+                    reject("数据库操作：<br>查询数据字典明细表失败<br>" + error.message);
+                })
+        })
+    }
+
+    /**
+      * 更新数据到字典明细表中
+      * @param UserSimple 
+      */
+      updateToDictDetail(dictDetail: DictDetail) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql("update sys_dict_detail set CATEGORY_CODE=?,DICT_CODE=?,DICT_CODE_DESC=?,CODE_TYPE=?,CODE_SIZE=? where DICT_DETAIL_ID=?",
+             [dictDetail.categoryCode,dictDetail.dictCode,dictDetail.dictCodeDesc,dictDetail.codeType,dictDetail.codeSize,dictDetail.dictDetailId])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>更新字典明细表失败<br>" + error.message);
                 })
         })
     }
@@ -473,7 +510,7 @@ export class PubDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入数据字典明细表失败\n" + error.message);
+                    reject("数据库操作：<br>插入数据字典明细表失败<br>" + error.message);
                 })
         })
     }
@@ -497,7 +534,7 @@ export class PubDBProvider {
                     var changeRecord: ChangeRecord = this._getChangeRecordFromDBResult(data);
                     resolve(changeRecord);
                 }, (error) => {
-                    reject("数据库操作：\n查询日志表失败\n" + error.message);
+                    reject("数据库操作：<br>查询日志表失败<br>" + error.message);
                 })
         })
     }
@@ -513,7 +550,7 @@ export class PubDBProvider {
                     var changeRecords: Array<ChangeRecord> = this._getChangeRecordsFromDBResult(data);
                     resolve(changeRecords);
                 }, (error) => {
-                    reject("数据库操作：\n查询日志表失败\n" + error.message);
+                    reject("数据库操作：<br>查询日志表失败<br>" + error.message);
                 })
         })
     }
@@ -529,7 +566,7 @@ export class PubDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新日志表失败\n" + error.message);
+                    reject("数据库操作：<br>更新日志表失败<br>" + error.message);
                 })
         })
     }
@@ -545,7 +582,7 @@ export class PubDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n删除日志表失败\n" + error.message);
+                    reject("数据库操作：<br>删除日志表失败<br>" + error.message);
                 })
         })
     }
@@ -560,7 +597,7 @@ export class PubDBProvider {
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
-                    reject("数据库操作：\n插入日志表失败\n" + error.message);
+                    reject("数据库操作：<br>插入日志表失败<br>" + error.message);
                 })
         })
     }
@@ -780,7 +817,7 @@ export class PubDBProvider {
                 asset.rfid = data.rows.item(i).RFID;
                 asset.recordFlag = data.rows.item(i).RECORD_FLAG;
                 asset.isChecked = data.rows.item(i).IS_CHECKED;
-                asset.isTrans = data.rows.item(i).IS_TRANS;
+                asset.isSynchro = data.rows.item(i).IS_SYNCHRO;
                 asset.selfNumber = data.rows.item(i).SELF_NUMBER;
                 asset.assetCode = data.rows.item(i).ASSET_CODE;
                 asset.originalValue = data.rows.item(i).ORIGINAL_VALUE;
@@ -837,7 +874,7 @@ export class PubDBProvider {
             asset.rfid = data.rows.item(0).RFID;
             asset.recordFlag = data.rows.item(0).RECORD_FLAG;
             asset.isChecked = data.rows.item(0).IS_CHECKED;
-            asset.isTrans = data.rows.item(0).IS_TRANS;
+            asset.isSynchro = data.rows.item(0).IS_SYNCHRO;
             asset.selfNumber = data.rows.item(0).SELF_NUMBER;
             asset.assetCode = data.rows.item(0).ASSET_CODE;
             asset.originalValue = data.rows.item(0).ORIGINAL_VALUE;

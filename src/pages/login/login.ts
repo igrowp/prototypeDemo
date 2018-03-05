@@ -1,3 +1,4 @@
+import { PubConstant } from './../../providers/entity/constant.provider';
 import { LoginWebProvider } from './../../providers/web/login.web.provider';
 import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
 import { HttpUtils } from './../../providers/utils/httpUtils';
@@ -46,18 +47,18 @@ export class LoginPage {
       platform.ready().then(() => {
           this.backButtonService.registerBackButtonAction(null);
       });
-      this.loginService.getFromStorage("account").then((val)=>{
+      this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_ACCOUNT).then((val)=>{
         if(val!=null&&val!=""){
           this.account=val;
           this.accountCopy=val;
-          this.userPwd=this.loginService.getFromStorage("password").then((val)=>{
+          this.userPwd=this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_PASSWORD).then((val)=>{
             this.userPwd=val;
           })
         }
       });
   }
   ionViewWillEnter(){
-    this.loginService.getFromStorage("isRemember").then((val)=>{
+    this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_IS_REMEMBER).then((val)=>{
       if(val!=null&&val!=""){
         this.isRemember=val;
       }else{
@@ -100,23 +101,23 @@ export class LoginPage {
           //     this.loginService.setInStorage("isRemember",this.isRemember+"");
           //   }
           // })
-          this.loginService.setInStorage("isRemember",this.isRemember+"");
+          this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_IS_REMEMBER,this.isRemember+"");
 
           // 在本地记录登陆账户信息
-          this.loginService.setInStorage("account", username.value);
-          this.loginService.setInStorage("password", password.value);
-          this.loginService.setInStorage("workerNumber", data.workerNumber);
+          this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_ACCOUNT, username.value);
+          this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_PASSWORD, password.value);
+          this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_WORKER_NUMBER, data.workerNumber);
 
           //获取该员工信息
           loading.setContent('正在获取员工信息...');
           this.loginService.getUserMessageFromServer(data.userId).then((user) => {
-            this.loginService.setInStorage("workForOrg", user.workForOrg);
-            this.loginService.setInStorage("wFOAddress", user.wfoAddress);
-            this.loginService.setInStorage("userName", user.userName);
-            this.loginService.setInStorage("workInOrg",user.workInOrg);
-            this.loginService.setInStorage("userId",user.userId);
-            this.loginService.setInStorage("signIn","true");
-            this.loginService.setInStorage("synchroTime",user.synchroTime);
+            this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_WORK_FOR_ORG, user.workForOrg);
+            this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_WFO_ADDRESS, user.wfoAddress);
+            this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_USER_NAME, user.userName);
+            this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_WORK_IN_ORG,user.workInOrg);
+            this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_USER_ID,user.userId);
+            this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_SIGN_IN,"true");
+            this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_SYNCHRO_TIME,user.synchroTime);
             
             //查看数据库中是否有该员工的资产信息，没有的话从服务器中更新
             this.assetService.queryAssetsFormFixedByPage(2,1,user.workerNumber).then((data)=>{
@@ -174,25 +175,25 @@ export class LoginPage {
           text:'恢复默认值',
           handler:data=>{
             HttpUtils.setDefaultUrlToProperties();
-            this.noticeService.showNativeToast("设置成功！");
+            this.noticeService.showNativeToast("设置成功");
           }
         },
         {
           text: '确定',
           handler: data => {
             if (data.address == "") {
-              this.noticeService.showNativeToast("服务器地址为空！");
+              this.noticeService.showNativeToast("服务器地址为空");
             } else if (data.port == "") {
-              this.noticeService.showNativeToast("服务器端口为空！");
+              this.noticeService.showNativeToast("服务器端口为空");
             } else {
               if (!data.address.includes("http://") && !data.address.includes("https://")) {
                 data.address = "http://" + data.address;
               }
               HttpUtils.setUrlToProperties(data.address, data.port);
               //保存到本地
-              this.loginService.setInStorage("urlAddress", data.address);
-              this.loginService.setInStorage("urlPort", data.port);
-              this.noticeService.showNativeToast("设置成功！");
+              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS, data.address);
+              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT, data.port);
+              this.noticeService.showNativeToast("设置成功");
             }
           }
         }

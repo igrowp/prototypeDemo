@@ -1,12 +1,11 @@
+import { PubConstant } from './../entity/constant.provider';
 import { DBService } from './../storage/db.service';
 import { LoginWebProvider } from './../web/login.web.provider';
 import { AssetWebProvider } from './../web/asset.web.provider';
 import { LoginDBProvider } from './../storage/login.db.provider';
 import { User, UserAccount } from './../entity/entity.provider';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
 import { AlertController, LoadingController } from 'ionic-angular';
-
 import { PubDBProvider } from './../storage/pub.db.provider';
 /*
 提供关于登陆的服务
@@ -14,7 +13,6 @@ import { PubDBProvider } from './../storage/pub.db.provider';
 @Injectable()
 export class LoginService {
   constructor(
-    public alertCtrl:AlertController,
     public loginWebProvider:LoginWebProvider,
     private loginDBProvider:LoginDBProvider,
     private assetWebProvider:AssetWebProvider,
@@ -25,121 +23,152 @@ export class LoginService {
     
   }
 
+  /**
+   * 下载基本的数据
+   */
+  downloadBasicData() {
+    return new Promise((resolve, reject) => {
+      this.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME).then((lastRequestTime) => {
+        this.getAndSaveOrgInfoFromServe(lastRequestTime).then(() => {
+          this.downloadDictIfEmpty().then(() => {
+            this.getAndSaveDictDetailFromServe(lastRequestTime).then(() => {
+              this.getAndSaveUserSimpleFromServe(lastRequestTime).then(() => {
+                //更新完成可以退出了
+                this.getAndSaveCurrentTimeFromServe();
+                resolve();
+              }, (error) => reject(error))
+            }, (error) => reject(error))
+          }, (error) => reject(error))
+        }, (error) => reject(error))
+      })
+    })
+  }
+
 
 
   /////////////数据下载同步////////////////////
   /**
    * 从服务器获取组织机构信息，并保存
    */
-  getAndSaveOrgInfoFromServe(){
-    return new Promise((resolve,reject)=>{
-      this.assetWebProvider.getOrgInfoListFromServe().then((data)=>{
-        for(var i=0;i<data.length;i++){
-          let orgInfo=data[i]
-          this.pubDBProvider.queryFromOrgInfoByOrgId(orgInfo.orgId).then((data1)=>{
-            if(data1==null){
-              //说明本地没有该组织机构信息，插入
-              this.pubDBProvider.insertToOrgInfo(orgInfo).then(()=>{
-                //插入成功
-                if(orgInfo.orgId==data[data.length-1].orgId){
-                  resolve();
-                }
-              },(error)=>{
-                reject(error)
-              })
-            }else{
-              //本地有该组织机构，进行更新
-              this.pubDBProvider.updateToOrgInfo(orgInfo).then(()=>{
-                //更新成功
-                if(orgInfo.orgId==data[data.length-1].orgId){
-                  resolve();
-                }
-              },(error)=>{
-                reject(error)
-              })
-            }
-          })
+  getAndSaveOrgInfoFromServe(lastRequestTime:string){
+    return new Promise((resolve, reject) => {
+      this.assetWebProvider.getOrgInfoListFromServe(lastRequestTime).then((data) => {
+        if (data == null || data.length == 0) {
+          resolve();
+        } else {
+          for (var i = 0; i < data.length; i++) {
+            let orgInfo = data[i]
+            this.pubDBProvider.queryFromOrgInfoByOrgId(orgInfo.orgId).then((data1) => {
+              if (data1 == null) {
+                //说明本地没有该组织机构信息，插入
+                this.pubDBProvider.insertToOrgInfo(orgInfo).then(() => {
+                  //插入成功
+                  if (orgInfo.orgId == data[data.length - 1].orgId) {
+                    resolve();
+                  }
+                }, (error) => {
+                  reject(error)
+                })
+              } else {
+                //本地有该组织机构，进行更新
+                this.pubDBProvider.updateToOrgInfo(orgInfo).then(() => {
+                  //更新成功
+                  if (orgInfo.orgId == data[data.length - 1].orgId) {
+                    resolve();
+                  }
+                }, (error) => {
+                  reject(error)
+                })
+              }
+            })
+          }
         }
       },error=>{
         reject(error);
       });
     });
   }
-  /**
-   * 如果本地组织机构表中没有数据从服务器中下载数据
-   */
-  downloadOrgInfoIfEmpty(){
-    return new Promise((resolve,reject)=>{
-      this.pubDBProvider.queryListFromOrgInfo(1,1).then((data)=>{
-        if(data==null||data.length==0){
-          //说明本地没有员工信息，进行下载
-          this.getAndSaveOrgInfoFromServe().then(()=>{
-            resolve(data);
-          },(error)=>{
-            reject(error);
-          });
-        }else{
-          //有数据就不用再下载了
-          resolve(data);
-        }
-      },(error)=>{
-        reject(error);
-      })
-    })
-  }
+  // /**
+  //  * 如果本地组织机构表中没有数据从服务器中下载数据
+  //  */
+  // downloadOrgInfoIfEmpty(lastRequestTime:string){
+  //   return new Promise((resolve,reject)=>{
+  //     this.pubDBProvider.queryListFromOrgInfo(1,1).then((data)=>{
+  //       if(data==null||data.length==0){
+  //         //说明本地没有员工信息，进行下载
+  //         this.getAndSaveOrgInfoFromServe(lastRequestTime).then(()=>{
+  //           resolve(data);
+  //         },(error)=>{
+  //           reject(error);
+  //         });
+  //       }else{
+  //         //有数据就不用再下载了
+  //         resolve(data);
+  //       }
+  //     },(error)=>{
+  //       reject(error);
+  //     })
+  //   })
+  // }
 
-  /**
-   * 如果本地员工精简表中没有数据从服务器中下载数据
-   */
-  downloadUserSimpleIfEmpty(){
-    return new Promise((resolve,reject)=>{
-      this.pubDBProvider.queryListFromUserSimple(1,1).then((data)=>{
-        if(data==null||data.length==0){
-          //说明本地没有员工信息，进行下载
-          this.getAndSaveUserSimpleFromServe().then(()=>{
-            resolve(data);
-          },(error)=>{
-            reject(error);
-          });
-        }else{
-          //有数据就不用再下载了
-          resolve(data);
-        }
-      },(error)=>{
-        reject(error);
-      })
-    })
-  }
+  // /**
+  //  * 如果本地员工精简表中没有数据从服务器中下载数据
+  //  */
+  // downloadUserSimpleIfEmpty(lastRequestTime:string){
+  //   return new Promise((resolve,reject)=>{
+  //     this.pubDBProvider.queryListFromUserSimple(1,1).then((data)=>{
+  //       if(data==null||data.length==0){
+  //         //说明本地没有员工信息，进行下载
+  //         this.getAndSaveUserSimpleFromServe(lastRequestTime).then(()=>{
+  //           resolve(data);
+  //         },(error)=>{
+  //           reject(error);
+  //         });
+  //       }else{
+  //         //有数据就不用再下载了
+  //         resolve(data);
+  //       }
+  //     },(error)=>{
+  //       reject(error);
+  //     })
+  //   })
+  // }
 
   /**
    * 从服务器获取员工精简信息表，并保存
    */
-  getAndSaveUserSimpleFromServe(){
-    return new Promise((resolve,reject)=>{
-      this.assetWebProvider.getUserSimpleListFromServe().then((data)=>{
-        for(var i=0;i<data.length;i++){
-          let userSimple=data[i];
-          this.pubDBProvider.queryFromUserSimpleByUserId(userSimple.userId).then((userName)=>{
-            if(userName==null){
-              this.pubDBProvider.insertToUserSimple(userSimple).then(()=>{
-                //插入成功
-                if(userSimple.workerNumber==data[data.length-1].workerNumber){
-                  //说明执行成功了
-                  resolve();
-                }
-              },(error)=>{
-                reject("插入简单员工表失败："+userSimple.workerNumber+error)
-              })
-            }else{
-              //已经有该成员，退出
-              if(userSimple.workerNumber==data[data.length-1].workerNumber){
-                //说明执行成功了
-                resolve();
+  getAndSaveUserSimpleFromServe(lastRequestTime:string){
+    return new Promise((resolve, reject) => {
+      this.assetWebProvider.getUserSimpleListFromServe(lastRequestTime).then((data) => {
+        if (data == null || data.length == 0) {
+          resolve();
+        } else {
+          for (var i = 0; i < data.length; i++) {
+            let userSimple = data[i];
+            this.pubDBProvider.queryFromUserSimpleByUserId(userSimple.userId).then((userName) => {
+              if (userName == null) {
+                this.pubDBProvider.insertToUserSimple(userSimple).then(() => {
+                  //插入成功
+                  if (userSimple.workerNumber == data[data.length - 1].workerNumber) {
+                    //说明执行成功了
+                    resolve();
+                  }
+                }, (error) => {
+                  reject("插入简单员工表失败：" + userSimple.workerNumber + error)
+                })
+              } else {
+                //已经有该成员，退出
+                this.pubDBProvider.updateToUserSimple(userSimple).then(() => {
+                  if (userSimple.workerNumber == data[data.length - 1].workerNumber) {
+                    //说明执行成功了
+                    resolve();
+                  }
+                }, error => reject(error))
               }
-            }
-          })
+            })
+          }
         }
-      },error=>{
+      }, error => {
         reject(error);
       });
     });
@@ -208,36 +237,46 @@ export class LoginService {
     });
   }
 
-
-  /**
-   * 如果本地数据字典表中没有数据从服务器中下载数据
+   /**
+   * 从服务器获取当前时间
    */
-  downloadDictDetailIfEmpty(){
-    return new Promise((resolve,reject)=>{
-      this.pubDBProvider.queryListFromDictDetail(1,1).then((data)=>{
-        if(data==null||data.length==0){
-          //说明本地没有员工信息，进行下载
-          this.getAndSaveDictDetailFromServe().then(()=>{
-            resolve(data);
-          },(error)=>{
-            reject(error);
-          });
-        }else{
-          //有数据就不用再下载了
-          resolve(data);
-        }
-      },(error)=>{
-        reject(error);
-      })
+  getAndSaveCurrentTimeFromServe(){
+    this.assetWebProvider.getCurrentTimeFromServe().then((currentTime)=>{
+      this.setInStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME,currentTime);
     })
+
   }
+
+
+  // /**
+  //  * 如果本地数据字典表中没有数据从服务器中下载数据
+  //  */
+  // downloadDictDetailIfEmpty(workerNumber:string){
+  //   return new Promise((resolve,reject)=>{
+  //     this.pubDBProvider.queryListFromDictDetail(1,1).then((data)=>{
+  //       if(data==null||data.length==0){
+  //         //说明本地没有员工信息，进行下载
+  //         this.getAndSaveDictDetailFromServe(workerNumber).then(()=>{
+  //           resolve(data);
+  //         },(error)=>{
+  //           reject(error);
+  //         });
+  //       }else{
+  //         //有数据就不用再下载了
+  //         resolve(data);
+  //       }
+  //     },(error)=>{
+  //       reject(error);
+  //     })
+  //   })
+  // }
 
   /**
    * 从服务器获取员工精简信息表，并保存
    */
-  getAndSaveDictDetailFromServe(){
+  getAndSaveDictDetailFromServe(lastRequestTime){
     return new Promise((resolve, reject) => {
-      this.assetWebProvider.getDictDetailListFromServe().then((data) => {
+      this.assetWebProvider.getDictDetailListFromServe(lastRequestTime).then((data) => {
         if (data == null || data.length == 0) {
           resolve();
         } else {
@@ -257,10 +296,12 @@ export class LoginService {
                 })
               } else {
                 //已经有该成员
-                if (dictDetail.dictDetailId == dictDetailId) {
-                  //说明执行成功了
-                  resolve();
-                }
+                this.pubDBProvider.updateToDictDetail(dictDetail).then(()=>{
+                  if (dictDetail.dictDetailId == dictDetailId) {
+                    //说明执行成功了
+                    resolve();
+                  }
+                },error=>reject(error))
               }
             })
           }
@@ -289,7 +330,7 @@ export class LoginService {
             if(data==null){
               //说明没有该人的账号信息，插入
               this.loginDBProvider.insertToAccount(userAccount).then((data)=>{
-                // console.log("插入成功！");
+                // console.log("插入成功");
               },(error)=>{
                 alert(error.message);
               })
@@ -316,7 +357,7 @@ export class LoginService {
             if(data==null){
               //说明没有该人的账号信息，插入
               this.loginDBProvider.insertToUserInfo(user).then((data)=>{
-                // console.log("插入成功！");
+                // console.log("插入成功");
               },(error)=>{
                 alert(error.message);
               })
@@ -355,7 +396,7 @@ export class LoginService {
               })
             }
           },(error)=>{
-            reject("获取员工信息失败，请在有内网的环境下登陆！");
+            reject("获取员工信息失败，请在有内网的环境下登陆");
           })
         }else{
           resolve(data);
@@ -373,14 +414,14 @@ export class LoginService {
         if(data==null){
           //说明本地没有该成员的账户信息,从服务器获取
           let loading=this.loadingCtrl.create({
-            content:'正在从服务器获取数据！',
+            content:'正在从服务器获取数据',
             duration:20000
           });
           loading.present();
           this.loginWebProvider.getUserAccountByNameAndPWD(userName,password).then((userAccount)=>{
             if(userAccount==null){
               loading.dismiss();
-              reject("账户或密码错误，请确认后重试！");
+              reject("账户或密码错误，请确认后重试");
             }else{
               this.loginDBProvider.queryFromAccountByUserId(userAccount.userId).then((userData)=>{
                 if(userData==null){
@@ -403,13 +444,13 @@ export class LoginService {
                   });
                 }
               },(error)=>{
-                reject("没有该成员的用户信息，请再次确认！");
+                reject("没有该成员的用户信息，请再次确认");
               })
               
             }
           },(error)=>{
             loading.dismiss();
-            reject("获取登陆信息失败，请确认账户密码正确，并在有内网的环境下重试！");
+            reject("获取登陆信息失败，请确认账户密码正确，并在有内网的环境下重试");
           })
         }else{
           //说明有该成员的信息
@@ -460,7 +501,7 @@ export class LoginService {
   setInStorage(key: string, value: string) {
     return new Promise((resolve, reject) => {
       if (key == "" || key == null) {
-        reject("键为空！");
+        reject("键为空");
       }
       this.dbService.getFromStorage(key).then((data) => {
         if (data == null || data == "") {
@@ -495,7 +536,7 @@ export class LoginService {
   getFromStorage(key: string) {
     return new Promise<string>((resolve, reject) => {
       if (key == "" || key == null) {
-        reject("键为空！");
+        reject("键为空");
         return;
       }
       this.dbService.getFromStorage(key).then((data) => {
@@ -517,7 +558,7 @@ export class LoginService {
   RemoveFromStorage(key: string) {
     return new Promise((resolve, reject) => {
       if (key == "" || key == null) {
-        reject("键为空！");
+        reject("键为空");
         return;
       }
       this.dbService.removeFromStorage(key).then((data) => {

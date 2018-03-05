@@ -1,14 +1,14 @@
 <ion-header>
     <ion-navbar color="title">
-        <ion-title id="title">资产发放</ion-title>
+        <ion-title class="border-left-white">资产发放</ion-title>
         <ion-buttons right style="width:20%">
-                <button ion-button (click)="handleClean()" id="btn_submit" color="light">
+                <button ion-button (click)="handleClean()" class="btn-submit" color="light">
             清空
           </button>
             </ion-buttons>
     </ion-navbar>
 </ion-header>
-<ion-content #granting_content padding style="background-color:#F7F6F6">
+<ion-content #granting_content class="bg-content">
     <!-- <ion-card>
       <ion-card-header style="padding-top:0px;padding-bottom:0px;">
           <ion-item style="padding-left:0px;">
@@ -20,9 +20,9 @@
     
 
     <ion-list>
-        <ion-list-header>
-            <h2 class="bold">发放列表 ({{sentQuantity}}/{{totalQuantity}})</h2>
-        </ion-list-header>
+        <ion-item-divider>
+                发放列表 ({{sentQuantity}}/{{totalQuantity}})
+        </ion-item-divider>
         <ion-item *ngFor="let item of noticeSubArray" (click)="handleMenu(item)">
             <!-- <ion-checkbox [(ngModel)]="cucumber" (ionChange)="updateCucumber()"></ion-checkbox> -->
             <!-- <ion-checkbox></ion-checkbox> -->
@@ -42,7 +42,7 @@
 
 <ion-footer>
         <ion-buttons start>
-            <button ion-button icon-end full (click)="navToBind()">
+            <button ion-button full (click)="navToBind()">
                     已选资产({{cvtNonReceives.length}})
             </button>
         </ion-buttons>
@@ -67,7 +67,7 @@
                 <ion-label>
                     <h2>{{asset.assetName}}</h2>
                     <p>规格型号：{{asset.specModel}}</p>
-                    <p *ngIf="asset.receiveName!=null">领用人：{{asset.receiveName}}</p>
+                    <p *ngIf="asset.receiveName!=null&&asset.receiveName!=''">领用人：{{asset.receiveName}}</p>
                 </ion-label>
                 <!-- <img src="./assets/imgs/scan.png" style="height:20px;" (click)="handleBindScan(asset)" item-end>
                 <img src="./assets/imgs/hand.png" style="height:20px;" (click)="handleBindInput(asset)" item-end> -->

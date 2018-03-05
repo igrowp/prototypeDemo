@@ -2,14 +2,80 @@
 
 </ion-menu> -->
 
-<ion-header>
+<!-- <ion-header>
     <ion-toolbar>
         <ion-searchbar placeholder="搜索" (ionInput)="filterItems($event)"></ion-searchbar>
     </ion-toolbar>
-</ion-header>
-<ion-content style="max-height: 250px;min-height: 150px;">
-    <button ion-button (click)="presentPopover($event)">Popover</button>
-    <button ion-button (click)="alert($event)">alert</button>
+</ion-header> -->
+<ion-content class="full">
+<ion-list inset>
+    <ion-item no-lines>
+        <ion-avatar item-left>
+            <img src="./assets/imgs/avatar.png">
+        </ion-avatar>
+        <h1>大竹</h1>
+        <h2>中油瑞飞</h2>
+    </ion-item>
+    <ion-item-divider></ion-item-divider>
+    <ion-item>
+        <ion-icon name="list-box" item-start></ion-icon>
+        <label (click)="navToMyAsset()">我的资产</label>
+    </ion-item>
+    <ion-item>
+        <ion-avatar item-left>
+            <img class="thumbnail" src="./assets/imgs/process.png">
+        </ion-avatar>
+        <h2 (click)="navToProcess()">流程审批</h2>
+    </ion-item>
+    <ion-item no-lines>
+        <!-- <ion-avatar item-left>
+            <img class="thumbnail" src="./assets/imgs/synchro.png">
+        </ion-avatar> -->
+        <ion-icon name="cloud-upload" item-start></ion-icon>
+        <label (click)="navToSynchro()">数据同步</label>
+    </ion-item>
+    <ion-item-divider></ion-item-divider>
+    <ion-item no-lines>
+            <ion-icon name="power" item-start></ion-icon>
+            <label (click)="exit()">退出</label>
+        </ion-item>
+    </ion-list>
+    <!-- 
+                <ion-grid class="full bg-menu">
+                    <ion-row id="left_top">
+                        <ion-col col-5 id="col_avatar">
+                            <img id="avatar" src="./assets/imgs/avatar.png" />
+                        </ion-col>
+                        <ion-col colr-7 id="col_user">
+                            <h3 id="user_unit">{{wFOAddress}}</h3>
+                            <h4 id="user_name">{{userName}}</h4>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <hr id="divider" />
+                    </ion-row>
+            
+                    <ion-row id="left_buttons">
+                        <button id="left_bottom_button" ion-button (click)="navToMyAsset()">
+                            <img src="./assets/imgs/myAsset.png"> 我的资产
+                        </button>
+                    </ion-row>
+            
+                    <ion-row id="left_buttons">
+                        <button id="left_bottom_button" ion-button (click)="navToProcess()">
+                            <img src="./assets/imgs/process.png"> 流程审批
+                        </button>
+                    </ion-row>
+                    <ion-row id="left_buttons">
+                        <button id="left_bottom_button" ion-button (click)="navToSynchro()">
+                            <img src="./assets/imgs/synchro.png"> 数据同步
+                        </button>
+                    </ion-row>
+                    <ion-row id="left_buttons">
+                        <button id="left_bottom_button" ion-button (click)="exit()">退出</button>
+                    </ion-row>
+            
+                </ion-grid> -->
 
 
 </ion-content>

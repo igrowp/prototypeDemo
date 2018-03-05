@@ -79,6 +79,7 @@ export class ConvertPage {
     this.alertCtrl.create({
       title:'提示',
       subTitle:'是否再次发放？',
+      cssClass:'alert-conform',
       buttons:[
         // {
         //   text:'取消',

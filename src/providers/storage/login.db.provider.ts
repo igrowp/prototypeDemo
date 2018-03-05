@@ -34,7 +34,7 @@ export class LoginDBProvider {
                   var userAccount: User = this._getUserInfoFromDBResult(data);
                   resolve(userAccount);
               }, (error) => {
-                  reject("数据库操作：\n查询账户信息表失败\n"+error.message);
+                  reject("数据库操作：<br>查询账户信息表失败<br>"+error.message);
               })
       })
   }
@@ -53,7 +53,7 @@ export class LoginDBProvider {
                   var user: User = this._getUserInfoFromDBResult(data);
                   resolve(user);
               }, (error) => {
-                  reject("数据库操作：\n查询用户信息表失败\n"+error.message);
+                  reject("数据库操作：<br>查询用户信息表失败<br>"+error.message);
               })
       })
   }
@@ -69,7 +69,7 @@ export class LoginDBProvider {
                   resolve(data);
               })
               .catch((error) => {
-                  reject("数据库操作：\n更新用户信息表失败\n"+error.message);
+                  reject("数据库操作：<br>更新用户信息表失败<br>"+error.message);
               })
       })
   }
@@ -85,7 +85,7 @@ export class LoginDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：\n更新用户信息表失败\n"+error.message);
+                    reject("数据库操作：<br>更新用户信息表失败<br>"+error.message);
                 })
         })
     }
@@ -101,7 +101,7 @@ export class LoginDBProvider {
               .then((data) => {
                   resolve(data);
               }, (error) => {
-                  reject("数据库操作：\n插入用户表失败\n"+error.message);
+                  reject("数据库操作：<br>插入用户表失败<br>"+error.message);
               })
       })
   }
@@ -126,7 +126,7 @@ export class LoginDBProvider {
                   var userAccount: UserAccount = this._getAccountFromDBResult(data);
                   resolve(userAccount);
               }, (error) => {
-                  reject("数据库操作：\n查询账户表失败\n"+error.message);
+                  reject("数据库操作：<br>查询账户表失败<br>"+error.message);
               })
       })
   }
@@ -143,7 +143,7 @@ export class LoginDBProvider {
                   var userAccount: UserAccount = this._getAccountFromDBResult(data);
                   resolve(userAccount);
               }, (error) => {
-                  reject("数据库操作：\n查询账户表失败\n"+error.message);
+                  reject("数据库操作：<br>查询账户表失败<br>"+error.message);
               })
       })
   }
@@ -159,7 +159,7 @@ export class LoginDBProvider {
                   resolve(data);
               })
               .catch((error) => {
-                  reject("数据库操作：\n更新账户表失败\n"+error.message);
+                  reject("数据库操作：<br>更新账户表失败<br>"+error.message);
               })
       })
   }
@@ -174,7 +174,7 @@ export class LoginDBProvider {
               .then((data) => {
                   resolve(data);
               }, (error) => {
-                  reject("数据库操作：\n插入账户表失败\n"+error.message);
+                  reject("数据库操作：<br>插入账户表失败<br>"+error.message);
               })
       })
   }
