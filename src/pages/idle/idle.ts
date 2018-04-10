@@ -1,9 +1,11 @@
-import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
+import { ConvertUtil } from './../../providers/utils/convertUtil';
+import { PubConstant } from './../../providers/entity/constant.provider';
+import { AttachmentService } from './../../providers/service/attachment.service';
+import { FileService } from './../../providers/service/file.service';
 import { Idle } from './../../providers/entity/pub.entity';
-import { Camera } from '@ionic-native/camera';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ActionSheetController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NoticeService } from '../../providers/service/notice.service';
 import { AssetHandleService } from '../../providers/service/asset.handle.service';
 
@@ -20,19 +22,32 @@ import { AssetHandleService } from '../../providers/service/asset.handle.service
   templateUrl: 'idle.html',
 })
 export class IdlePage {
-  public photos: Array<string> = new Array<string>();
+  public photoBase64s: Array<string> = new Array<string>();
+  public photoPaths: Array<string> = new Array<string>();
   public idle:Idle=new Idle();
+  private assetId="";
   constructor(public navCtrl: NavController,
     private assetHandleService:AssetHandleService,
-    private camera:Camera,
+    private fileService:FileService,
     private noticeService:NoticeService,
-    private actionSheetCtrl:ActionSheetController,
+    private attachmentService:AttachmentService,
     private alertCtrl:AlertController,
      public navParams: NavParams) {
        this.idle=this.navParams.get("idle");
-       
-       
+       this.assetId=this.navParams.get("assetId");
+       this.attachmentService.getAttachments(this.assetId,PubConstant.ATTACHMENT_TYPE_IDLE).then((attachments)=>{
+         if(attachments.length>0){
+           for(let i=0;i<attachments.length;i++){
+             let attachment=attachments[i];
+             this.photoPaths.push(attachment.storagePath);
+             ConvertUtil.fileUrlToBase64(attachment.storagePath).then((base64)=>{
+               this.photoBase64s.push(base64);
+             })
+           }
+         }
+       })
   }
+
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad IdlePage');
@@ -40,7 +55,7 @@ export class IdlePage {
 
   //提交
   handleSubmit(){
-    if(this.idle.installLocation&&this.idle.testResult&&this.idle.stopReason&&this.idle.assetDesc&&this.photos){
+    if(this.idle.installLocation&&this.idle.testResult&&this.idle.stopReason&&this.idle.assetDesc){
       if(this.idle.installLocation.trim()==""){
         this.noticeService.showIonicAlert("安装地点不能为空")
         return;
@@ -59,9 +74,10 @@ export class IdlePage {
       }
       let loading=this.noticeService.showIonicLoading("正在提交",10000);
       loading.present();
+      this.attachmentService.uploadOrSavePhotos(this.idle.assetId,PubConstant.ATTACHMENT_TYPE_IDLE,null,this.photoPaths,PubConstant.UPLOAD_TYPE_BASE64);
       this.assetHandleService.synchroIdleToServe(this.idle).then((result) => {
         loading.dismiss();
-        this.noticeService.showIonicAlert(result);
+        this.noticeService.showIonicAlert("提交成功");
         this.navCtrl.pop();
       }, error => {
         loading.dismiss();
@@ -91,7 +107,9 @@ export class IdlePage {
         {
           text: '确定',
           handler: () => {
-            this.photos.splice(index);
+            this.photoBase64s.splice(index,1);
+            this.photoPaths.splice(index,1);
+            
           }
         }
       ]
@@ -105,9 +123,9 @@ export class IdlePage {
 * 添加图片
 */
   add() {
-    if (this.photos.length >= 3) {
+    if (this.photoBase64s.length >= 3) {
       //只能上传三张照片
-      this.noticeService.showIonicAlert("只能上传三张照片哦");
+      this.noticeService.showIonicAlert("只能上传三张照片");
       return;
     } else {
       this.useASComponent();
@@ -118,83 +136,29 @@ export class IdlePage {
    * 底部选择项
    */
   private useASComponent() {
-    let actionSheet = this.actionSheetCtrl.create({
-      title: "选择",
-      buttons: [
-        {
-          text: "拍照",
-          handler: () => {
-            this.takePhoto();
-            //alert("拍照");startCamera
-          }
-        },
-        {
-          text: "从手机相册选择",
-          handler: () => {
-            this.selectPhoto();
-            //alert("拍照");choosePhoto
-          }
-        },
-        {
-          text: "取消",
-          role: 'cancel',
-          handler: () => {
+    
+    this.fileService.showActionSheetForImageSelect((fileUrl,dataUrl)=>{
+      //拍照
+      if (this.photoPaths.length < 3) {
+        this.photoPaths.push(fileUrl);
+        this.photoBase64s.push(dataUrl);
+      }
 
+    }, (fileUrls,dataUrls) => {
+      //选择图片
+      if(fileUrls.length>0){
+        for(let i=0;i<fileUrls.length;i++){
+          if(this.photoPaths.length<3){
+            this.photoPaths.push(fileUrls[i]);
+            this.photoBase64s.push(dataUrls[i]);
           }
         }
-      ]
-    });
-    actionSheet.present();
-  }
-
-  /**
-   * 照照片
-   */
-  takePhoto() {
-    this.camera.getPicture({
-      quality: 10,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      sourceType: this.camera.PictureSourceType.CAMERA,
-      encodingType: this.camera.EncodingType.PNG,
-      saveToPhotoAlbum: true
-    }).then(imageData => {
-      if (this.photos.length < 3) {
-        this.photos.push(imageData);
       }
-    }, error => {
-    });
+    },null);
   }
 
 
-  /**
-   * 从图库选择照片
-   */
-  selectPhoto(): void {
-    this.camera.getPicture({
-      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      quality: 10,
-      encodingType: this.camera.EncodingType.PNG,
-    }).then(imageData => {
-      var startIndex = imageData.lastIndexOf("/");
-      var lastIndex = imageData.indexOf('?');
-      var imgName = imageData.substring(startIndex + 1, lastIndex);
-      var isExis: boolean = false;
-      this.photos.forEach(file => {
-        var name = file.substring(file.lastIndexOf("/") + 1, file.indexOf('?'));
-        if (name == imgName) {
-          this.noticeService.showIonicAlert("该图片已选择");
-          isExis = true;
-        }
-      });
-      if (!isExis && this.photos.length < 3) {
-        this.photos.push(imageData);
-      }
-    }, error => {
-      //没选图片也会报错，所以这里就不选了
-      //alert(JSON.stringify(error));
-    });
-  }
+
 
 
   

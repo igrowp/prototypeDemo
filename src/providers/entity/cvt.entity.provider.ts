@@ -35,9 +35,6 @@ export class CvtNonNoticeSub {
 	residualQuantity;  //剩余数量
 	quantity;    //记录每次进入界面时的数量，用于计算已选数量
 }
-interface a{
-
-}
 
 
 

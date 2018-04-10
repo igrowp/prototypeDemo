@@ -1,32 +1,27 @@
 page-test1 {
-    #imgs_content {
-        text-align: center;
-        float: right;
-        width: 50px;
-        height: 50px;
-        margin-left: 5px;
-        margin-right: 5px;
-        border-radius: 10px;
+    .scan-bg{
+        height: 100%;
+        width: 100%;
+        background-color:#2486D6;
+        // background-image: url(./../assets/gif/timg.gif);
+        // background-repeat: no-repeat;
+        // background-size: cover;
     }
-    #imgs {
-        max-width: 50px;
-        max-height: 50px;
+
+    .icon-back{
+        font-size:3rem;
+        margin-top:10px;
+        margin-left:10px;
+        color:#fff;
     }
-    #imgs_add {
-        margin-top: 6px;
-        // padding-left: 7px;
-        width: 36px;
-        height: 36px;
-    }
-    #th_p {
-        font-size: 2rem;
-        color: #9A9A9A;
-        font-weight: 600;
-        float: left;
-    }
-    #td_p {
-        float: right;
-        text-align: right;
-        font-size: 1.8rem;
+
+    .img-center{
+        height:300px;
+        position: absolute;
+        top:0px;
+        bottom:0px;
+        left:0px;
+        right:0px;
+        margin:auto;
     }
 }

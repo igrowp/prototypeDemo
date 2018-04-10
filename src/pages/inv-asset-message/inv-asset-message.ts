@@ -1,20 +1,19 @@
+import { FileService } from './../../providers/service/file.service';
+import { ConvertUtil } from './../../providers/utils/convertUtil';
 import { AssetHandleService } from './../../providers/service/asset.handle.service';
 import { Scrap, Idle } from './../../providers/entity/pub.entity';
-import { LoginPageModule } from './../login/login.module';
 import { PubConstant } from './../../providers/entity/constant.provider';
 import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
-import { DateUtil } from './../../providers/utils/dateUtil';
 import { AssetService } from '../../providers/service/asset.service';
 import { NoticeService } from '././../../providers/service/notice.service';
 import { InvService } from '././../../providers/service/inv.service';
 import { Camera } from '@ionic-native/camera';
-import { ChangeRecord, FixedAsset, InvAsset, OrgInfo, UserSimple } from './../../providers/entity/entity.provider';
+import { ChangeRecord, FixedAsset, InvAsset } from './../../providers/entity/entity.provider';
 import { Component } from '@angular/core';
 import {
   ActionSheetController,
   AlertController,
   IonicPage,
-  MenuController,
   NavController,
   NavParams
 } from 'ionic-angular';
@@ -35,12 +34,13 @@ import { DictDetail } from '../../providers/entity/pub.entity';
 export class InvAssetMessagePage {
   //html绑定变量
   public segment = "changeMessage";
-  public photos: Array<string> = new Array<string>();
+  public photoBase64s:Array<string> = new Array<string>();  //记录选择图片的base64格式，用于选择后的显示
+  private photoPaths: Array<string> = new Array<string>();  //记录选择图片的路径，用于存储选择的图片路径
   public fixedAsset: FixedAsset = new FixedAsset();
   public invAsset: InvAsset = new InvAsset();
   public manufactureDate: any;   //出厂日期
   public productionTime: any;    //投产日期      
-  public dateNow = DateUtil.formatDate(new Date());
+  public dateNow = ConvertUtil.formatDate(new Date());
   public techStates:Array<DictDetail>;  //技术状况的列表
   public useStates:Array<DictDetail>;  //技术状况的列表
   public securityStates:Array<DictDetail>;  //技术状况的列表
@@ -62,10 +62,9 @@ export class InvAssetMessagePage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public alertCtrl: AlertController,
     public assetService: AssetService,
-    private actionSheetCtrl: ActionSheetController,
     private assetHandleService:AssetHandleService,
+    private fileService:FileService,
     private camera: Camera,
-    private menuCtrl: MenuController,
     private noticeService: NoticeService,
     private invService: InvService) {
     this.segment = "changeMessage";
@@ -79,7 +78,13 @@ export class InvAssetMessagePage {
       this.invAsset = new InvAsset();
     }else{
       if(this.invAsset.photoPath!=null&&this.invAsset.photoPath!=""){
-        this.photos=JSON.parse(this.invAsset.photoPath);
+        this.photoPaths=JSON.parse(this.invAsset.photoPath);
+        //解析为base64并展示
+        for(let i=0;i<this.photoPaths.length;i++){
+          ConvertUtil.fileUrlToBase64(this.photoPaths[i]).then((dataUrl)=>{
+            this.photoBase64s.push(dataUrl);
+          })
+        }
       }
     }
     if (this.fixedAsset == null) {
@@ -166,11 +171,11 @@ export class InvAssetMessagePage {
     // profitLoss;
     // profitLossCause;
     // remark;
-    if (this.photos.length == 0) {
+    if (this.photoPaths.length == 0) {
       //说明没有选择图片
       this.invAsset.photoPath = "";
     } else {
-      this.invAsset.photoPath = JSON.stringify(this.photos);
+      this.invAsset.photoPath = JSON.stringify(this.photoPaths);
     }
 
     //更新资产台账信息
@@ -399,7 +404,8 @@ export class InvAssetMessagePage {
         {
           text: '确定',
           handler: () => {
-            this.photos.splice(index);
+            this.photoPaths.splice(index,1);
+            this.photoBase64s.splice(index,1);
           }
         }
       ]
@@ -412,9 +418,9 @@ export class InvAssetMessagePage {
  * 添加图片
  */
   add() {
-    if (this.photos.length >= 3) {
+    if (this.photoPaths.length >= 3) {
       //只能上传三张照片
-      this.noticeService.showIonicAlert("只能上传三张照片哦");
+      this.noticeService.showIonicAlert("只能上传三张照片");
       return;
     } else {
       this.useASComponent();
@@ -425,84 +431,26 @@ export class InvAssetMessagePage {
    * 底部选择项
    */
   private useASComponent() {
-    let actionSheet = this.actionSheetCtrl.create({
-      title: "选择",
-      buttons: [
-        {
-          text: "拍照",
-          handler: () => {
-            this.takePhoto();
-            //alert("拍照");startCamera
-          }
-        },
-        {
-          text: "从手机相册选择",
-          handler: () => {
-            this.selectPhoto();
-            //alert("拍照");choosePhoto
-          }
-        },
-        {
-          text: "取消",
-          role: 'cancel',
-          handler: () => {
+    
+    this.fileService.showActionSheetForImageSelect((fileUrl,dataUrl)=>{
+      //拍照
+      if (this.photoPaths.length < 3) {
+        this.photoPaths.push(fileUrl);
+        this.photoBase64s.push(dataUrl);
+      }
 
+    }, (fileUrls,dataUrls) => {
+      //选择图片
+      if(fileUrls.length>0){
+        for(let i=0;i<fileUrls.length;i++){
+          if(this.photoPaths.length<3){
+            this.photoPaths.push(fileUrls[i]);
+            this.photoBase64s.push(dataUrls[i]);
           }
         }
-      ]
-    });
-    actionSheet.present();
-  }
-
-  /**
-   * 照照片
-   */
-  takePhoto() {
-    this.camera.getPicture({
-      quality: 10,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      sourceType: this.camera.PictureSourceType.CAMERA,
-      encodingType: this.camera.EncodingType.PNG,
-      saveToPhotoAlbum: true
-    }).then(imageData => {
-      if(this.photos.length<3){
-        this.photos.push(imageData);
       }
-    }, error => {
-    });
+    },null);
   }
-
-
-  /**
-   * 从图库选择照片
-   */
-  selectPhoto(): void {
-    this.camera.getPicture({
-      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      quality: 10,
-      encodingType: this.camera.EncodingType.PNG,
-    }).then(imageData => {
-      var startIndex = imageData.lastIndexOf("/");
-      var lastIndex = imageData.indexOf('?');
-      var imgName = imageData.substring(startIndex + 1, lastIndex);
-      var isExis: boolean = false;
-      this.photos.forEach(file => {
-        var name = file.substring(file.lastIndexOf("/") + 1, file.indexOf('?'));
-        if (name == imgName) {
-          this.noticeService.showIonicAlert("该图片已选择");
-          isExis = true;
-        }
-      });
-      if (!isExis&&this.photos.length<3) {
-        this.photos.push(imageData);
-      }
-    }, error => {
-      //没选图片也会报错，所以这里就不选了
-      //alert(JSON.stringify(error));
-    });
-  }
-
 
   // //////////////////////////////////筛选保管人和使用单位的方法/////////////////
   // changeManagerOrOrg(type: string) {

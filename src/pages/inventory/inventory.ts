@@ -1,3 +1,4 @@
+import { ConvertUtil } from './../../providers/utils/convertUtil';
 import { NoticeService } from './../../providers/service/notice.service';
 import { FabContainer } from 'ionic-angular';
 import { FixedAsset, InvNotice } from './../../providers/entity/entity.provider';
@@ -5,7 +6,6 @@ import { AssetService } from './../../providers/service/asset.service';
 import { Component, ViewChild } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AlertController, Platform, InfiniteScroll,ModalController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-import { DateUtil } from '../../providers/utils/dateUtil';
 import { Content } from 'ionic-angular/components/content/content';
 declare let ReadRFID: any;
  
@@ -45,8 +45,8 @@ export class InventoryPage {
     this.invNotice=this.navParams.get("invNotice");
     this.workerNumber=this.navParams.get("workerNumber");
     this.platform.ready().then(()=>{
-      this.finishTime=DateUtil.formatDate(new Date(this.invNotice.timeFinish));
-      this.startTime=DateUtil.formatDate(new Date(this.invNotice.timeStart));
+      this.finishTime=ConvertUtil.formatDate(new Date(this.invNotice.timeFinish));
+      this.startTime=ConvertUtil.formatDate(new Date(this.invNotice.timeStart));
     })
     this.init();
   }

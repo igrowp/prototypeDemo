@@ -1,15 +1,17 @@
+import { AttachmentWebProvider } from './../../providers/web/attachment.web.provider';
 import { AssetHandleService } from './../../providers/service/asset.handle.service';
 import { PubConstant } from './../../providers/entity/constant.provider';
 import { CvtNonNotice, CvtNonReceive } from './../../providers/entity/cvt.entity.provider';
 import { NoticeService } from './../../providers/service/notice.service';
 import { PhotoLibrary } from "@ionic-native/photo-library";
-import { InvAsset, ChangeRecord } from './../../providers/entity/entity.provider';
+import { InvAsset } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
 import { CvtService } from './../../providers/service/cvt.service';
 import { Component } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 import { LoginService } from '../../providers/service/login.service';
+import { ConvertUtil } from '../../providers/utils/convertUtil';
 /// <reference path="plugin/SignaturePad.d.ts"/>
 //import * as SignaturePad from 'signature_pad';
 /**
@@ -49,6 +51,7 @@ export class SignaturePage {
     public navCtrl: NavController,
     public cvtService: CvtService,
     public alertCtrl: AlertController,
+    private attachmentWebProvider:AttachmentWebProvider,
     private photoLibrary: PhotoLibrary,
     private loadingCtrl: LoadingController,
     private noticeService: NoticeService,
@@ -165,7 +168,10 @@ export class SignaturePage {
             });
             loading.present();
             this.cvtService.saveCvtAssetsFromServe(this.cvtNotice.recipient, this.cvtNotice.noticeId).then(() => {
-              this.cvtService.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, null, null, this.cvtNotice.noticeId, PubConstant.SIGNATURE_TYPE_CVT_RECEIVER).then((data) => {
+              //同过base64上传图片
+              // this.attachmentWebProvider.uploadBase64( null, null, this.cvtNotice.noticeId,PubConstant.ATTACHMENT_TYPE_CVT_RECEIVER,dataURL).then((data)=>{
+                //通过blob上传图片
+                this.attachmentWebProvider.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, null, null, this.cvtNotice.noticeId, PubConstant.ATTACHMENT_TYPE_CVT_RECEIVER,this.attachmentWebProvider.UploadType.BASE64).then((data) => {
                 this.cvtService.insertCvtNonNoticeSubFromServe(this.cvtNotice.noticeId).then(() => {
                   //修改状态
                   this.cvtNotice.noticeState = "GRANTING";
@@ -238,9 +244,11 @@ export class SignaturePage {
           }, (error) => {
             this.noticeService.showIonicAlert(error);
           })
+        }else{
+          this.navCtrl.pop();
         }
       }, (error) => {
-        this.noticeService.showIonicAlert("签名失败，请重新尝试!<br>" + error);
+        this.noticeService.showIonicAlert("存储签名失败，请确认是否打开读写数据库权限");
       })
     }
   }
@@ -354,6 +362,7 @@ export class SignaturePage {
   handleRemoveDefaultSignature(){
     this.isShowDefaultSignature=false;
     this.buttonColor="primary";
+    this.signaturePath="";
     //刷新画布
     this.ionViewDidEnter();
 
@@ -368,7 +377,7 @@ export class SignaturePage {
         this.isShowDefaultSignature=true;
         this.buttonColor="danger";
         this.photoLibrary.getPhoto(defalutSignaturePath).then((blob) => {
-          this.BlobToCanvas(blob, (canvas) => {
+          ConvertUtil.blobToCanvas(blob, (canvas) => {
             //获取默认签名文件名称
             this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_DEFAULT_SIGNATURE_NAME).then((defalutSignatureName)=>{
               this.signatureName=defalutSignatureName;
@@ -378,31 +387,6 @@ export class SignaturePage {
         })
       }
     })
-  }
-  // Blob转canvas
-  BlobToCanvas(blob, cb) {
-    this.fileOrBlobToDataURL(blob, function (dataurl) {
-      let canvas = <HTMLCanvasElement>document.getElementById("canvas-default");
-      var ctx = canvas.getContext('2d');
-      var img = new Image();
-      img.onload = function () {
-        canvas.width=img.width;
-        canvas.height=img.height;
-        ctx.drawImage(img, 0, 0);
-
-        cb(canvas);
-      };
-      img.src = dataurl;
-    });
-  }
-
-  // File/Blob对象转DataURL
-  fileOrBlobToDataURL(blob, callback) {
-    var a = new FileReader();
-    a.onload = function (e:any) {
-      callback(e.target.result);
-    };
-    a.readAsDataURL(blob);
   }
 
 

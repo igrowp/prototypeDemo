@@ -8,7 +8,8 @@ export class HttpUtils {
     }
 
     public static getFileUploadUrlFromProperties(){
-        return Properties.fileUploadURL;
+        return Properties.webConfig.address+":"+Properties.webConfig.port+"/"+Properties.webConfig.project;
+        // return Properties.fileUploadURL;
 
     }
 
@@ -18,6 +19,9 @@ export class HttpUtils {
 
     public static getUrlPortFromProperties(){
         return Properties.webConfig.port;
+    }
+    public static getApkDownloadURLFromProperties(){
+        return Properties.apkDownloadURL;
     }
 
     public static setUrlToProperties(address:string,port:string):boolean{

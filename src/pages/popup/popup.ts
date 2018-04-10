@@ -18,48 +18,50 @@ import { NoticeService } from '../../providers/service/notice.service';
   templateUrl: 'popup.html',
 })
 export class PopupPage {
-  public hidden=true;
-  public message:string="";
-  public messageSub="";
+  public hidden = true;
+  public message: string = "";
+  public messageSub = "";
 
   constructor(public navCtrl: NavController,
-    public loadingCtrl:LoadingController,
-     public navParams: NavParams,
-     private alertCtrl:AlertController,
-     private noticeService:NoticeService,
-     private loginService:LoginService,
-  public viewCtrl: ViewController) {
+    public loadingCtrl: LoadingController,
+    public navParams: NavParams,
+    private alertCtrl: AlertController,
+    private noticeService: NoticeService,
+    private loginService: LoginService,
+    public viewCtrl: ViewController) {
   }
 
   ionViewDidLoad() {
-    this.init();    
+    this.init();
   }
 
-  init(){
-    this.hidden=true;
+  init() {
+    this.hidden = true;
     //同步员工精简表到本地
-    let loading=this.loadingCtrl.create({
-      content:"正在从服务器获取数据..."
+    let loading = this.loadingCtrl.create({
+      content: "正在同步数据字典...",
+      duration:300000,
+      dismissOnPageChange:true,
     })
+    
     loading.present();
     this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME).then((lastRequestTime) => {
       if (lastRequestTime == null) {
         lastRequestTime = "";
-        this.loginService.getAndSaveOrgInfoFromServe(lastRequestTime).then(() => {
-          loading.setContent("正在同步数据字典......")
-          this.loginService.downloadDictIfEmpty().then(() => {
-            this.loginService.getAndSaveDictDetailFromServe(lastRequestTime).then(() => {
-              loading.setContent("正在同步组织机构数据......")
-              this.loginService.getAndSaveUserSimpleFromServe(lastRequestTime).then(() => {
-                //更新完成可以退出了
-                this.loginService.getAndSaveCurrentTimeFromServe();
-                loading.setContent("同步成功");
-                loading.dismiss();
-                this.viewCtrl.dismiss();
-              }, (error) => {
-                this.uploadFailed(error);
-                loading.dismiss();
-              })
+        this.loginService.downloadDictIfEmpty().then(() => {
+          this.loginService.getAndSaveDictDetailFromServe(lastRequestTime).then(() => {
+            loading.setContent("正在从服务器获取数据...")
+            this.loginService.getAndSaveOrgInfoFromServe(lastRequestTime).then(() => {
+              // this.loginService.getAndSaveUserSimpleFromServe(lastRequestTime).then(() => {
+              //更新完成可以退出了
+              this.loginService.getAndSaveCurrentTimeFromServe();
+              loading.setContent("同步成功");
+              loading.dismiss();
+              this.viewCtrl.dismiss();
+              // }, (error) => {
+              //   this.uploadFailed(error);
+              //   loading.dismiss();
+              // })
             }, (error) => {
               this.uploadFailed(error);
               loading.dismiss();
@@ -72,7 +74,7 @@ export class PopupPage {
           this.uploadFailed(error);
           loading.dismiss();
         })
-      }else{
+      } else {
         loading.dismiss();
         this.viewCtrl.dismiss();
       }
@@ -86,39 +88,39 @@ export class PopupPage {
   }
 
 
-  dismiss(){
+  dismiss() {
     this.viewCtrl.dismiss();
   }
 
   //重试
-  handleReTry(){
-    this.hidden=!this.hidden;
+  handleReTry() {
+    this.hidden = !this.hidden;
     this.init();
   }
 
 
-  setting(){
+  setting() {
     // this.Local_URL=HttpUtils.getUrlFromProperties();
     // var url=this.Local_URL.substring(0,this.Local_URL.lastIndexOf('/'));
-    var address=HttpUtils.getUrlAddressFromProperties();
-    var port=HttpUtils.getUrlPortFromProperties();
+    var address = HttpUtils.getUrlAddressFromProperties();
+    var port = HttpUtils.getUrlPortFromProperties();
     this.alertCtrl.create({
-      title:"设置服务器地址/端口",
+      title: "设置服务器地址/端口",
       inputs: [
         {
-          label:'地址',
+          label: '地址',
           name: 'address',
-          placeholder: '地址：'+address
+          placeholder: '地址：' + address
         },
         {
-          name:'port',
-          placeholder:'端口：'+port
+          name: 'port',
+          placeholder: '端口：' + port
         }
       ],
-      buttons:[
+      buttons: [
         {
-          text:'恢复默认值',
-          handler:data=>{
+          text: '恢复默认值',
+          handler: data => {
             HttpUtils.setDefaultUrlToProperties();
             this.noticeService.showNativeToast("设置成功");
           }

@@ -1,7 +1,6 @@
-import { InvNotice, OrgInfo, UserSimple } from './../entity/entity.provider';
+import { InvNotice, OrgInfo } from './../entity/entity.provider';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { AlertController } from 'ionic-angular';
 import { PubDBProvider } from '../storage/pub.db.provider';
 import { InvDBProvider } from '../storage/inv.db.provider';
 import { InvWebProvider } from '../web/inv.web.provider';
@@ -212,31 +211,31 @@ export class InvService {
 
 
 
-  /**
-   * 从本地数据库中查询所有的组织机构
-   */
-  queryListFromOrgInfo() {
-    return new Promise<Array<OrgInfo>>((resolve, reject) => {
-      this.pubDBProvider.queryListFromOrgInfo(0, 0).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
-  }
+  // /**
+  //  * 从本地数据库中查询所有的组织机构
+  //  */
+  // queryListFromOrgInfo() {
+  //   return new Promise<Array<OrgInfo>>((resolve, reject) => {
+  //     this.pubDBProvider.queryListFromOrgInfo(0, 0).then((data) => {
+  //       resolve(data);
+  //     }, (error) => {
+  //       reject(error);
+  //     })
+  //   })
+  // }
 
-  /**
-   * 从本地数据库中查询所有的组织机构
-   */
-  queryListFromUserSimple() {
-    return new Promise<Array<UserSimple>>((resolve, reject) => {
-      this.pubDBProvider.queryListFromUserSimple(0, 0).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
-  }
+  // /**
+  //  * 从本地数据库中查询所有的组织机构
+  //  */
+  // queryListFromUserSimple() {
+  //   return new Promise<Array<UserSimple>>((resolve, reject) => {
+  //     this.pubDBProvider.queryListFromUserSimple(0, 0).then((data) => {
+  //       resolve(data);
+  //     }, (error) => {
+  //       reject(error);
+  //     })
+  //   })
+  // }
 
   //  /**
   //  * 向资产盘点记录表中更新数据

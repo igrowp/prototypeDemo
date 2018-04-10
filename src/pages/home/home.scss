@@ -10,82 +10,28 @@ page-home {
         box-shadow: 2px 0px 8px #6484fb;
     }
     
-
-    #left_top {
-        padding: 0px;
-        margin: 0px;
-        width: 100%;
-        height: 25%;
-    }
-    #col_avatar {
-        vertical-align: middle;
-        text-align: right;
-        height: 100%;
-    }
-    #avatar {
+    
+    .badge{
+        // padding:1px 3px;
+        margin:0px;
+        padding-left:0.4rem;
+        padding-right:0.4rem;
         position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        height: 70%;
-        margin: auto;
+        right:-0.5rem;
+        bottom:15px;
+        // border-radius: 50%
     }
-    #col_user {
-        //display: table-cell;
-        vertical-align: middle;
-        text-align: left;
-        height: 100%;
-        // padding-left: 2%;
-        color: white;
-    }
-    #user_unit {
-        position: absolute;
-        left: 4%;
-        bottom: 55%;
-        margin: 0px;
-        font-size: 2rem;
-    }
-    #user_name {
-        position: absolute;
-        left: 4%;
-        top: 55%;
-        margin: 0px;
-        font-size: 1.5rem;
-    }
-    #divider {
-        padding: 0px;
-        margin: 0px;
-        width: 100%;
-        border: none;
-        border-top: 2px solid white;
-    }
-    #left_buttons {
-        margin-top: 8%;
-        width: 100%;
-        height: 10%;
-        text-align: center;
-    }
-    #left_bottom_button {
-        background-color: #f5f6f6;
-        color: #6484fb;
-        border-radius: 10px;
-        width: 80%;
-        height: 100%;
-        margin-left: 10%;
-        font-size: 2rem;
-    }
-    #left_bottom_button img {
-        height: 60%;
-        margin-right: 6%;
-    }
-
 
     .center{
         text-align: center;
     }
     .center img{
         max-width: 128px;
+    }
+
+    //ios端侧边栏专用
+    .padding-top{
+        padding-top:50px;
     }
 
      //pad版样式

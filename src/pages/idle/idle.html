@@ -36,12 +36,12 @@
           </div>
       </ion-item>
       <ion-item>
-          <p class="item-head">上传图片({{photos.length}}/3)：</p>
+          <p class="item-head">上传图片({{photoBase64s.length}}/3)：</p>
           <ion-row>
-              <ion-col col-4 class="img-content" *ngFor="let item of photos;let i=index">
-                  <img id="imgss" [src]="item" (click)="isDeleteImg(i)" />
+              <ion-col col-4 class="img-content" *ngFor="let item of photoBase64s;let i=index">
+                  <img  class="imgs-item" [src]="item" (click)="isDeleteImg(i)" />
               </ion-col>
-              <ion-col col-4 class="img-content" *ngIf="photos.length<3" style="border: 1px dashed #9C9C9C;">
+              <ion-col col-4 class="img-content" *ngIf="photoBase64s.length<3" style="border: 1px dashed #9C9C9C;">
                   <img class="imgs-add" (click)="add()" src="./assets/imgs/add.png" />
               </ion-col>
           </ion-row>

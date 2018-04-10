@@ -5,7 +5,7 @@ import { AssetWebProvider } from './../web/asset.web.provider';
 import { LoginDBProvider } from './../storage/login.db.provider';
 import { User, UserAccount } from './../entity/entity.provider';
 import { Injectable } from '@angular/core';
-import { AlertController, LoadingController } from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
 import { PubDBProvider } from './../storage/pub.db.provider';
 /*
 提供关于登陆的服务
@@ -32,11 +32,11 @@ export class LoginService {
         this.getAndSaveOrgInfoFromServe(lastRequestTime).then(() => {
           this.downloadDictIfEmpty().then(() => {
             this.getAndSaveDictDetailFromServe(lastRequestTime).then(() => {
-              this.getAndSaveUserSimpleFromServe(lastRequestTime).then(() => {
+              //this.getAndSaveUserSimpleFromServe(lastRequestTime).then(() => {
                 //更新完成可以退出了
                 this.getAndSaveCurrentTimeFromServe();
                 resolve();
-              }, (error) => reject(error))
+              //}, (error) => reject(error))
             }, (error) => reject(error))
           }, (error) => reject(error))
         }, (error) => reject(error))
@@ -88,91 +88,46 @@ export class LoginService {
       });
     });
   }
-  // /**
-  //  * 如果本地组织机构表中没有数据从服务器中下载数据
-  //  */
-  // downloadOrgInfoIfEmpty(lastRequestTime:string){
-  //   return new Promise((resolve,reject)=>{
-  //     this.pubDBProvider.queryListFromOrgInfo(1,1).then((data)=>{
-  //       if(data==null||data.length==0){
-  //         //说明本地没有员工信息，进行下载
-  //         this.getAndSaveOrgInfoFromServe(lastRequestTime).then(()=>{
-  //           resolve(data);
-  //         },(error)=>{
-  //           reject(error);
-  //         });
-  //       }else{
-  //         //有数据就不用再下载了
-  //         resolve(data);
-  //       }
-  //     },(error)=>{
-  //       reject(error);
-  //     })
-  //   })
-  // }
 
   // /**
-  //  * 如果本地员工精简表中没有数据从服务器中下载数据
+  //  * 从服务器获取员工精简信息表，并保存
   //  */
-  // downloadUserSimpleIfEmpty(lastRequestTime:string){
-  //   return new Promise((resolve,reject)=>{
-  //     this.pubDBProvider.queryListFromUserSimple(1,1).then((data)=>{
-  //       if(data==null||data.length==0){
-  //         //说明本地没有员工信息，进行下载
-  //         this.getAndSaveUserSimpleFromServe(lastRequestTime).then(()=>{
-  //           resolve(data);
-  //         },(error)=>{
-  //           reject(error);
-  //         });
-  //       }else{
-  //         //有数据就不用再下载了
-  //         resolve(data);
+  // getAndSaveUserSimpleFromServe(lastRequestTime:string){
+  //   return new Promise((resolve, reject) => {
+  //     this.assetWebProvider.getUserSimpleListFromServe(lastRequestTime).then((data) => {
+  //       if (data == null || data.length == 0) {
+  //         resolve();
+  //       } else {
+  //         for (var i = 0; i < data.length; i++) {
+  //           let userSimple = data[i];
+  //           this.pubDBProvider.queryFromUserSimpleByUserId(userSimple.userId).then((userName) => {
+  //             if (userName == null) {
+  //               this.pubDBProvider.insertToUserSimple(userSimple).then(() => {
+  //                 //插入成功
+  //                 if (userSimple.workerNumber == data[data.length - 1].workerNumber) {
+  //                   //说明执行成功了
+  //                   resolve();
+  //                 }
+  //               }, (error) => {
+  //                 reject("插入简单员工表失败：" + userSimple.workerNumber + error)
+  //               })
+  //             } else {
+  //               //已经有该成员，退出
+  //               this.pubDBProvider.updateToUserSimple(userSimple).then(() => {
+  //                 if (userSimple.workerNumber == data[data.length - 1].workerNumber) {
+  //                   //说明执行成功了
+  //                   resolve();
+  //                 }
+  //               }, error => reject(error))
+  //             }
+  //           })
+  //         }
   //       }
-  //     },(error)=>{
+  //     }, error => {
   //       reject(error);
-  //     })
-  //   })
+  //     });
+  //   });
   // }
-
-  /**
-   * 从服务器获取员工精简信息表，并保存
-   */
-  getAndSaveUserSimpleFromServe(lastRequestTime:string){
-    return new Promise((resolve, reject) => {
-      this.assetWebProvider.getUserSimpleListFromServe(lastRequestTime).then((data) => {
-        if (data == null || data.length == 0) {
-          resolve();
-        } else {
-          for (var i = 0; i < data.length; i++) {
-            let userSimple = data[i];
-            this.pubDBProvider.queryFromUserSimpleByUserId(userSimple.userId).then((userName) => {
-              if (userName == null) {
-                this.pubDBProvider.insertToUserSimple(userSimple).then(() => {
-                  //插入成功
-                  if (userSimple.workerNumber == data[data.length - 1].workerNumber) {
-                    //说明执行成功了
-                    resolve();
-                  }
-                }, (error) => {
-                  reject("插入简单员工表失败：" + userSimple.workerNumber + error)
-                })
-              } else {
-                //已经有该成员，退出
-                this.pubDBProvider.updateToUserSimple(userSimple).then(() => {
-                  if (userSimple.workerNumber == data[data.length - 1].workerNumber) {
-                    //说明执行成功了
-                    resolve();
-                  }
-                }, error => reject(error))
-              }
-            })
-          }
-        }
-      }, error => {
-        reject(error);
-      });
-    });
-  }
 
   /**
    * 如果本地数据字典表中没有数据从服务器中下载数据
@@ -396,7 +351,7 @@ export class LoginService {
               })
             }
           },(error)=>{
-            reject("获取员工信息失败，请在有内网的环境下登陆");
+            reject("获取员工信息失败，网络连接超时");
           })
         }else{
           resolve(data);
@@ -450,7 +405,7 @@ export class LoginService {
             }
           },(error)=>{
             loading.dismiss();
-            reject("获取登陆信息失败，请确认账户密码正确，并在有内网的环境下重试");
+            reject("获取登陆信息失败，网络连接超时");
           })
         }else{
           //说明有该成员的信息
@@ -491,6 +446,13 @@ export class LoginService {
     });
   }
 
+  /**
+   * 根据单点登录返回结果得到用户信息
+   * @param userId
+   */
+  getUserInfoFromServeBySSO(email:string):Promise<User>{
+    return this.loginWebProvider.getUserMessageBySSO(email);
+  }
 
 
   /**

@@ -1,11 +1,16 @@
+import { Camera } from '@ionic-native/camera';
 import { AssetWebProvider } from './../providers/web/asset.web.provider';
 import { TabsPage } from './../pages/tabs/tabs';
 import { LoginDBProvider } from './../providers/storage/login.db.provider';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { CvtWebProvider } from './../providers/web/cvt.web.provider';
-import { Test3Page } from './../pages/test3/test3';
 import { PhotoLibrary } from '@ionic-native/photo-library';
 import { File } from '@ionic-native/file';
+import { FileOpener } from '@ionic-native/file-opener';
+import { Transfer } from '@ionic-native/transfer';
+import { AppVersion } from '@ionic-native/app-version';
+import { ImagePicker } from '@ionic-native/image-picker';
+
 import { BackButtonService } from '../providers/service/backButton.service';
 import { NoticeService } from './../providers/service/notice.service';
 import { InvService } from './../providers/service/inv.service';
@@ -32,6 +37,10 @@ import { AssetHandleService } from '../providers/service/asset.handle.service';
 import { AssetHandleDBProvider } from '../providers/storage/asset.handle.db.provider';
 import { AssetHandleWebProvider } from '../providers/web/asset.handle.web.provider';
 import { WorkflowWebProvider } from '../providers/web/workflow.web.provider';
+import { PubWebProvider } from '../providers/web/pub.web.provider';
+import { FileService } from '../providers/service/file.service';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { AttachmentService } from '../providers/service/attachment.service';
 @NgModule({
   declarations: [
     MyApp,
@@ -49,6 +58,7 @@ import { WorkflowWebProvider } from '../providers/web/workflow.web.provider';
     TabsPage
   ],
   providers: [
+    Camera,
     AlertController,
     StatusBar,
     SplashScreen,
@@ -57,6 +67,8 @@ import { WorkflowWebProvider } from '../providers/web/workflow.web.provider';
     AssetService,
     BarcodeScanner,
     LoginService,
+    ScreenOrientation,
+    
     
     PhotoLibrary,
     AssetHandleService,
@@ -64,14 +76,23 @@ import { WorkflowWebProvider } from '../providers/web/workflow.web.provider';
     InvService,
     NoticeService,
     BackButtonService,
+    FileService,
+    AttachmentService,
+
+    AppVersion, 
     File,
-    Test3Page,
+    FileOpener,
+    Transfer,
+    ImagePicker,
+
     DBService,
     LoginDBProvider,
     AssetHandleDBProvider,
     PubDBProvider,
     InvDBProvider,
     CvtDBProvider,
+    PubWebProvider,
+
     LoginWebProvider,
     InvWebProvider,
     AssetWebProvider,

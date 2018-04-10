@@ -8,74 +8,14 @@
     </ion-toolbar>
 </ion-header> -->
 <ion-content class="full">
-<ion-list inset>
-    <ion-item no-lines>
-        <ion-avatar item-left>
-            <img src="./assets/imgs/avatar.png">
-        </ion-avatar>
-        <h1>大竹</h1>
-        <h2>中油瑞飞</h2>
-    </ion-item>
-    <ion-item-divider></ion-item-divider>
-    <ion-item>
-        <ion-icon name="list-box" item-start></ion-icon>
-        <label (click)="navToMyAsset()">我的资产</label>
-    </ion-item>
-    <ion-item>
-        <ion-avatar item-left>
-            <img class="thumbnail" src="./assets/imgs/process.png">
-        </ion-avatar>
-        <h2 (click)="navToProcess()">流程审批</h2>
-    </ion-item>
-    <ion-item no-lines>
-        <!-- <ion-avatar item-left>
-            <img class="thumbnail" src="./assets/imgs/synchro.png">
-        </ion-avatar> -->
-        <ion-icon name="cloud-upload" item-start></ion-icon>
-        <label (click)="navToSynchro()">数据同步</label>
-    </ion-item>
-    <ion-item-divider></ion-item-divider>
-    <ion-item no-lines>
-            <ion-icon name="power" item-start></ion-icon>
-            <label (click)="exit()">退出</label>
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCABIAEgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4 Tl5ufo6erx8vP09fb3 Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3 Pn6/9oADAMBAAIRAxEAPwDz igcnAroNP8ADLyqsl3IYwedi9fxPas6lWFNXkzSnSlUdoozdI059RutnIjXl29BXUnw/p7R7PIxx94E5rUsNNt7Wz2WqbdnLjqW96nWOvHxGLnKV4uyPSo0IQjaSuznP ERt8eZ58mzONuBn86sf2Bp6xlPIzx94k5ro/L/ANCH/XT lVzHWc8VV0vIuFOkr 6edarpz6ddGM5Mbco3qKpV6Vf6Zb3Vpsuk3FuUHQr71ymoeGXhRpLSQyAc7GHP5969Ohi4ySjN2ZxVcNJNuGqMCiiiu04yzpy79Qt1PeRf516HGtcZ4ZsWuL9bhh 6hOT7nsK76IW79Q8Z9RyK8jHyUpKKex6eEvGDbW4W5Mbhl7dvWrUtuBiSP/Vv09valjtCwzE6SD2OD VWbZGTMMqEI/qOh9a89Qk/cktHs/Mc6ivdEPl/6CP un9KjigBDSyD92nX3PpWn9kPkeXkfezmq1wjORFEh2J046n1rWdGdO0prorLuzGNW iZlzkyOWbqf0qpIta0loVGZZEjHucn8qqSiBfuh5D6ngVkozTvPQ7adRbI8wv1CX9woGAJG/nRV/xJYNbag8yj91MSw9j3FFfSU5KcFJHj1IuMmmdB4c8v yovL9931zW3HXC G9QNreiF2/cynB/2T611ba3ZQfcSSdv  V/xrx8Thpuq7bM9bDz9pTSitjbgVmICAk 1acUhtl3XUyRoOztXD3Hie/kUpblLZPSMc/nWTNPNO26aV5G9WOauhh1SfNdt/ci3g51PidvxPSB4j0rzvK 1pn15x dTyyNcJutZlkQ/3GryypIbia3bdDK8Z9VbFdVSXtY8stPQHlsVrB/ed3OrKSGBB96pyVj2/ii/jUJcbLlPSQc/nVpdbsZ/vLJbt/30v NeZLBuOsXcqNKpDdfcUPEnl/2VJ5mM5G360Vg ItQN5etEh/cxHA9z60V7GFpunTSZ5WKqKdTToZ1mQLuIn 8K2awAcHIrQh1HgLMpP 0v FXVg5ao6cBiYUrxn1L9FNR1kQMjblPenVy2se5FqSugooooKCgdaa7rGhZ2CqO9UptRGCIFOf7zf4VcYOWxz1sTTo/E9exVuyDdykdN5oqHrRXafMN3dwooooEWLO58iT5vuN1H9a0jcwBd3mrj0HWiis5U1J3Z2UMXUpRcY7EX9oW cYf64qUXMBUt5q4HY9aKKl0omsMwrdbMzbu4M8nGQi9BVeiitUrKyOCc3OTlLdhRRRTJP//Z">
+    <!-- <img src="http://11.10.97.76/123.jpg"> -->
+    <button ion-button (click)="click()">选择</button>
+    <button ion-button (click)="upload()">上传</button>
+    <ion-list>
+        <ion-item *ngFor="let item of arry;let i=index">
+            <img id="imgs" [src]="item"/>
         </ion-item>
     </ion-list>
-    <!-- 
-                <ion-grid class="full bg-menu">
-                    <ion-row id="left_top">
-                        <ion-col col-5 id="col_avatar">
-                            <img id="avatar" src="./assets/imgs/avatar.png" />
-                        </ion-col>
-                        <ion-col colr-7 id="col_user">
-                            <h3 id="user_unit">{{wFOAddress}}</h3>
-                            <h4 id="user_name">{{userName}}</h4>
-                        </ion-col>
-                    </ion-row>
-                    <ion-row>
-                        <hr id="divider" />
-                    </ion-row>
-            
-                    <ion-row id="left_buttons">
-                        <button id="left_bottom_button" ion-button (click)="navToMyAsset()">
-                            <img src="./assets/imgs/myAsset.png"> 我的资产
-                        </button>
-                    </ion-row>
-            
-                    <ion-row id="left_buttons">
-                        <button id="left_bottom_button" ion-button (click)="navToProcess()">
-                            <img src="./assets/imgs/process.png"> 流程审批
-                        </button>
-                    </ion-row>
-                    <ion-row id="left_buttons">
-                        <button id="left_bottom_button" ion-button (click)="navToSynchro()">
-                            <img src="./assets/imgs/synchro.png"> 数据同步
-                        </button>
-                    </ion-row>
-                    <ion-row id="left_buttons">
-                        <button id="left_bottom_button" ion-button (click)="exit()">退出</button>
-                    </ion-row>
-            
-                </ion-grid> -->
-
 
 </ion-content>

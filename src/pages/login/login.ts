@@ -1,6 +1,5 @@
 import { PubConstant } from './../../providers/entity/constant.provider';
 import { LoginWebProvider } from './../../providers/web/login.web.provider';
-import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
 import { HttpUtils } from './../../providers/utils/httpUtils';
 import { Properties } from './../../providers/properties/properties';
 import { AssetService } from './../../providers/service/asset.service';
@@ -91,7 +90,8 @@ export class LoginPage {
           this.noticeService.showIonicAlert("账号或密码错误，请确认后重试!");          //%%%%%%%%可以进行判断，是账户还是密码错误，做到更智能
         }else{
           let loading=this.loadingCtrl.create({
-            content:'正在登陆中.....'
+            content:'正在登陆中.....',
+            dismissOnPageChange:true
           });
           loading.present();
           //如果是否登陆状态发生改变，在本地数据库进行修改
@@ -153,8 +153,6 @@ export class LoginPage {
 
 
   setting(){
-    // this.Local_URL=HttpUtils.getUrlFromProperties();
-    // var url=this.Local_URL.substring(0,this.Local_URL.lastIndexOf('/'));
     var address=HttpUtils.getUrlAddressFromProperties();
     var port=HttpUtils.getUrlPortFromProperties();
     this.alertCtrl.create({

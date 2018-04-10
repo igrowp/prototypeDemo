@@ -63,49 +63,48 @@
             <!-- 报废 -->
 
             <div *ngIf="isScrap==false&&fixedAsset.techStatus=='99'">
-                    <ion-card>
-                        <ion-card-content>
-                            <ion-card-title>
-                                资产报废卡片
-                            </ion-card-title>
-                            <ion-item>
-                                <ion-label class="item-head">报废类别：</ion-label>
-                                <ion-select class="item-body" [(ngModel)]="scrap.scrapCategory" placeholder="选择" interface="popover">
-                                    <ion-option [value]="0">非正常</ion-option>
-                                    <ion-option [value]="1">正常</ion-option>
-                                </ion-select>
-                            </ion-item>
-                            <hr>
-                            <ion-item>
-                                <ion-label class="item-head">闲置/停产日期：</ion-label>
-                                <p class="item-body default" *ngIf="scrap.unproductionTime==null||scrap.unproductionTime==''" item-end>选择日期</p>
-                                <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消"
-                                    [(ngModel)]="scrap.unproductionTime"></ion-datetime>
-                            </ion-item>
-                            <hr>
-                            <ion-item>
-                                <p class="item-head">存放地点：</p>
-                                <input item-end class="item-body input" type="text" [(ngModel)]="scrap.storageLocation" placeholder="存放地点">
-                            </ion-item>
-                            <hr>
-                            <ion-item>
-                                <p class="item-head">资产简况：</p>
-                                <div>
-                                    <textarea class="input-reason" rows="3" [(ngModel)]="scrap.assetBrief"></textarea>
-                                </div>
-                            </ion-item>
-                            <hr>
-                            <ion-item>
-                                <p class="item-head">报废原因：</p>
-                                <div>
-                                    <textarea class="input-reason" rows="3"  [(ngModel)]="scrap.scrapReason"></textarea>
-                                </div>
-                            </ion-item>
-                            </ion-card-content>
-                            
-                            </ion-card>
+                <ion-card>
+                    <ion-card-content>
+                        <ion-card-title>
+                            资产报废卡片
+                        </ion-card-title>
+                        <ion-item>
+                            <ion-label class="item-head">报废类别：</ion-label>
+                            <ion-select class="item-body" [(ngModel)]="scrap.scrapCategory" placeholder="选择" interface="popover">
+                                <ion-option [value]="0">非正常</ion-option>
+                                <ion-option [value]="1">正常</ion-option>
+                            </ion-select>
+                        </ion-item>
+                        <hr>
+                        <ion-item>
+                            <ion-label class="item-head">闲置/停产日期：</ion-label>
+                            <p class="item-body default" *ngIf="scrap.unproductionTime==null||scrap.unproductionTime==''" item-end>选择日期</p>
+                            <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消"
+                                [(ngModel)]="scrap.unproductionTime"></ion-datetime>
+                        </ion-item>
+                        <hr>
+                        <ion-item>
+                            <p class="item-head">存放地点：</p>
+                            <input item-end class="item-body input" type="text" [(ngModel)]="scrap.storageLocation" placeholder="存放地点">
+                        </ion-item>
+                        <hr>
+                        <ion-item>
+                            <p class="item-head">资产简况：</p>
+                            <div>
+                                <textarea class="input-reason" rows="3" [(ngModel)]="scrap.assetBrief"></textarea>
                             </div>
+                        </ion-item>
+                        <hr>
+                        <ion-item>
+                            <p class="item-head">报废原因：</p>
+                            <div>
+                                <textarea class="input-reason" rows="3" [(ngModel)]="scrap.scrapReason"></textarea>
+                            </div>
+                        </ion-item>
+                    </ion-card-content>
 
+                </ion-card>
+            </div>
 
             <ion-item>
                 <ion-label class="item-head">使用状况：</ion-label>
@@ -126,27 +125,27 @@
                         </ion-card-title>
                         <ion-item>
                             <ion-label class="item-head">现存放地点：</ion-label>
-                            <input item-end class="item-body input" type="text" placeholder="存放地点"  [(ngModel)]="idle.installLocation">
+                            <input item-end class="item-body input" type="text" placeholder="存放地点" [(ngModel)]="idle.installLocation">
                         </ion-item>
                         <hr>
                         <ion-item>
                             <p class="item-head">检定结果：</p>
                             <div>
-                                <textarea class="input-reason"  [(ngModel)]="idle.testResult" rows="3"></textarea>
+                                <textarea class="input-reason" [(ngModel)]="idle.testResult" rows="3"></textarea>
                             </div>
                         </ion-item>
                         <hr>
                         <ion-item>
                             <p class="item-head">停用原因及目前保护措施：</p>
                             <div>
-                                <textarea class="input-reason"  [(ngModel)]="idle.stopReason" rows="3"></textarea>
+                                <textarea class="input-reason" [(ngModel)]="idle.stopReason" rows="3"></textarea>
                             </div>
                         </ion-item>
                         <hr>
                         <ion-item>
                             <p class="item-head">资产现状：</p>
                             <div>
-                                <textarea class="input-reason"  [(ngModel)]="idle.assetDesc" rows="3"></textarea>
+                                <textarea class="input-reason" [(ngModel)]="idle.assetDesc" rows="3"></textarea>
                             </div>
                         </ion-item>
                     </ion-card-content>
@@ -175,12 +174,12 @@
             </ion-item>
 
             <ion-item>
-                <p class="item-head">上传图片({{photos.length}}/3)：</p>
+                <p class="item-head">上传图片({{photoBase64s.length}}/3)：</p>
                 <ion-row>
-                    <ion-col col-4 class="img-content" *ngFor="let item of photos;let i=index">
-                        <img id="imgss" [src]="item" (click)="isDeleteImg(i)" />
+                    <ion-col col-4 class="img-content" *ngFor="let item of photoBase64s;let i=index">
+                        <img class="imgs-item" [src]="item" (click)="isDeleteImg(i)" />
                     </ion-col>
-                    <ion-col col-4 class="img-content" *ngIf="photos.length<3" style="border: 1px dashed #9C9C9C;">
+                    <ion-col col-4 class="img-content border" *ngIf="photoBase64s.length<3">
                         <img class="imgs-add" (click)="add()" src="./assets/imgs/add.png" />
                     </ion-col>
                 </ion-row>
@@ -297,8 +296,5 @@
                 没有搜索到该结果
             </ion-item>
         </ion-list>
-
-
-
     </ion-content>
 </ion-menu> -->

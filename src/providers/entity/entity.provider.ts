@@ -79,6 +79,7 @@ export class FixedAsset{
     manufacturer;       //生产厂家
     serialNumber;      //出厂编号  
     fundChannel;       //资金渠道
+    photoPath;         //资产图片路径，用于存储完善资产信息中的图片路径信息
 }
 
 export class User{

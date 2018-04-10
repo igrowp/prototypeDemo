@@ -1,10 +1,8 @@
-import { PubConstant } from './../entity/constant.provider';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { AssetHandleDBProvider } from '../storage/asset.handle.db.provider';
 import { Idle, Scrap } from '../entity/pub.entity';
 import { AssetHandleWebProvider } from '../web/asset.handle.web.provider';
-import { NoticeService } from './notice.service';
 /*
   资产处置类
 */
@@ -12,8 +10,7 @@ import { NoticeService } from './notice.service';
 export class AssetHandleService {
 
   constructor(private assetHandleDbProvider:AssetHandleDBProvider,
-      private assetHandelWebProvider:AssetHandleWebProvider,
-      private noticeService:NoticeService) {
+      private assetHandelWebProvider:AssetHandleWebProvider) {
 
   }
   
@@ -109,8 +106,25 @@ export class AssetHandleService {
             })
           }
         }
-      },error=>reject(error))
+      },error=>reject("获取闲置资产信息失败"))
     })
+  }
+
+
+  /**
+   * 从服务器获取闲置申请单
+   * @param applyId 
+   */
+  getIdleBillFromServe(applyId:String){
+    return this.assetHandelWebProvider.getIdleBillFromServe(applyId);
+  }
+
+  /**
+   * 从服务器获取闲置申请单
+   * @param applyId 
+   */
+  getIdleAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getIdleAssetListFromServe(applyId);
   }
 
 
@@ -206,7 +220,7 @@ export class AssetHandleService {
             })
           }
         }
-      },error=>reject(error))
+      },error=>reject("获取报废资产数据失败"))
     })
   }
 
@@ -292,5 +306,26 @@ export class AssetHandleService {
   getScrapListByWorkerNumber(workerNumber:string){
     return this.assetHandleDbProvider.selectScrapListByWorkerNumber(workerNumber);
   }
+
+
+
+  //调拨
+  /**
+   * 从服务器获取调拨申请单
+   * @param allocateId 
+   */
+  getAlloBillFromServe(allocateId:String){
+    return this.assetHandelWebProvider.getAlloBillFromServe(allocateId);
+  }
+
+  /**
+   * 从服务器获取调拨资产列表
+   * @param allocateId 
+   */
+  getAlloAssetListFromServe(allocateId:String){
+    return this.assetHandelWebProvider.getAlloAssetListFromServe(allocateId);
+  }
+
+  
 
 }

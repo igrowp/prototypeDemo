@@ -1,11 +1,12 @@
+import { CvtNonNotice } from './../../providers/entity/cvt.entity.provider';
 import { LoginService } from './../../providers/service/login.service';
 import { CvtService } from './../../providers/service/cvt.service';
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CvtNonNotice } from '../../providers/entity/cvt.entity.provider';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { NoticeService } from '../../providers/service/notice.service';
 import { PubConstant } from '../../providers/entity/constant.provider';
+
 
 /**
  * Generated class for the TransPage page.

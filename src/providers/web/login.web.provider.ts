@@ -1,3 +1,4 @@
+import { PubConstant } from './../entity/constant.provider';
 import { HttpUtils } from './../utils/httpUtils';
 import { UserAccount, User } from './../entity/entity.provider';
 import { Http } from '@angular/http';
@@ -23,6 +24,7 @@ export class LoginWebProvider{
     return new Promise<UserAccount>((resolve, reject) => {
       this.http.get(this.getUrl() + '/account' + params)
         .map(res => res.json())
+        .timeout(PubConstant.HTTP_TIME_OUT_LONG)
         .subscribe((data) => {
           if (JSON.stringify(data) == "{}") {
             resolve(null);
@@ -70,6 +72,20 @@ export class LoginWebProvider{
     })
   }
 
+
+  getUserMessageBySSO(email: string) {
+    let params = "?email=" + email;
+    return new Promise<User>((resolve, reject) => {
+      this.http.get(this.getUrl() + '/user' + params)
+        .map(res => res.json())
+        .timeout(PubConstant.HTTP_TIME_OUT_SHORT)
+        .subscribe((data) => {
+          resolve(data);
+        }, err => {
+          reject(err);
+        })
+    })
+  }
 
 
   

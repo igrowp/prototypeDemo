@@ -135,10 +135,11 @@
                 <ion-col col-3 class="center" (click)="navToProcess()">
                     <img src="./assets/imgs/process.png" />
                     <h2 style="margin-top:10px;">流程审批
-                        <sup>
+                        <!-- <sup>
                             <ion-badge color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
-                        </sup>
+                        </sup> -->
                     </h2>
+                    <ion-badge color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToCvt()">
                     <img src="./assets/imgs/cvt.png" />
@@ -150,11 +151,8 @@
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToInv()">
                     <img src="./assets/imgs/inv.png" />
-                    <h2 style="margin-top:10px;">资产盘点
-                        <sup>
-                            <ion-badge color="danger" *ngIf="badgeValueInv!=null&&badgeValueInv!=0">{{badgeValueInv}}</ion-badge>
-                        </sup>
-                    </h2>
+                    <h2 style="margin-top:10px;">资产盘点</h2>
+                    <ion-badge class="badge" color="danger" *ngIf="badgeValueInv!=null&&badgeValueInv!=0">{{badgeValueInv}}</ion-badge>
                 </ion-col>
             </ion-row>
         </ion-card-content>
@@ -205,6 +203,7 @@
                 </ion-item>
             </ion-card-content>
         </ion-card>
+       
     </div>
 
     <ion-card *ngIf="badgeValueInv==1" (click)="navToInv()">
@@ -222,8 +221,9 @@
             </ion-item>
         </ion-card-content>
     </ion-card>
-
+    <!-- <img src="http://11.10.97.76/usr/tomcat/apache-tomcat-8.5.11/webapps/eaam-app/upload/dzceshi/2018-2-7-2.png"> -->
 </ion-content>
+
 
 <ion-menu [content]="content">
     <ion-list inset>
@@ -253,7 +253,11 @@
         <ion-item-divider></ion-item-divider>
         <ion-item>
             <ion-icon name="settings" item-start></ion-icon>
-            <h2 (click)="navToSetting(true)">设置</h2>
+            <h2 (click)="setting()">设置服务器地址</h2>
+        </ion-item>
+        <ion-item>
+            <ion-icon name="paper-plane" item-start></ion-icon>
+            <h2 (click)="checkAppVersion(true)">版本更新</h2>
         </ion-item>
         <ion-item no-lines>
                 <ion-icon name="power" item-start></ion-icon>

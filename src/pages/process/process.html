@@ -14,15 +14,12 @@
 <ion-content class="bg-content">
   <div *ngIf="hasData">
 
-    <ion-list>
+    <!-- <ion-list>
       <ion-item *ngFor="let item of todoEventList;let i=index" (click)="handleDetail(item)">
-        <!-- <ion-label (click)="scan(item)">
-                <h2>{{item.eventName}}</h2>
-                <h4 class="sub-title">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</h4>
-            </ion-label> -->
         <ion-row>
           <ion-col col-12>
-            <h2>{{item.eventName}}</h2>
+            <h2 *ngIf="item.eventName!=undefined&&item.eventName!=''">{{item.eventName}}</h2>
+            <h2 *ngIf="item.eventName==undefined||item.eventName==''">未命名审批名称</h2>
           </ion-col>
           <ion-col col-4 class="center">
             {{item.eventType}}
@@ -35,7 +32,7 @@
           </ion-col>
         </ion-row>
       </ion-item>
-    </ion-list>
+    </ion-list> -->
 
     <ion-list *ngIf="convertList.length>0">
       <ion-item-divider>
@@ -58,11 +55,34 @@
         </ion-row>
       </ion-item>
     </ion-list>
+
     <ion-list *ngIf="allocateList.length>0">
       <ion-item-divider>
-        资产调拨
+        调拨审批
       </ion-item-divider>
       <ion-item *ngFor="let item of allocateList;let i=index" (click)="handleDetail(item)">
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventPerson}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="idleList.length>0">
+      <ion-item-divider>
+        闲置审批
+      </ion-item-divider>
+      <ion-item *ngFor="let item of idleList;let i=index" (click)="handleDetail(item)">
         <ion-row>
           <ion-col col-12>
             <h2>{{item.eventName}}</h2>

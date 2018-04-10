@@ -3,11 +3,10 @@ import { PubConstant } from './../entity/constant.provider';
 import { AssetWebProvider } from './../web/asset.web.provider';
 import { CvtNonReceive, CvtNonNotice,CvtNonNoticeSub } from './../entity/cvt.entity.provider';
 import { PhotoLibrary } from '@ionic-native/photo-library';
-import { FixedAsset, ChangeRecord, UserSimple } from './../entity/entity.provider';
+import { FixedAsset, ChangeRecord } from './../entity/entity.provider';
 import { CvtWebProvider } from '../web/cvt.web.provider';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { DataBaseUtil } from '../utils/dataBaseUtil';
 import { NoticeService } from './notice.service';
 import { PubDBProvider } from '../storage/pub.db.provider';
 import { AttachmentWebProvider } from '../web/attachment.web.provider';
@@ -51,7 +50,7 @@ export class CvtService {
               reject("同步失败" + error);
             })
           }, (error) => {
-            reject("获取领用表失败：" + error);
+            reject("获取领用表失败");
           })
         }
       }
@@ -100,14 +99,15 @@ export class CvtService {
    * 根据userId查询员工信息
    * @param userId 
    */
-  queryFromUserSimpleByUserId(userId:string){
-    return new Promise<UserSimple>((resolve,reject)=>{
-      this.pubDBProvider.queryFromUserSimpleByUserId(userId).then((data)=>{
-        resolve(data);
-      },(error)=>{
-        reject(error);
-      })
-    })
+  getUserSimpleList(){
+    return this.assetWebProvider.getUserSimpleListFromServe();
+  }
+  /**
+   * 根据userId查询员工信息
+   * @param userId 
+   */
+  getUserSimpleByUserId(userId:string){
+    return this.assetWebProvider.getUserSimpleFromServe(userId);
   }
 
 
@@ -237,7 +237,7 @@ export class CvtService {
     return new Promise((resolve, reject) => {
       this.cvtWebProvider.receiverNoGranting(cvtNonNotice.noticeId, recipient).then((data) => {
         if (data != null) {
-          this.uploadSignature(recipient, signaturePath, signatureName, null, data,null, PubConstant.SIGNATURE_TYPE_CVT_RECEIVER_NO_GRANTING).then(() => {
+          this.attaWebProvider.uploadSignature(recipient, signaturePath, signatureName, null, data,null, PubConstant.ATTACHMENT_TYPE_CVT_RECEIVER_NO_GRANTING,this.attaWebProvider.UploadType.BASE64).then(() => {
 
           }, (error) => {
             reject("上传签名失败，请检查网络是否通畅");
@@ -293,39 +293,6 @@ export class CvtService {
     })
   }
   
-  
-
-  /**
-   * 上传图片
-   * @param workerNumber 员工编号
-   * @param signaturePath 签名路径
-   * @param signatureName 签名名称
-   * @param attachmentType 附件类型
-   * @param recordId 存放附件的表的主键
-   * @param recordIdList 存放附件的表的主键，批量处理情况
-   */
-  uploadSignature(workerNumber, signaturePath, signatureName,recordId,recordIdList,cvtNonNoticeId,attachmentType) {
-    return new Promise((resolve, reject) => {
-      let signatureParams = new Map<string, string>();
-      signatureParams.set("workerNumber", workerNumber);
-      if(recordId){
-        signatureParams.set("recordId", recordId);
-      }else if(recordIdList){
-        signatureParams.set("recordIdList",JSON.stringify(recordIdList));
-      }else if(cvtNonNoticeId){
-        signatureParams.set("noticeId", cvtNonNoticeId);
-      }else{
-        //没有签名附件主键的情况
-        reject("缺少附件表主键");
-      }
-      signatureParams.set("attachmentType",attachmentType); //转产凭证、资产附件、转产照片、盘点
-      this.photoLibrary.getPhoto(signaturePath).then((blob) => {
-        this.attaWebProvider.uploadSignature(blob, signatureName, signatureParams).then((data) => {
-          resolve(data);
-        },err=>reject(err))
-      },err=>reject(err))
-    })
-  }
 
   /**
    * 签名确认后，将资产信息保存到本地，存储资产领用表
@@ -348,7 +315,7 @@ export class CvtService {
               //说明该资产已发放
               nonReceive.recordFlag=2;
             }
-            this._addToCvtNonReceive(nonReceive).then(() => {
+            this._addOrUpdateToCvtNonReceive(nonReceive).then(() => {
               //插入成功，执行
               if (nonReceive.receiveId == lastReveiceId) {
                 //说明插入到了最后一个
@@ -437,7 +404,7 @@ export class CvtService {
 
   //////插入专区///////////
   //插入或更新非安转产领用表
-  private _addToCvtNonReceive(cvtNonReceive: CvtNonReceive) {
+  private _addOrUpdateToCvtNonReceive(cvtNonReceive: CvtNonReceive) {
     return new Promise((resolve, reject) => {
       this.cvtDBProvider.queryFromCvtNonReceiveByReceiveId(cvtNonReceive.receiveId).then((receive) => {
         if (receive == null) {
@@ -445,7 +412,9 @@ export class CvtService {
             resolve();
           }, err => reject(err))
         }else{
-          resolve();
+          this.cvtDBProvider.updateToCvtNonReceive(cvtNonReceive).then(()=>{
+            resolve();
+          },err=>reject(err))
         }
       }, err => reject(err))
     })

@@ -34,6 +34,18 @@ export class Idle{
     applyState:string;   //申请状态  0未提交，1审批中，2审批通过，3驳回
     recordFlag;   //删除标识
 }
+/**
+ * 闲置申请单
+ */
+export class IdleBill{
+    appId;     //申请ID
+    appTitle;  //申请标题
+    appNo;     //申请单号
+    appOrg;    //申请单位
+    appDate;   //申请日期
+    appPerson;    //申请人
+
+}
 
 /**
  * 报废
@@ -51,7 +63,7 @@ export class Scrap{
 }
 
 
-export class HttpResult{
+export class PostRequestResult{
     result:boolean;  //结果  true:成功  , false:失败
     applyState:string;    //申请单状态, 详情见常量类
 
@@ -69,20 +81,82 @@ export class TodoEvent{
     loginName;
     taskId;     //工作流任务ID
     eventOrg;   //通知单作用单位
-    nextApprovalPersonName;  //下一个审批人
-    nextApprovalPersonGroup;  //下一个审批人列表，与上面只能有一个存在
-    nextStepName;  //下一个审批步骤
 }
 
+/**
+ * 下一步审批人信息
+ */
+export class NextStepApprover{
+    processInstanceId;  //流程实例ID  格式：nodeID_姓名|员工编号  例如"sid-73BD84F3-E8DA-49FD-98BF-8A2D55B0EFEC_王宇|80420935"
+    approverName; //审批人姓名
+}
+
+/**
+ * 下一步审批信息
+ */
+export class NextStepInfo{
+    nodeId;  //节点ID
+    nextStepName;  //下一步审批名称
+    nextStepApprovers:Array<NextStepApprover>;
+}
+
+/**
+ * 提交审批结果的Bean参数
+ */
 export class WorkflowBean{
-    userName; //审批人
+    workerNumber; //审批人员工编号
     outcome;  //审批结果  同意/驳回
     comment;  //审批意见
     taskId;   //流程ID
-    nextApprovePerson;  //下一个审核人    //用于涉及到并行的情况，如果是单行的审批则值为""
+    rejectTo; //驳回到
+    nextStepApprovers;  //下一个审核人    //用于涉及到并行的情况，如果是单行的审批则值为""
     approveType;  //审批类型
 }
 
+/**
+ * 资产调拨申请单
+ */
+export class AllocateBill{
+    allocateId; //申请单Id
+    allocateType; //申请单类型（气矿内部调拨、作业区内部调拨、分公司调入气矿、气矿调入分公司）
+    appNo;     //申请单号
+    appOrg;    //申请单位
+    userId;   //申请人userId
+    appDate;   //申请日期
+    appOutOrg; //调出单位
+    appInOrg;  //调入单位
+    appPerson; //申请人姓名
+}
+
+/**
+ * 简单资产信息
+ */
+export class Asset{
+    assetCode;  //资产编码
+    assetId;  //资产ID
+    assetName;  //资产名称
+    selfNumber;  //自编码
+    specModel;   //规格型号
+}
+
+/**
+ * 手机版本信息
+ */
+export class AppInfo{
+    appVersion;
+    appRemark;
+}
+
+/**
+ * 附件类
+ */
+export class Attachment{
+    assetId;  //资产id
+    workerNumber;   //员工编号
+    attachmentType; //附件类型
+    storagePath;  //存储路径
+    isUpload;   //是否上传 0未上传，1已上传
+}
 
 
 

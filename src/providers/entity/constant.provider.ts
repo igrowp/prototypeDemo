@@ -1,4 +1,29 @@
 export class PubConstant{
+
+	//上传方式
+	/**
+	 * 图片上传方式-base64
+	 */
+	static UPLOAD_TYPE_BASE64=0;
+	/**
+	 * 图片上传方式-blob
+	 */
+	static UPLOAD_TYPE_BLOB=1;
+
+
+	//工作流驳回状态
+	/**
+	 * 工作流
+	 * 驳回到申请者
+	 */
+	static WORKFLOW_REJECT_TO_APPLICANT="APPLICATE";
+	/**
+	 * 工作流
+	 * 驳回到上一个审批人
+	 */
+	static WORKFLOW_REJECT_TO_PREVIOUS="PREVIOUS";
+
+
 	//本地存储字段
 	/**
 	 * 同步时间(value:string)
@@ -87,23 +112,35 @@ export class PubConstant{
 	static CHANGE_RECORD_TYPE_INVENTORY="INVENTORY";
 
 
-	///签字类型
+	///附件表类型
 	/**
-	 * 转产领用人签名的类型
+	 * 转产领用人签名的附件类型
 	 */
-	static SIGNATURE_TYPE_CVT_SIGNATURE="CVT_SIGNATURE";
+	static ATTACHMENT_TYPE_CVT_SIGNATURE="CVT_SIGNATURE";
 	/**
-	 * 转产保管人签名的类型
+	 * 转产保管人签名的附件类型
 	 */
-	static SIGNATURE_TYPE_CVT_RECEIVER="CVT_RECEIVER";
+	static ATTACHMENT_TYPE_CVT_RECEIVER="CVT_RECEIVER";
 	/**
-	 * 转产领用人签名的类型-未下发情况
+	 * 转产领用人签名的附件类型-未下发情况
 	 */
-	static SIGNATURE_TYPE_CVT_RECEIVER_NO_GRANTING="CVT_RECEIVER_NO_GRANTING";
+	static ATTACHMENT_TYPE_CVT_RECEIVER_NO_GRANTING="CVT_RECEIVER_NO_GRANTING";
 	/**
-	 * 盘点时的签名的类型
+	 * 盘点时签名保存的附件类型
 	 */
-	static SIGNATURE_TYPE_INV_SIGNATURE="INV_SIGNATURE";
+	static ATTACHMENT_TYPE_INV_SIGNATURE="INV_SIGNATURE";
+	/**
+	 * 盘点时图片保存的的附件类型
+	 */
+	static ATTACHMENT_TYPE_INV_IMG="INV_IMG";
+	/**
+	 * 闲置时的附件类型
+	 */
+	static ATTACHMENT_TYPE_IDLE="IDLE_IMG";
+	/**
+	 * 资产图片的附件类型
+	 */
+	static ATTACHMENT_TYPE_ASSET="ASSET_IMG";
 
 
 

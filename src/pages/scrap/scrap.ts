@@ -1,11 +1,9 @@
-import { DateUtil } from './../../providers/utils/dateUtil';
+import { ConvertUtil } from './../../providers/utils/convertUtil';
 import { NoticeService } from './../../providers/service/notice.service';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Scrap } from '../../providers/entity/pub.entity';
 import { AssetHandleService } from '../../providers/service/asset.handle.service';
-import { DataBaseUtil } from '../../providers/utils/dataBaseUtil';
-
 /**
  * Generated class for the ScrapPage page.
  *
@@ -21,7 +19,7 @@ import { DataBaseUtil } from '../../providers/utils/dataBaseUtil';
 export class ScrapPage {
   public scrapType;//报废类型
   public date;
-  public dateNow = DateUtil.formatDate(new Date());
+  public dateNow = ConvertUtil.formatDate(new Date());
 
   public scrap:Scrap=new Scrap();
 

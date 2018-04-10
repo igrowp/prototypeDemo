@@ -2,7 +2,6 @@ import { Storage } from '@ionic/storage';
 import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Properties } from '../properties/properties';
-import { NoticeService } from '../service/notice.service';
 
 /*
   该类用于数据库的创建已经数据库版本升级操作
@@ -34,8 +33,7 @@ export class DBService {
 
 
   constructor(private sqlite: SQLite,
-             private storage:Storage,
-             private noticeService:NoticeService) {
+             private storage:Storage,) {
     //设定本次数据库的版本号
     this.newVersion = Properties.dbConfig.version;
     this.dbName = Properties.dbConfig.name;
@@ -317,7 +315,8 @@ CHANGE_CUSTODIAN varchar(32),
 CHANGE_WORKER_NUMBER varchar(20),
 MANUFACTURER varchar(100),
 SERIAL_NUMBER varchar(100),
-FUND_CHANNEL varchar(100))`, {})//建表
+FUND_CHANNEL varchar(100),
+PHOTO_PATH varchar(512))`, {})//建表
           .then(() => console.log('建立本地固定资产台账表成功'))
           .catch(e => alert(e.message));
         //创建账户表
@@ -383,15 +382,15 @@ WORKER_NUMBER varchar(20))`, {})//建表
           .then(() => console.log('创建组织结构表成功'))
           .catch(e => alert(e.message));
 
-        //创建员工精简信息表
-        db.executeSql('drop table if exists sys_person_info_simple', {});
-        db.executeSql(`create table sys_person_info_simple
-        (WORKER_NUMBER varchar(20),
-        USER_NAME varchar(100),
-        WORK_IN_ORG varchar(32),
-        USER_ID varchar(32))`, {})//建表
-          .then(() => console.log('创建员工精简信息表成功'))
-          .catch(e => alert(e.message));
+        // //创建员工精简信息表
+        // db.executeSql('drop table if exists sys_person_info_simple', {});
+        // db.executeSql(`create table sys_person_info_simple
+        // (WORKER_NUMBER varchar(20),
+        // USER_NAME varchar(100),
+        // WORK_IN_ORG varchar(32),
+        // USER_ID varchar(32))`, {})//建表
+        //   .then(() => console.log('创建员工精简信息表成功'))
+        //   .catch(e => alert(e.message));
 
         //创建盘点通知表
         db.executeSql('drop table if exists inv_notice', {});
@@ -499,6 +498,18 @@ WORKER_NUMBER varchar(20))`, {})//建表
           PRIMARY KEY (SCRAP_ID)
         )`, {})//建表
           .then(() => console.log('创建报废表成功'))
+          .catch(e => alert(e.message));
+
+        //创建附件表
+        db.executeSql('DROP TABLE IF EXISTS sys_attachments', {});
+        db.executeSql(`CREATE TABLE sys_attachments (
+          ASSET_ID varchar(32) NOT NULL,
+          WORKER_NUMBER varchar(20) DEFAULT NULL,
+          ATTACHMENT_TYPE varchar(32) DEFAULT NULL,
+          STORAGE_PATH varchar(512) DEFAULT NULL,
+          IS_UPLOAD int(1) DEFAULT 0
+        )`, {})//建表
+          .then(() => console.log('创建附件表成功'))
           .catch(e => alert(e.message));
 
         //创建数据字典表

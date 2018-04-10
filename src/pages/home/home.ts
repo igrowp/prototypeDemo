@@ -1,7 +1,6 @@
-import { InvWebProvider } from './../../providers/web/inv.web.provider';
+import { AttachmentService } from './../../providers/service/attachment.service';
+import { HttpUtils } from './../../providers/utils/httpUtils';
 import { WorkflowWebProvider } from './../../providers/web/workflow.web.provider';
-import { DateUtil } from './../../providers/utils/dateUtil';
-import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { PubConstant } from './../../providers/entity/constant.provider';
 import { CvtNonNotice, CvtNonReceive } from './../../providers/entity/cvt.entity.provider';
@@ -13,11 +12,16 @@ import { LoginService } from './../../providers/service/login.service';
 import { InvNotice } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams, Platform, AlertController, ActionSheetController } from 'ionic-angular';
-import { CvtDBProvider } from '../../providers/storage/cvt.db.provider';
-import { CvtWebProvider } from '../../providers/web/cvt.web.provider';
+import { IonicPage, LoadingController, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { AssetHandleService } from '../../providers/service/asset.handle.service';
+
+import { TransferObject, Transfer } from '@ionic-native/transfer';
+import { AppVersion } from '@ionic-native/app-version';
+import { FileOpener } from '@ionic-native/file-opener';
+import { PubWebProvider } from '../../providers/web/pub.web.provider';
+import { ConvertUtil } from '../../providers/utils/convertUtil';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 declare let ReadRFID: any;
 
 @IonicPage()
@@ -42,6 +46,7 @@ export class HomePage {
   public cvtNoticeList: Array<CvtNonNotice>;  //转产通知ID
   public finishTime="";
 
+  private fileTransfer: TransferObject;
 
   constructor(public navCtrl: NavController,
     private loadingCtrl: LoadingController,
@@ -56,13 +61,20 @@ export class HomePage {
     private barcodeScanner: BarcodeScanner,
     private assetHandleService:AssetHandleService,
     private cvtService: CvtService,
-    private cvtWebProvider:CvtWebProvider,
-    private invWebProvider:InvWebProvider,
-    public noticeService: NoticeService,
-    private cvtDbProvider: CvtDBProvider,
-    private backButtonService: BackButtonService) {
+    private noticeService: NoticeService,
+    private attachmentService:AttachmentService,
+    private backButtonService: BackButtonService,
+    private appVersion: AppVersion,
+    private fileOpener: FileOpener,
+    private pubWebProvider:PubWebProvider,
+    private screenOrientation:ScreenOrientation,
+    private transfer: Transfer) {
+      //控制屏幕方向（当前为强制横屏）
+    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
 
     this.badgeValueInv = 0;
+    this.fileTransfer = this.transfer.create();
+    this.checkAppVersion(false);
 
     this.platform.ready().then(() => {
       this.backButtonService.registerBackButtonAction(null);
@@ -95,28 +107,24 @@ export class HomePage {
 
   ionViewDidEnter() {
     this.initCvt();
+    this.getTaskListFromServe();
     // if (this.workForOrg) {
     //   this.getNoticeFromServe();  //每次进入主界面，从服务器获取一次数据
     // }
   }
-  // test(name: HTMLInputElement) {
-  //   this.invWebProvider.test(name.value).then(()=>{
+  test() {
+    this.navCtrl.push("Test2Page");
+    //this.checkAppVersion();
+    // this.invWebProvider.test().then(()=>{
 
-  //   })
-    
+    // })
+    // let modal=this.modalCtrl.create("Test1Page");
+    // modal.onDidDismiss(data=>{
+    //   alert(data);
+    // })
+    // modal.present();
 
-  //   // this.cvtService.getCvtNonNoticeByWorkerNumberFromServe("1234中国").then(()=>{
-
-  //   // })
-
-  //   //this.navCtrl.push("Test2Page");
-    
-  //   // this.cvtDbProvider.deleteFromCvtNonNoticeByNoticeId("a7abd4ce5653403694d1de0ea108333e");
-  //   // this.cvtDbProvider.deleteFromCvtNonNoticeSubByNoticeId("a7abd4ce5653403694d1de0ea108333e");
-  //   // this.cvtDbProvider.deleteFromCvtNonReceiveByNoticeId("a7abd4ce5653403694d1de0ea108333e").then(() => {
-  //   //   alert("删除成功");
-  //   // });
-  // }
+  }
   test11(){
     alert("this.listConvert.length="+this.listConvert.length);
     alert("this.listGranting.length="+this.listGranting.length);
@@ -258,17 +266,18 @@ export class HomePage {
   //流程审批
   navToProcess(param?:boolean) {
     this.navCtrl.push("ProcessPage",{
-      userName:this.userName
+      workerNumber:this.workerNumber
     });
     // this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME).then((time)=>{
     //   alert("上次数据下载时间"+time);
     // })
-    // if(param){
-    //   setTimeout(()=>{
-    //     this.menuCtrl.close();
-    //   },400);
-    // }
+    
     // alert("功能开发中");
+    if(param){
+      setTimeout(()=>{
+        this.menuCtrl.close();
+      },400);
+    }
   }
 
   //设置页面
@@ -282,6 +291,53 @@ export class HomePage {
 
   }
 
+  setting(){
+    var address=HttpUtils.getUrlAddressFromProperties();
+    var port=HttpUtils.getUrlPortFromProperties();
+    this.alertCtrl.create({
+      title:"设置服务器地址/端口",
+      inputs: [
+        {
+          label:'地址',
+          name: 'address',
+          placeholder: '地址：'+address
+        },
+        {
+          name:'port',
+          placeholder:'端口：'+port
+        }
+      ],
+      buttons:[
+        {
+          text:'恢复默认值',
+          handler:data=>{
+            HttpUtils.setDefaultUrlToProperties();
+            this.noticeService.showNativeToast("设置成功");
+          }
+        },
+        {
+          text: '确定',
+          handler: data => {
+            if (data.address == "") {
+              this.noticeService.showNativeToast("服务器地址为空");
+            } else if (data.port == "") {
+              this.noticeService.showNativeToast("服务器端口为空");
+            } else {
+              if (!data.address.includes("http://") && !data.address.includes("https://")) {
+                data.address = "http://" + data.address;
+              }
+              HttpUtils.setUrlToProperties(data.address, data.port);
+              //保存到本地
+              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS, data.address);
+              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT, data.port);
+              this.noticeService.showNativeToast("设置成功");
+            }
+          }
+        }
+      ]
+    }).present();
+  }
+
   /**
    * 得到需要同步的数据
    */
@@ -290,28 +346,33 @@ export class HomePage {
       let cvtNonReceiveList = Array<CvtNonReceive>();
       this.assetHandleService.getScrapListByWorkerNumber(this.workerNumber).then((scrapList) => {
         this.assetHandleService.getIdleListByWorkerNumber(this.workerNumber).then((idleList) => {
-          this.assetService.queryAssetsFromFixed(this.workerNumber, 1).then().then((fixedAssets) => {
-            if (this.cvtNoticeList == null || this.cvtNoticeList.length == 0) {
-              //没有转产通知
-              resolve(fixedAssets.length + idleList.length + scrapList.length);
-            } else {
-              let lastNoticeId = this.cvtNoticeList[this.cvtNoticeList.length - 1].noticeId;
-              for (let i = 0; i < this.cvtNoticeList.length; i++) {
-                let cvtNotice = this.cvtNoticeList[i];
-                this.cvtService.queryFromCvtNonReceive(cvtNotice.noticeId, 1).then((cvtNonReceives) => {
-                  if (cvtNonReceives) {
-                    cvtNonReceiveList = cvtNonReceiveList.concat(cvtNonReceives);
-                  }
-                  if (cvtNotice.noticeId == lastNoticeId) {
-                    resolve(fixedAssets.length + cvtNonReceives.length + idleList.length + scrapList.length);
-                  }
-                }, (error) => {
-                  reject("获取领用表失败：<br>" + error);
-                })
+          this.attachmentService.getUnSynchroAttachments().then((attachments) => {
+            this.assetService.queryAssetsFromFixed(this.workerNumber, 1).then().then((fixedAssets) => {
+              if (this.cvtNoticeList == null || this.cvtNoticeList.length == 0) {
+                //没有转产通知
+                resolve(fixedAssets.length + idleList.length + scrapList.length+attachments.length);
+              } else {
+                let lastNoticeId = this.cvtNoticeList[this.cvtNoticeList.length - 1].noticeId;
+                for (let i = 0; i < this.cvtNoticeList.length; i++) {
+                  let cvtNotice = this.cvtNoticeList[i];
+                  this.cvtService.queryFromCvtNonReceive(cvtNotice.noticeId, 1).then((cvtNonReceives) => {
+                    if (cvtNonReceives) {
+                      cvtNonReceiveList = cvtNonReceiveList.concat(cvtNonReceives);
+                    }
+                    if (cvtNotice.noticeId == lastNoticeId) {
+                      resolve(fixedAssets.length + cvtNonReceives.length + idleList.length + scrapList.length+attachments.length);
+                    }
+                  }, (error) => {
+                    reject("获取领用表失败：<br>" + error);
+                  })
+                }
               }
-            }
+            }, (error) => {
+              reject("获取台账失败：<br>" + error);
+            })
+
           }, (error) => {
-            reject("获取台账失败：<br>" + error);
+            reject("获取附件表失败：<br>" + error)
           })
         }, (error) => {
           reject("获取闲置表失败：<br>" + error)
@@ -319,7 +380,7 @@ export class HomePage {
       }, (error) => {
         reject("获取报废表失败：<br>" + error)
       })
-  })
+    })
   }
 
   //同步数据
@@ -356,7 +417,7 @@ export class HomePage {
                 //同步数据
                 this._synchroData();
                 //将时间保存到数据库中
-                let time = DateUtil.formatDateToHMS(new Date())
+                let time = ConvertUtil.formatDateToHMS(new Date())
                 this.loginService.updateSynchroTimeToUserInfo(this.workerNumber, time);
                 this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_SYNCHRO_TIME, time);
               }
@@ -413,12 +474,8 @@ export class HomePage {
     return new Promise((resolve, reject) => {
       this.getInvNoticeFromServe().then(() => {
         this.getCvtNoticeFromServe().then(() => {
-          //获取流程审批数据
-          this.workflowWebProvider.getTaskListFromServe(this.userName).subscribe((taskList)=>{
+          this.getTaskListFromServe().then(()=>{
             resolve();
-            if(taskList!=null&&taskList.length>0){
-              this.badgeValuePro=taskList.length;
-            }
           }, error => {
             reject(error);
           })
@@ -431,6 +488,19 @@ export class HomePage {
     })
   }
 
+  getTaskListFromServe() {
+    return new Promise((resolve, reject) => {
+      //获取流程审批数据
+      this.workflowWebProvider.getTaskListFromServe(this.workerNumber).subscribe((taskList)=>{
+        resolve();
+        if(taskList!=null&&taskList.length>=0){
+          this.badgeValuePro=taskList.length;
+        }
+      }, error => {
+        reject(error);
+      })
+    })
+  }
   getInvNoticeFromServe() {
     return new Promise((resolve, reject) => {
       if (this.badgeValueInv == 0 || this.invNotice == null) {
@@ -440,7 +510,7 @@ export class HomePage {
             //说明有通知了
             this.badgeValueInv = 1;
             this.invNotice = notice;
-            this.finishTime=DateUtil.formatDate(new Date(notice.timeFinish));
+            this.finishTime=ConvertUtil.formatDate(new Date(notice.timeFinish));
           } else {
             this.badgeValueInv = 0;
             this.invNotice = null;
@@ -539,23 +609,29 @@ export class HomePage {
         this.assetHandleService.synchroIdleListToServe(this.workerNumber).then(() => {
           loading.setContent("正在同步报废资产数据...");
           this.assetHandleService.synchroScrapListToServe(this.workerNumber).then(() => {
-            loading.dismiss();
-            this.noticeService.showNativeToast("同步成功");
+            loading.setContent("正在同步附件表...")
+            this.attachmentService.synchroAttachmentToServe().then(()=>{
+              loading.dismiss();
+              this.noticeService.showNativeToast("同步成功");
+            }, error => {
+              loading.dismiss();
+              this.noticeService.showIonicAlert(error);
+            })
           }, error => {
             loading.dismiss();
-            this.noticeService.showIonicAlert("同步报废数据失败<br>" + error);
+            this.noticeService.showIonicAlert(error);
           })
         }, error => {
           loading.dismiss();
-          this.noticeService.showIonicAlert("同步闲置数据失败<br>" + error);
+          this.noticeService.showIonicAlert(error);
         })
       }, error => {
         loading.dismiss();
-        this.noticeService.showIonicAlert("同步转产数据失败<br>" + error);
+        this.noticeService.showIonicAlert(error);
       })
     }, error => {
       loading.dismiss();
-      this.noticeService.showIonicAlert("同步盘点数据失败<br>网络连接超时");
+      this.noticeService.showIonicAlert(error);
     })
   }
 
@@ -597,6 +673,89 @@ export class HomePage {
   //   })
   // }
 
+  //软件更新
+  /**
+   * 判断当前版本是否需要更新
+   * @param showResult 不需要更新时是否进行提示， true提示 false不提示
+   */
+  checkAppVersion(showResult:boolean){
+    if(showResult){
+      var loading=this.noticeService.showIonicLoading("正在获取数据...");
+      loading.present();
+    }
+    this.pubWebProvider.getRecentAppVersion().subscribe((appInfo)=>{
+      this.appVersion.getVersionNumber().then((version)=>{
+        if(showResult){
+          loading.dismiss();
+        }
+        if(appInfo.appVersion>version){
+          let alert = this.alertCtrl.create({
+            title: '版本更新',
+            cssClass:"alert-conform",
+            subTitle: '发现最新版本, 是否更新?',
+            buttons: [
+              {
+                text: '取消',
+                role: 'cancel',
+                handler: () => {
+                  console.log('取消');
+                }
+              },
+              {
+                text: '更新',
+                handler: () => {
+                  console.log('更新');
+                  this.loadAPP();
+                }
+              }
+            ]
+          });
+          alert.present();
+  
+        }else if(showResult){
+          this.noticeService.showIonicAlert("当前已经是最新版本");
+          return;
+        }
+      })
+      
+    },(error)=>{
+      if(showResult){
+        loading.dismiss();
+        this.noticeService.showIonicAlert("网络连接超时");
+      }
+    })
+
+  }
+
+  // 下载app
+  private loadAPP(){
+    let loading = this.loadingCtrl.create({
+        spinner: 'bubbles',
+        content: '安装包正在下载...',
+        dismissOnPageChange: false
+    });
+    loading.present();
+    // 下载 
+    this.fileTransfer.download(HttpUtils.getApkDownloadURLFromProperties(), "file:///storage/sdcard0/Download/qdg.apk").then((entry) => {
+      loading.dismiss();
+      this.fileOpener.open("file:///storage/sdcard0/Download/qdg.apk",'application/vnd.android.package-archive').then(()=>{});
+    }, (error) => {
+      // handle error
+      console.log('download error');
+      alert("下载失败"+error.message);
+      loading.dismiss();
+    });
+    // 进度
+    this.fileTransfer.onProgress((event) => {
+      //进度，这里使用文字显示下载百分比
+      var downloadProgress = (event.loaded / event.total) * 100;
+      loading.setContent("已经下载：" + Math.floor(downloadProgress) + "%");
+      if (downloadProgress > 99) {
+          loading.dismiss();
+      }
+    });
+  }
+
 
 
   /**
@@ -631,6 +790,29 @@ export class HomePage {
         })
       }
     });
+
+    //sso直接退出
+    // let alert = this.alertCtrl.create({
+    //   title: '提示',
+    //   cssClass:"alert-conform",
+    //   subTitle: '是否确认退出?',
+    //   buttons: [
+    //     {
+    //       text: '取消',
+    //       role: 'cancel',
+    //       handler: () => {
+    //         console.log('取消');
+    //       }
+    //     },
+    //     {
+    //       text: '退出',
+    //       handler: () => {
+    //         this.platform.exitApp();
+    //       }
+    //     }
+    //   ]
+    // });
+    // alert.present();
   }
 
 

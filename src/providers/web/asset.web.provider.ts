@@ -117,13 +117,36 @@ export class AssetWebProvider {
   /**
    * 从服务器获取简单用户信息
    */
-  getUserSimpleListFromServe(lastRequestTime:string) {
+  getUserSimpleListFromServe(lastRequestTime?:string) {
     return new Promise<Array<UserSimple>>((resolve, reject) => {
-      let params = "?lastRequestTime=" + lastRequestTime;
+      let params ="";
+      if(lastRequestTime){
+        params="?lastRequestTime=" + lastRequestTime;
+      } 
       this.http.get(this.getUrl() + '/user/simple/list'+params)
         .map(res => res.json())
         .subscribe((data) => {
           resolve(data);
+        }, error => {
+          reject(error.message);
+        })
+    })
+  }
+
+  /**
+   * 从服务器获取简单用户信息
+   */
+  getUserSimpleFromServe(userId:string) {
+    return new Promise<UserSimple>((resolve, reject) => {
+      let params = "?userId=" + userId;
+      this.http.get(this.getUrl() + '/user'+params)
+        .map(res => res.json())
+        .subscribe((data) => {
+          if(data=="{}"){
+            resolve(null);
+          }else{
+            resolve(data);
+          }
         }, error => {
           reject(error.message);
         })

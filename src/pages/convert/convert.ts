@@ -53,6 +53,8 @@ export class ConvertPage {
       // }
     })
   }
+
+
   //点击详情
   handleDetail(noticeSub){
     this.cvtService.getCvtAssetBySubNoticeId(noticeSub.subNoticeId).then((data)=>{

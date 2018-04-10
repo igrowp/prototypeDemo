@@ -142,15 +142,8 @@ export class CvtWebProvider{
    * 将本地数据资产台账同步到服务器
    */
   syncCvtNonReceiveToServer(cvtNonReceives: Array<CvtNonReceive>) {
-    let headers = new Headers();
-    headers.append("Accept", 'application/json');
-    headers.append('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
-
-    let options = new RequestOptions({
-      headers: headers
-    });
+    let options=HttpUtils.getRequestOptions();
     var json = JSON.stringify(cvtNonReceives);
-    console.log(json);
     let obj: any = {
       cvtNonReceives: json
     }
@@ -168,21 +161,9 @@ export class CvtWebProvider{
             //图片上传成功
             //传签名
             let cvtNonReceive = cvtNonReceives[i];
-            let signatureParams = new Map<string, string>();
-            signatureParams.set("workerNumber", cvtNonReceive.receivePerson);
-            signatureParams.set("recordId", cvtNonReceive.receiveId);
-            signatureParams.set("attachmentType", PubConstant.SIGNATURE_TYPE_CVT_SIGNATURE); //转产凭证、资产附件、转产照片、盘点
-            this.photoLibrary.getPhoto(cvtNonReceive.signaturePath).then((blob) => {
-              this.attaWebProvider.uploadSignature(blob, cvtNonReceive.signatureName, signatureParams).then(() => {
-                if (cvtNonReceive.receiveId == receiveId) {
-                  //说明完成了最后一个的图片上传
-                  resolve("同步成功");
-                }
-              }, error => {
-                reject(error + "<br>")
-              })
-            })
+            this.attaWebProvider.uploadSignature(cvtNonReceive.receivePerson,cvtNonReceive.signaturePath,cvtNonReceive.signatureName,cvtNonReceive.receiveId,null,null,PubConstant.ATTACHMENT_TYPE_CVT_SIGNATURE,this.attaWebProvider.UploadType.BASE64);
           }
+          resolve("同步成功");
         }, err => {
           reject(err);
         });

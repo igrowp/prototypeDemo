@@ -1,5 +1,5 @@
+import { ConvertUtil } from './../../providers/utils/convertUtil';
 import { CvtService } from './../../providers/service/cvt.service';
-import { DateUtil } from './../../providers/utils/dateUtil';
 import { NoticeService } from './../../providers/service/notice.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { CvtNonReceive } from './../../providers/entity/cvt.entity.provider';
@@ -58,7 +58,7 @@ export class GrantingBindPage {
       this.cvtNonReceives[i].receiveOrg=this.receiveOrg;
       this.cvtNonReceives[i].receiveName=this.receivePerson;
       this.cvtNonReceives[i].receivePerson=this.receiveWorkerNumber;
-      this.cvtNonReceives[i].receiveTime=DateUtil.formatDateToHMS(new Date());
+      this.cvtNonReceives[i].receiveTime=ConvertUtil.formatDateToHMS(new Date());
       this.cvtNonReceives[i].reveiveStyle="0";
       this.cvtNonReceives[i].recordFlag=1;
     }
@@ -82,7 +82,7 @@ export class GrantingBindPage {
         if(code==""){
           return;
         }
-        this.cvtService.queryFromUserSimpleByUserId(code).then((userSimple)=>{
+        this.cvtService.getUserSimpleByUserId(code).then((userSimple)=>{
           if(userSimple==null){
             this.noticeSer.showIonicAlert("无法识别该二维码");
           } else {
@@ -125,7 +125,7 @@ export class GrantingBindPage {
     this.menuCtrl.enable(true, 'grantingSelectPerson');
     this.menuCtrl.open("grantingSelectPerson");
     this.menuCtrl.toggle('right');
-    this.invService.queryListFromUserSimple().then((data)=>{
+    this.cvtService.getUserSimpleList().then((data)=>{
       this.userList=data;
     },(error)=>{
       alert(error);

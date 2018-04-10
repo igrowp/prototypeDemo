@@ -3,7 +3,6 @@ import { AssetService } from './../../providers/service/asset.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { Component, ViewChild } from '@angular/core';
 import { AlertController, InfiniteScroll, IonicPage, NavController, LoadingController, NavParams, Platform, FabContainer } from 'ionic-angular';
-import { ChangeDetectorRef } from '@angular/core';
 import { Content } from 'ionic-angular/components/content/content';
 import { NoticeService } from '../../providers/service/notice.service';
 declare let ReadRFID: any;
@@ -32,7 +31,6 @@ export class MyAssetPage {
     private platform: Platform,
     private noticeService:NoticeService,
     private barcodeScanner: BarcodeScanner,
-    private cd: ChangeDetectorRef,
     private loadingCtrl: LoadingController,
     private navParams: NavParams,
     private assetService: AssetService
@@ -156,7 +154,6 @@ export class MyAssetPage {
 
   bindRFID(item){
     let id=item.assetId;
-    let code="fffff";
     let loading=this.loadingCtrl.create({
       content:"正在从服务器获取数据..."
     })

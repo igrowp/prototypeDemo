@@ -2,7 +2,6 @@ import { AlertController, LoadingController } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { ToastController } from 'ionic-angular';
 import 'rxjs/add/operator/map';
-import { LoadingOptions } from 'ionic-angular/components/loading/loading-options';
 declare let ReadRFID: any;
 
 
@@ -38,8 +37,13 @@ export class NoticeService {
      * @param message 
      */
     showNativeToast(message: string) {
-        ReadRFID.showToast(message);
-
+        // ReadRFID.showToast(message);
+        let toast=this.toastCtrl.create({
+            message:message,
+            duration:3000,
+            position:'bottom'
+        });
+        toast.present();
     }
 
     /**
@@ -58,6 +62,30 @@ export class NoticeService {
             subTitle: message + "",
             cssClass:'alert-alert',
             buttons: ["确定"]
+        }).present();
+    }
+
+    /**
+     * 显示ionic自带TOAST
+     * @param message 
+     */
+    showIonicAlertWithCallBack(message: String,handleMethord,title?:string) {
+        var titleString;
+        if(title==null||title==""){
+            titleString="提示";
+        }else{
+            titleString=title;
+        }
+        this.alertCtrl.create({
+            title: titleString,
+            subTitle: message + "",
+            cssClass:'alert-alert',
+            buttons:[
+                {
+                  text: '确定',
+                  handler: handleMethord
+                }
+              ]
         }).present();
     }
 

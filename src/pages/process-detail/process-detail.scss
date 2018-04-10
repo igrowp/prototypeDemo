@@ -14,9 +14,11 @@ page-process-detail {
         color:#000;
         padding-right: 2%;
         text-align: right;
+
+        word-break:keep-all;
+        white-space:nowrap; 
     }
     .default{
         color: #9A9A9A;
     }
-
 }

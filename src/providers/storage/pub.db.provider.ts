@@ -1,9 +1,9 @@
-import { Dict, DictDetail } from './../entity/pub.entity';
-import { DateUtil } from './../utils/dateUtil';
+import { ConvertUtil } from './../utils/convertUtil';
+import { Dict, DictDetail, Attachment } from './../entity/pub.entity';
 import { SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
 import { DBService } from './db.service';
-import { OrgInfo, UserSimple, ChangeRecord, FixedAsset } from '../entity/entity.provider';
+import { OrgInfo, ChangeRecord, FixedAsset } from '../entity/entity.provider';
 
 /*
   公共的地数据库类
@@ -143,10 +143,10 @@ export class PubDBProvider {
      */
     insertToFixed(asset: FixedAsset) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql("insert into asset_account_fixed values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            this.dbService.executeSql("insert into asset_account_fixed values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 [asset.assetId, asset.assetName, asset.assetType, asset.assetCategory, asset.assetClass, asset.specModel, asset.licenseplatWellno, asset.workForOrg, asset.workInOrg, asset.subordinateBlock,
                 asset.productionTime, asset.techStatus, asset.useState, asset.manufactureDate, asset.increaseDate, asset.increaseReason, asset.unit, asset.quantity, asset.yardStatus, asset.assetGroup,
-                asset.remainingLife, asset.netWorth, asset.workerNumber, asset.custodian, asset.installLocation, asset.remark, asset.twoDimensionCode, asset.rfid, asset.recordFlag, "0", "0", asset.selfNumber, asset.assetCode, asset.originalValue, asset.singleQuantity, asset.complexQuantity, asset.certificateNumber, asset.securityState, asset.changeCustodian, asset.changeWorkerNumber, asset.manufacturer, asset.serialNumber, asset.fundChannel])
+                asset.remainingLife, asset.netWorth, asset.workerNumber, asset.custodian, asset.installLocation, asset.remark, asset.twoDimensionCode, asset.rfid, asset.recordFlag, "0", "0", asset.selfNumber, asset.assetCode, asset.originalValue, asset.singleQuantity, asset.complexQuantity, asset.certificateNumber, asset.securityState, asset.changeCustodian, asset.changeWorkerNumber, asset.manufacturer, asset.serialNumber, asset.fundChannel,asset.photoPath])
                 .then((data) => {
                     resolve(data);
                 })
@@ -164,9 +164,9 @@ export class PubDBProvider {
         return new Promise((resolve, reject) => {
             this.dbService.executeSql(`update asset_account_fixed 
                                        set TECH_STATUS=?,USE_STATE=?,QUANTITY=?,INSTALL_LOCATION=?,TWO_DIMENSION_CODE=?,IS_CHECKED=?,IS_SYNCHRO=?,SECURITY_STATE=?,RFID=?,CUSTODIAN=?,WORKER_NUMBER=?,CHANGE_CUSTODIAN=?,CHANGE_WORKER_NUMBER=?,
-                                       LICENSEPLAT_WELLNO=?,SELF_NUMBER=?,MANUFACTURER=?,MANUFACTURE_DATE=?,INSTALL_LOCATION=? where ASSET_ID=?`,
+                                       LICENSEPLAT_WELLNO=?,SELF_NUMBER=?,SERIAL_NUMBER=?,MANUFACTURE_DATE=?,INSTALL_LOCATION=?,PHOTO_PATH=? where ASSET_ID=?`,
                                         [asset.techStatus, asset.useState, asset.quantity, asset.installLocation, asset.twoDimensionCode, asset.isChecked, asset.isSynchro, asset.securityState, asset.rfid, asset.custodian, asset.workerNumber, asset.changeCustodian, asset.changeWorkerNumber,
-                                            asset.licenseplatWellno,asset.selfNumber,asset.manufacturer,asset.manufactureDate,asset.installLocation, asset.assetId])
+                                            asset.licenseplatWellno,asset.selfNumber,asset.serialNumber,asset.manufactureDate,asset.installLocation,asset.photoPath, asset.assetId])
                 .then((data) => {
                     resolve(data);
                 })
@@ -214,33 +214,33 @@ export class PubDBProvider {
     }
 
 
-    /**
-       * 分页查询组织机构表
-       * @param pageSize 
-       * @param pageIndex  页号，从1开始 
-       */
-    queryListFromOrgInfo(pageSize: number, pageIndex: number) {
-        return new Promise<Array<OrgInfo>>((resolve, reject) => {
-            let sql: string = "";
-            let params: any = [];
-            if (pageSize == 0 && pageIndex == 0) {
-                //都为0时默认查询所有数据
-                sql = 'select * from sys_org_info order by ORG_NAME';
-                params = [];
-            } else {
-                var index = pageSize * (pageIndex - 1);
-                sql = 'select * from sys_org_info limit ? offset ?';
-                params = [pageSize, index];
-            }
-            this.dbService.executeSql(sql, params)
-                .then((data) => {
-                    var orgInfoes: Array<OrgInfo> = this._getOrgInfosFromDBResult(data);
-                    resolve(orgInfoes);
-                }, (error) => {
-                    reject("数据库操作：<br>查询组织结构表失败<br>" + error.message);
-                })
-        })
-    }
+    // /**
+    //    * 分页查询组织机构表
+    //    * @param pageSize 
+    //    * @param pageIndex  页号，从1开始 
+    //    */
+    // queryListFromOrgInfo(pageSize: number, pageIndex: number) {
+    //     return new Promise<Array<OrgInfo>>((resolve, reject) => {
+    //         let sql: string = "";
+    //         let params: any = [];
+    //         if (pageSize == 0 && pageIndex == 0) {
+    //             //都为0时默认查询所有数据
+    //             sql = 'select * from sys_org_info order by ORG_NAME';
+    //             params = [];
+    //         } else {
+    //             var index = pageSize * (pageIndex - 1);
+    //             sql = 'select * from sys_org_info limit ? offset ?';
+    //             params = [pageSize, index];
+    //         }
+    //         this.dbService.executeSql(sql, params)
+    //             .then((data) => {
+    //                 var orgInfoes: Array<OrgInfo> = this._getOrgInfosFromDBResult(data);
+    //                 resolve(orgInfoes);
+    //             }, (error) => {
+    //                 reject("数据库操作：<br>查询组织结构表失败<br>" + error.message);
+    //             })
+    //     })
+    // }
 
     /**
       * 更新数据到组织结构表中
@@ -278,80 +278,164 @@ export class PubDBProvider {
 
     ///////////员工精简表////////////////
 
+    // /**
+    //    * 通过编号查询员工精简表
+    //    */
+    // queryFromUserSimpleByUserId(userId: string) {
+    //     return new Promise<UserSimple>((resolve, reject) => {
+    //         this.dbService.executeSql("select * from sys_person_info_simple where USER_ID=?", [userId])
+    //             .then((data) => {
+    //                 var userSimple: UserSimple = this._getUserSimpleFromDBResult(data);
+    //                 resolve(userSimple);
+    //             }, (error) => {
+    //                 reject("数据库操作：<br>查询员工精简表失败<br>" + error.message);
+    //             })
+    //     })
+    // }
+
+    // /**
+    //    * 分页查询员工精简表
+    //    * @param pageSize 
+    //    * @param pageIndex  页号，从1开始 
+    //    */
+    // queryListFromUserSimple(pageSize: number, pageIndex: number) {
+    //     return new Promise<Array<UserSimple>>((resolve, reject) => {
+    //         let sql: string = "";
+    //         let params: any = [];
+    //         if (pageSize == 0 && pageIndex == 0) {
+    //             //都为0时默认查询所有数据
+    //             sql = 'select * from sys_person_info_simple order by USER_NAME';
+    //             params = [];
+    //         } else {
+    //             var index = pageSize * (pageIndex - 1);
+    //             sql = 'select * from sys_person_info_simple limit ? offset ?';
+    //             params = [pageSize, index];
+    //         }
+    //         this.dbService.executeSql(sql, params)
+    //             .then((data) => {
+    //                 var userSimples: Array<UserSimple> = this._getUserSimplesFromDBResult(data);
+    //                 resolve(userSimples);
+    //             }, (error) => {
+    //                 reject("数据库操作：<br>查询员工精简表失败<br>" + error.message);
+    //             })
+    //     })
+    // }
+    
+    // /**
+    //   * 更新数据到员工精简表中
+    //   * @param UserSimple 
+    //   */
+    //   updateToUserSimple(userSimple: UserSimple) {
+    //     return new Promise((resolve, reject) => {
+    //         this.dbService.executeSql("update sys_person_info_simple set WORKER_NUMBER=?,USER_NAME=?,WORK_IN_ORG=? where USER_ID=?", [userSimple.workerNumber,userSimple.userName,userSimple.workInOrg,userSimple.userId])
+    //             .then((data) => {
+    //                 resolve(data);
+    //             })
+    //             .catch((error) => {
+    //                 reject("数据库操作：<br>更新员工精简表失败<br>" + error.message);
+    //             })
+    //     })
+    // }
+
+    // /**
+    //    * 在员工信息表中插入数据
+    //    * @param userSimple 
+    //    */
+    // insertToUserSimple(userSimple: UserSimple) {
+    //     return new Promise((resolve, reject) => {
+    //         this.dbService.executeSql('insert into sys_person_info_simple values (?,?,?,?)', [userSimple.workerNumber, userSimple.userName, userSimple.workInOrg, userSimple.userId])
+    //             .then((data) => {
+    //                 resolve(data);
+    //             }, (error) => {
+    //                 reject("数据库操作：<br>插入员工信息表失败<br>" + error.message);
+    //             })
+    //     })
+    // }
+    ///////////员工精简表END////////////////
+
+
+
+    //////////   附件表   //////////////////
+
     /**
-       * 通过编号查询员工精简表
-       */
-    queryFromUserSimpleByUserId(userId: string) {
-        return new Promise<UserSimple>((resolve, reject) => {
-            this.dbService.executeSql("select * from sys_person_info_simple where USER_ID=?", [userId])
+     * 查询附件表
+     * @param assetId 
+     * @param attachmentType 
+     */
+    queryFromAttachments(assetId: string,attachmentType:string) {
+        return new Promise<Array<Attachment>>((resolve, reject) => {
+            this.dbService.executeSql('select * from sys_attachments where ASSET_ID=? AND ATTACHMENT_TYPE=?', [assetId,attachmentType])
                 .then((data) => {
-                    var userSimple: UserSimple = this._getUserSimpleFromDBResult(data);
-                    resolve(userSimple);
+                    var attachments = this._getAttachmentsFromDBResult(data);
+                    resolve(attachments);
                 }, (error) => {
-                    reject("数据库操作：<br>查询员工精简表失败<br>" + error.message);
+                    reject("数据库操作：<br>查询附件表失败<br>" + error.message);
+                })
+        })
+    }
+    /**
+     * 根据是否同步查询附件表
+     * @param isUpload 
+     */
+    queryFromAttachmentsByIsUpload(isUpload:number) {
+        return new Promise<Array<Attachment>>((resolve, reject) => {
+            this.dbService.executeSql('select * from sys_attachments where IS_UPLOAD=?', [isUpload])
+                .then((data) => {
+                    var attachments = this._getAttachmentsFromDBResult(data);
+                    resolve(attachments);
+                }, (error) => {
+                    reject("数据库操作：<br>查询附件表失败<br>" + error.message);
                 })
         })
     }
 
     /**
-       * 分页查询员工精简表
-       * @param pageSize 
-       * @param pageIndex  页号，从1开始 
-       */
-    queryListFromUserSimple(pageSize: number, pageIndex: number) {
-        return new Promise<Array<UserSimple>>((resolve, reject) => {
-            let sql: string = "";
-            let params: any = [];
-            if (pageSize == 0 && pageIndex == 0) {
-                //都为0时默认查询所有数据
-                sql = 'select * from sys_person_info_simple order by USER_NAME';
-                params = [];
-            } else {
-                var index = pageSize * (pageIndex - 1);
-                sql = 'select * from sys_person_info_simple limit ? offset ?';
-                params = [pageSize, index];
-            }
-            this.dbService.executeSql(sql, params)
+      * 更新数据到附件表中
+      * @param attachment 
+      */
+      updateToAttachment(attachment: Attachment) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql("update sys_attachments set IS_UPLOAD=? where ASSET_ID=? and ATTACHMENT_TYPE=? and STORAGE_PATH=?", [ attachment.isUpload,attachment.assetId,attachment.attachmentType,attachment.storagePath])
                 .then((data) => {
-                    var userSimples: Array<UserSimple> = this._getUserSimplesFromDBResult(data);
-                    resolve(userSimples);
-                }, (error) => {
-                    reject("数据库操作：<br>查询员工精简表失败<br>" + error.message);
+
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>更新附件表失败<br>" + error.message);
                 })
         })
     }
-    
+
+
     /**
-      * 更新数据到员工精简表中
-      * @param UserSimple 
-      */
-      updateToUserSimple(userSimple: UserSimple) {
+       * 在附件表中插入数据
+       * @param userSimple 
+       */
+    insertToAttachment(attachment: Attachment) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql("update sys_person_info_simple set WORKER_NUMBER=?,USER_NAME=?,WORK_IN_ORG=? where USER_ID=?", [userSimple.workerNumber,userSimple.userName,userSimple.workInOrg,userSimple.userId])
+            this.dbService.executeSql('insert into sys_attachments values (?,?,?,?,?)', [attachment.assetId,attachment.workerNumber, attachment.attachmentType,attachment.storagePath,attachment.isUpload])
+                .then((data) => {
+                    resolve(data);
+                }, (error) => {
+                    reject("数据库操作：<br>插入附件表失败<br>" + error.message);
+                })
+        })
+    }
+    /**
+     * 删除附件表
+     */
+    deleteFromAttachment(assetId: string,attachment:string) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('delete from sys_attachments where ASSET_ID=? and ATTACHMENT_TYPE=?', [assetId,attachment])
                 .then((data) => {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：<br>更新员工精简表失败<br>" + error.message);
+                    reject("数据库操作：<br>删除日志表失败<br>" + error.message);
                 })
         })
     }
-
-    /**
-       * 在员工信息表中插入数据
-       * @param userSimple 
-       */
-    insertToUserSimple(userSimple: UserSimple) {
-        return new Promise((resolve, reject) => {
-            this.dbService.executeSql('insert into sys_person_info_simple values (?,?,?,?)', [userSimple.workerNumber, userSimple.userName, userSimple.workInOrg, userSimple.userId])
-                .then((data) => {
-                    resolve(data);
-                }, (error) => {
-                    reject("数据库操作：<br>插入员工信息表失败<br>" + error.message);
-                })
-        })
-    }
-    ///////////员工精简表END////////////////
+    //////////   附件表END   //////////////////
 
 
 
@@ -646,31 +730,24 @@ export class PubDBProvider {
         return orgInfoes;
     }
 
-    private _getUserSimpleFromDBResult(data): UserSimple {
-        var userSimple: UserSimple = null;
-        if (data.rows.length > 0) {
-            userSimple = new UserSimple();
-            userSimple.userName = data.rows.item(0).USER_NAME;
-            userSimple.workerNumber = data.rows.item(0).WORKER_NUMBER;
-            userSimple.workInOrg = data.rows.item(0).WORK_IN_ORG;
-            userSimple.userId = data.rows.item(0).USER_ID;
-        }
-        return userSimple;
-    }
 
-    private _getUserSimplesFromDBResult(data): Array<UserSimple> {
-        var userSimples: Array<UserSimple> = new Array<UserSimple>();
+    //获取附件表数据
+    private _getAttachmentsFromDBResult(data): Array<Attachment> {
+        var attachments: Array<Attachment> = new Array<Attachment>();
         if (data.rows.length > 0) {
             for (var i = 0; i < data.rows.length; i++) {
-                var userSimple: UserSimple = new UserSimple();
-                userSimple.userName = data.rows.item(i).USER_NAME;
-                userSimple.workerNumber = data.rows.item(i).WORKER_NUMBER;
-                userSimple.workInOrg = data.rows.item(i).WORK_IN_ORG;
-                userSimples.push(userSimple);
+                let attachment = new Attachment();
+                attachment.assetId = data.rows.item(i).ASSET_ID;
+                attachment.workerNumber = data.rows.item(i).WORKER_NUMBER;
+                attachment.attachmentType = data.rows.item(i).ATTACHMENT_TYPE;
+                attachment.storagePath = data.rows.item(i).STORAGE_PATH;
+                attachment.isUpload = data.rows.item(i).IS_UPLOAD;
+                attachments.push(attachment);
             }
         }
-        return userSimples;
+        return attachments;
     }
+    
 
 
     //获取数据字典数据
@@ -798,9 +875,9 @@ export class PubDBProvider {
                 asset.useState = data.rows.item(i).USE_STATE;
                 //   asset.manufactureDate=data.rows.item(i).MANUFACTURE_DATE;
                 //   asset.increaseDate=data.rows.item(i).INCREASE_DATE;
-                asset.manufactureDate = DateUtil.formatDate(new Date(data.rows.item(i).MANUFACTURE_DATE));
-                asset.productionTime = DateUtil.formatDate(new Date(data.rows.item(i).PRODUCTION_TIME));
-                asset.increaseDate = DateUtil.formatDate(new Date(data.rows.item(i).INCREASE_DATE));
+                asset.manufactureDate = ConvertUtil.formatDate(new Date(data.rows.item(i).MANUFACTURE_DATE));
+                asset.productionTime = ConvertUtil.formatDate(new Date(data.rows.item(i).PRODUCTION_TIME));
+                asset.increaseDate = ConvertUtil.formatDate(new Date(data.rows.item(i).INCREASE_DATE));
 
                 asset.increaseReason = data.rows.item(i).INCREASE_REASON;
                 asset.unit = data.rows.item(i).UNIT;
@@ -830,6 +907,7 @@ export class PubDBProvider {
                 asset.manufacturer = data.rows.item(i).MANUFACTURER;
                 asset.serialNumber = data.rows.item(i).SERIAL_NUMBER;
                 asset.fundChannel = data.rows.item(i).FUND_CHANNEL;
+                asset.photoPath = data.rows.item(i).PHOTO_PATH;
                 assets.push(asset);
             }
         }
@@ -856,9 +934,9 @@ export class PubDBProvider {
             asset.subordinateBlock = data.rows.item(0).SUBORDINATE_BLOCK;
             asset.techStatus = data.rows.item(0).TECH_STATUS;
             asset.useState = data.rows.item(0).USE_STATE;
-            asset.manufactureDate = DateUtil.formatDate(new Date(data.rows.item(0).MANUFACTURE_DATE));
-            asset.productionTime = DateUtil.formatDate(new Date(data.rows.item(0).PRODUCTION_TIME));
-            asset.increaseDate = DateUtil.formatDate(new Date(data.rows.item(0).INCREASE_DATE));
+            asset.manufactureDate = ConvertUtil.formatDate(new Date(data.rows.item(0).MANUFACTURE_DATE));
+            asset.productionTime = ConvertUtil.formatDate(new Date(data.rows.item(0).PRODUCTION_TIME));
+            asset.increaseDate = ConvertUtil.formatDate(new Date(data.rows.item(0).INCREASE_DATE));
             asset.increaseReason = data.rows.item(0).INCREASE_REASON;
             asset.unit = data.rows.item(0).UNIT;
             asset.quantity = data.rows.item(0).QUANTITY;
@@ -887,6 +965,7 @@ export class PubDBProvider {
             asset.manufacturer = data.rows.item(0).MANUFACTURER;
             asset.serialNumber = data.rows.item(0).SERIAL_NUMBER;
             asset.fundChannel = data.rows.item(0).FUND_CHANNEL;
+            asset.photoPath = data.rows.item(0).PHOTO_PATH;
         }
         return asset;
     }
