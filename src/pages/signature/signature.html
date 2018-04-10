@@ -1,26 +1,16 @@
-<!--
-  Generated template for the SignaturePage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
     <ion-navbar color="title">
         <ion-title class="border-left-white">手写签名</ion-title>
         <ion-buttons right>
             <button class="btn-submit" ion-button icon-left (click)="handleSetting()">
-                <!-- <ion-icon  name="ios-settings"></ion-icon> -->
                 设为默认签名
             </button>
         </ion-buttons>
     </ion-navbar>
-    
 </ion-header>
 
 
 <ion-content class="about">
-
-
     <div id="signature-pad" class="signature-pad">
         <div disabled="true" class="signature-pad--body">
             <canvas id="canvas"></canvas>
@@ -57,6 +47,5 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-
     </div>
 </ion-content>

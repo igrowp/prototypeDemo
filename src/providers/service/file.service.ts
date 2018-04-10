@@ -1,5 +1,3 @@
-import { AttachmentWebProvider } from './../web/attachment.web.provider';
-import { PhotoLibrary } from '@ionic-native/photo-library';
 import { ConvertUtil } from './../utils/convertUtil';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { Camera } from '@ionic-native/camera';
@@ -7,6 +5,9 @@ import { Injectable } from "@angular/core";
 import { NoticeService } from './notice.service';
 import { ActionSheetController } from 'ionic-angular/components/action-sheet/action-sheet-controller';
 
+/**
+ * 对文件操作进行的函数封装
+ */
 @Injectable()
 export class FileService {
     static TOAST_POS_BOTTOM: string = 'bottom';
@@ -15,8 +16,6 @@ export class FileService {
     constructor(private camera:Camera,
              private noticeService:NoticeService,
              private imagePicker:ImagePicker,
-             private photoLibrary:PhotoLibrary,
-             private attachmentWebProvider:AttachmentWebProvider,
              private actionSheetCtrl:ActionSheetController) {
     }
 

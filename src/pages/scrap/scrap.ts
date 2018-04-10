@@ -5,10 +5,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Scrap } from '../../providers/entity/pub.entity';
 import { AssetHandleService } from '../../providers/service/asset.handle.service';
 /**
- * Generated class for the ScrapPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 报废页面
  */
 
 @IonicPage()
@@ -18,7 +15,6 @@ import { AssetHandleService } from '../../providers/service/asset.handle.service
 })
 export class ScrapPage {
   public scrapType;//报废类型
-  public date;
   public dateNow = ConvertUtil.formatDate(new Date());
 
   public scrap:Scrap=new Scrap();
@@ -28,10 +24,6 @@ export class ScrapPage {
     private noticeService:NoticeService,
      public navParams: NavParams) {
       this.scrap=this.navParams.get("scrap");
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ScrapPage');
   }
 
   handleSubmit(){
@@ -58,7 +50,6 @@ export class ScrapPage {
         this.navCtrl.pop();
       }, error => {
         loading.dismiss();
-        alert("错了");
         this.noticeService.showIonicAlert(error);
       })
     }else{

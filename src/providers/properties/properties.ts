@@ -2,8 +2,6 @@
   配置一些常用的参数
 */
 export class Properties {
-  //应用基本信息
-  static APP_VERSION_NUMBER=1.0;
   //数据库配置
   static dbConfig = {
     version: 1.0,           //当前版本号  （上次版本号 1.0）

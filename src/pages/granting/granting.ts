@@ -7,10 +7,7 @@ import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { Checkbox } from 'ionic-angular/components/checkbox/checkbox';
 
 /**
- * Generated class for the GrantingPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 资产发放页面
  */
 
 @IonicPage()
@@ -19,14 +16,14 @@ import { Checkbox } from 'ionic-angular/components/checkbox/checkbox';
   templateUrl: 'granting.html',
 })
 export class GrantingPage {
-  checked=true;   //用于已经选择了的资产，显示不可选中状态
+  public checked=true;   //用于已经选择了的资产，显示不可选中状态
   public cvtNotice:CvtNonNotice;  //非安设备转产通知
   public isShow:boolean=true;  //是否显示通知单详细信息
   public noticeSubArray:Array<CvtNonNoticeSub>=new Array<CvtNonNoticeSub>(); //用于选择资产的数据记录
   public assets:Array<any>;  //用于存放某一项资产下的资产列表
+  public cvtNonReceives:Array<CvtNonReceive>=new Array<CvtNonReceive>();   //记录某人勾选的所有资产
 
   private assetArray:Array<CvtNonReceive>=new Array<CvtNonReceive>();  //用于数据备份，备份数据库查询得到的数据
-  public cvtNonReceives:Array<CvtNonReceive>=new Array<CvtNonReceive>();   //记录某人勾选的所有资产
 
   public totalQuantity=0;  //全部资产数量
   public sentQuantity=0;   //已经确定发放的资产数量
@@ -37,14 +34,13 @@ export class GrantingPage {
               public menuCtrl:MenuController) {
     this.cvtNotice=this.navParams.get("cvtNonNotice");
     this.cvtService.queryFromCvtNonNoticeSubByNoticeId(this.cvtNotice.noticeId).then((noticeSub) => {
-      console.log("构造函数"+noticeSub);
       if (noticeSub != null) {
         this.noticeSubArray = noticeSub;
       }
       this.init();
     })
-    
   }
+
   //初始化
   init(){
     //初始化参数
@@ -84,11 +80,6 @@ export class GrantingPage {
     })
   }
 
-  ionViewDidEnter(){
-    //计算各资产项的剩余数量
-    // this.init();
-  }
-
   /**
    * 显示侧边栏，展示某一资产下的详细资产项
    * @param item 
@@ -107,6 +98,9 @@ export class GrantingPage {
     this.init();
   }
 
+  /**
+   * 关闭侧边栏
+   */
   handleCloseMenu(){
     this.menuCtrl.close();    
   }

@@ -78,7 +78,7 @@ export class InvDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：<br>删除资产盘点通知单失败<br>"+error.message);
+                    reject("数据库操作：<br>删除资产盘点通知单失败<br>" + error.message);
                 })
         })
     }
@@ -104,7 +104,7 @@ export class InvDBProvider {
                     var assets: Array<InvAsset> = this._getInvAssetsFromDBResult(data);
                     resolve(assets);
                 }).catch((error) => {
-                    reject("数据库操作：<br>查询盘点记录表失败<br>"+error.message);
+                    reject("数据库操作：<br>查询盘点记录表失败<br>" + error.message);
                 });
         })
     }
@@ -120,7 +120,7 @@ export class InvDBProvider {
                     var asset = this._getInvAssetFromDBResult(data);
                     resolve(asset);
                 }).catch((error) => {
-                    reject("数据库操作：<br>查询资产信息失败<br>"+error.message);
+                    reject("数据库操作：<br>查询资产信息失败<br>" + error.message);
                 });
         })
     }
@@ -142,7 +142,7 @@ export class InvDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：<br>更新盘点记录信息表失败<br>"+error.message);
+                    reject("数据库操作：<br>更新盘点记录信息表失败<br>" + error.message);
                 })
         })
     }
@@ -187,7 +187,7 @@ export class InvDBProvider {
                     resolve(data);
                 })
                 .catch((error) => {
-                    reject("数据库操作：<br>插入资产盘带你记录表失败<br>"+error.message);
+                    reject("数据库操作：<br>插入资产盘带你记录表失败<br>" + error.message);
                 })
         })
     }

@@ -4,7 +4,7 @@ import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Properties } from '../properties/properties';
 
 /*
-  该类用于数据库的创建已经数据库版本升级操作
+  该类用于数据库的创建以及数据库版本升级操作
 */
 @Injectable()
 export class DBService {
@@ -47,8 +47,6 @@ export class DBService {
     return new Promise<SQLiteObject>((resolve,reject)=>{
       this.onCreate().then((db)=>{
         this.onUpgrade();
-        //alert("初始化数据库")
-        //alert("数据库"+db);
         resolve(db);
       },(err)=>{reject(err)})
     })
@@ -74,7 +72,6 @@ export class DBService {
           }
         } else {
           //本地没有存储该数据库版本,初始化数据
-          //alert("创建数据库");
           this.createDB().then(() => {
             this.storage.set("dbVersion", 1.0).then((db) => {
               this.oldVersion = 1.0;  //设置初始数据库版本号为1.0版本

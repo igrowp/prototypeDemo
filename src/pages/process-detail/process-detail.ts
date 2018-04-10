@@ -7,10 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FixedAsset } from '../../providers/entity/entity.provider';
 
 /**
- * Generated class for the ProcessDetailPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 流程审批页面-审批详情页
  */
 
 @IonicPage()
@@ -100,7 +97,7 @@ export class ProcessDetailPage {
   handleDetail(noticeSub){
     switch(this.todoEvent.eventType){
       case "转产发放通知":
-        this.cvtWebProvider.getCvtAssetBySubNoticeId(noticeSub.subNoticeId).then((data)=>{
+        this.cvtWebProvider.getCvtAssetListBySubNoticeId(noticeSub.subNoticeId).then((data)=>{
           this.navCtrl.push("ConvertNonDetailPage",{
             fixedAssets:data,
             CvtNonNoticeSub:noticeSub

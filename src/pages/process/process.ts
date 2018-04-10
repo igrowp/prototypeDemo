@@ -7,10 +7,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NoticeService } from '../../providers/service/notice.service';
 
 /**
- * Generated class for the ProcessPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 流程审批页面
  */
 
 @IonicPage()
@@ -105,7 +102,7 @@ export class ProcessPage {
             this.noticeService.showIonicAlert("获取通知单失败");
             return;
           } else {
-            this.cvtWebProvider.getCvtNonNoticeSub(notice.noticeId).then((noticeSubList) => {
+            this.cvtWebProvider.getCvtNonNoticeSubList(notice.noticeId).then((noticeSubList) => {
               this.navCtrl.push("ProcessDetailPage", {
                 workerNumber: this.workerNumber,
                 cvtNonNotice: notice,

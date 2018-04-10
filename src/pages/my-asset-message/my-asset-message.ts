@@ -4,22 +4,17 @@ import { Scrap } from './../../providers/entity/pub.entity';
 import { PubConstant } from './../../providers/entity/constant.provider';
 import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
-import { Camera } from '@ionic-native/camera';
 import { AssetService } from './../../providers/service/asset.service';
 import { FixedAsset } from './../../providers/entity/entity.provider';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NoticeService } from '../../providers/service/notice.service';
-import { ActionSheetController } from 'ionic-angular/components/action-sheet/action-sheet-controller';
 import { Idle } from '../../providers/entity/pub.entity';
 import { AssetHandleService } from '../../providers/service/asset.handle.service';
 import { AttachmentService } from '../../providers/service/attachment.service';
 
 /**
- * Generated class for the AssetMessageTranPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 我的资产-详情页
  */
 
 @IonicPage()
@@ -28,12 +23,11 @@ import { AttachmentService } from '../../providers/service/attachment.service';
   templateUrl: 'my-asset-message.html',
 })
 export class MyAssetMessagePage {
-  public photoPaths: Array<string> = new Array<string>();
-  public photoBase64s: Array<string> = new Array<string>();
-  isHiddenSearch = true;
+  public photoPaths: Array<string> = new Array<string>();   //记录选择图片的路径，用于存储选择的图片路径
+  public photoBase64s: Array<string> = new Array<string>(); //记录选择图片的base64格式，用于选择后的显示
   public handleType = "完善资产信息";
   public fixedAsset: FixedAsset = new FixedAsset();
-  public dateNow = ConvertUtil.formatDate(new Date());
+  public dateNow = ConvertUtil.formatDate(new Date());  //当前时间
 
   constructor(public navCtrl: NavController,
     private noticeService: NoticeService,
@@ -164,7 +158,7 @@ export class MyAssetMessagePage {
    * 确认是否删除按钮
    * @param file 
    */
-  private isDeleteImg(index) {
+  isDeleteImg(index) {
     let alert = this.alertCtrl.create({
       title: '提示',
       subTitle: '是否要删除该照片?',

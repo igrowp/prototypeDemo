@@ -10,6 +10,9 @@ import { UserSimple } from '../../providers/entity/entity.provider';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
 
+/**
+ * 资产发放-绑定领用人界面
+ */
 
 @IonicPage()
 @Component({

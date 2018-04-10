@@ -2,64 +2,49 @@ import { PubConstant } from './../entity/constant.provider';
 import { InvAsset, InvNotice } from './../entity/entity.provider';
 import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
-import { PhotoLibrary } from '@ionic-native/photo-library';
 import 'rxjs/add/operator/map';
 import { HttpUtils } from '../utils/httpUtils';
 import { AttachmentWebProvider } from './attachment.web.provider';
 
+/**
+ * 与资产盘点有关的服务器数据请求
+ */
 @Injectable()
-export class InvWebProvider{
-    constructor(public http: Http,
-        private photoLibrary: PhotoLibrary,
-        private attaWebProvider:AttachmentWebProvider,) {
+export class InvWebProvider {
+  constructor(public http: Http,
+    private attaWebProvider: AttachmentWebProvider, ) {
   }
-  getUrl(){
-    return HttpUtils.getUrlFromProperties()+"/inv";
+  getUrl() {
+    return HttpUtils.getUrlFromProperties() + "/inv";
   }
 
-    /**
-     * 根据单位获得盘点通知单
-     * @param leadingOrg 
-     */
-    getInvNoticeByOrg(leadingOrg: string) {
-        let params = "?leadingOrg=" + leadingOrg;
-        return new Promise<InvNotice>((resolve, reject) => {
-          this.http.get(this.getUrl() + '/notice' + params)
-            .map(res => res.json())
-            .subscribe((data) => {
-              if (JSON.stringify(data) == "{}") {
-                resolve(null);
-              } else {
-                resolve(data);
-              }
-            }, err => {
-              reject(err);
-            })
-        })
-    
-      }
-
-      /**
-     * 根据单位获得盘点通知单
-     * @param leadingOrg 
-     */
-    test() {
-      return new Promise<InvNotice>((resolve, reject) => {
-        this.http.get("http://10.88.133.45:8080/eaam-app/file/img")
-          .subscribe((data) => {
-            alert("返回结果");
-          }, err => {
-            reject(err);
-          })
-      })
-  
-    }
-
-      /**
-   * 将本地资产盘点记录数据同步到服务器
+  /**
+   * 根据单位获得盘点通知单
+   * @param leadingOrg 
    */
+  getInvNoticeByOrg(leadingOrg: string) {
+    let params = "?leadingOrg=" + leadingOrg;
+    return new Promise<InvNotice>((resolve, reject) => {
+      this.http.get(this.getUrl() + '/notice' + params)
+        .map(res => res.json())
+        .subscribe((data) => {
+          if (JSON.stringify(data) == "{}") {
+            resolve(null);
+          } else {
+            resolve(data);
+          }
+        }, err => {
+          reject(err);
+        })
+    })
+
+  }
+
+  /**
+* 将本地资产盘点记录数据同步到服务器
+*/
   syncInvToServer(invAssets: Array<InvAsset>) {
-    let options =HttpUtils.getRequestOptions();
+    let options = HttpUtils.getRequestOptions();
     var json = JSON.stringify(invAssets);
     console.log(json);
     let obj: any = {
@@ -104,7 +89,7 @@ export class InvWebProvider{
         });
     });
   }
-  
 
-  
+
+
 }

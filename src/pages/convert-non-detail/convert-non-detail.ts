@@ -3,10 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 import { CvtNonNoticeSub } from '../../providers/entity/cvt.entity.provider';
 
 /**
- * Generated class for the ConvertNonDetailPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 资产领用详情页
  */
 
 @IonicPage()

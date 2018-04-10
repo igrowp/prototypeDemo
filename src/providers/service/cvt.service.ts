@@ -2,8 +2,7 @@ import { CvtDBProvider } from './../storage/cvt.db.provider';
 import { PubConstant } from './../entity/constant.provider';
 import { AssetWebProvider } from './../web/asset.web.provider';
 import { CvtNonReceive, CvtNonNotice,CvtNonNoticeSub } from './../entity/cvt.entity.provider';
-import { PhotoLibrary } from '@ionic-native/photo-library';
-import { FixedAsset, ChangeRecord } from './../entity/entity.provider';
+import { ChangeRecord } from './../entity/entity.provider';
 import { CvtWebProvider } from '../web/cvt.web.provider';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
@@ -11,17 +10,13 @@ import { NoticeService } from './notice.service';
 import { PubDBProvider } from '../storage/pub.db.provider';
 import { AttachmentWebProvider } from '../web/attachment.web.provider';
 /*
-  Generated class for the AboutServiceProvider provider.
-
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
+  提供关于资产转产相关的封装方法，对服务器及本地数据库进行数据操作
 */
 @Injectable()
 export class CvtService {
 
   constructor(private cvtWebProvider:CvtWebProvider,
     private cvtDBProvider:CvtDBProvider,
-    private photoLibrary: PhotoLibrary,
     private attaWebProvider:AttachmentWebProvider,
     private assetWebProvider:AssetWebProvider,
     private pubDBProvider:PubDBProvider,
@@ -167,7 +162,7 @@ export class CvtService {
    */
   getCvtNoticeSubByNoticeId(noticeId:string){
     return new Promise<Array<CvtNonNoticeSub>>((resolve,reject)=>{
-      this.cvtWebProvider.getCvtNonNoticeSub(noticeId).then((data)=>{
+      this.cvtWebProvider.getCvtNonNoticeSubList(noticeId).then((data)=>{
         resolve(data);
       },(err)=>{
         reject(err);
@@ -181,7 +176,7 @@ export class CvtService {
    */
   insertCvtNonNoticeSubFromServe(noticeId: string) {
     return new Promise((resolve, reject) => {
-      this.cvtWebProvider.getCvtNonNoticeSub(noticeId).then((noticeSubs) => {
+      this.cvtWebProvider.getCvtNonNoticeSubList(noticeId).then((noticeSubs) => {
         if (noticeSubs==null||noticeSubs.length == 0) {
           resolve();
         } else {
@@ -208,24 +203,21 @@ export class CvtService {
     })
   }
 
-  getCvtAssetBySubNoticeId(subNoticeId:string){
-    return new Promise<Array<FixedAsset>>((resolve,reject)=>{
-      this.cvtWebProvider.getCvtAssetBySubNoticeId(subNoticeId).then((data)=>{
-        resolve(data);
-      },(err)=>{
-        reject(err);
-      });
-    });
+  /**
+   * 根据转产附加表ID获取资产列表
+   * @param subNoticeId 
+   */
+  getCvtAssetListBySubNoticeId(subNoticeId:string){
+    return this.cvtWebProvider.getCvtAssetListBySubNoticeId(subNoticeId);
   }
 
+  /**
+   * 修改资产转产通知单状态
+   * @param state
+   * @param noticeId 
+   */
   updateStateToCvtNoticeFromServe(state:string,noticeId:string){
-    return new Promise<string>((resolve,reject)=>{
-      this.cvtWebProvider.updateStateToCvtNotice(state,noticeId).then((data)=>{
-        resolve(data);
-      },(err)=>{
-        reject(err);
-      });
-    });
+    return this.cvtWebProvider.updateStateToCvtNotice(state,noticeId);
   }
 
 

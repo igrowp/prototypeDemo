@@ -3,9 +3,10 @@ import { TodoEvent, WorkflowBean, PostRequestResult, NextStepInfo} from './../en
 import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-// import 'rxjs/add/operator/timeout'
 import { Observable } from 'rxjs/Observable';
-
+/**
+ * 与流程审批有关的服务器数据请求
+ */
 @Injectable()
 export class WorkflowWebProvider {
   constructor(public http: Http) {
@@ -44,9 +45,5 @@ export class WorkflowWebProvider {
     return this.http.get(this.getUrl() + '/submit' + params)
         .map(res => res.json());
   }
-
-
-
-
 
 }

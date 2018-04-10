@@ -1,3 +1,4 @@
+import { HttpUtils } from './../utils/httpUtils';
 import { PubConstant } from './../entity/constant.provider';
 import { DBService } from './../storage/db.service';
 import { LoginWebProvider } from './../web/login.web.provider';
@@ -5,8 +6,9 @@ import { AssetWebProvider } from './../web/asset.web.provider';
 import { LoginDBProvider } from './../storage/login.db.provider';
 import { User, UserAccount } from './../entity/entity.provider';
 import { Injectable } from '@angular/core';
-import { LoadingController } from 'ionic-angular';
+import { LoadingController, AlertController } from 'ionic-angular';
 import { PubDBProvider } from './../storage/pub.db.provider';
+import { NoticeService } from './notice.service';
 /*
 提供关于登陆的服务
 */
@@ -18,9 +20,62 @@ export class LoginService {
     private assetWebProvider:AssetWebProvider,
     private pubDBProvider:PubDBProvider,
     private dbService:DBService,
+    private alertCtrl:AlertController,
+    private noticeService:NoticeService,
     private loadingCtrl:LoadingController,
   ) {
     
+  }
+  
+
+  /**
+   * 设置服务器的地址和端口
+   */
+  settingHttpAddressAndPort(){
+    var address=HttpUtils.getUrlAddressFromProperties();
+    var port=HttpUtils.getUrlPortFromProperties();
+    this.alertCtrl.create({
+      title:"设置服务器地址/端口",
+      inputs: [
+        {
+          label:'地址',
+          name: 'address',
+          placeholder: '地址：'+address
+        },
+        {
+          name:'port',
+          placeholder:'端口：'+port
+        }
+      ],
+      buttons:[
+        {
+          text:'恢复默认值',
+          handler:data=>{
+            HttpUtils.setDefaultUrlToProperties();
+            this.noticeService.showToast("设置成功");
+          }
+        },
+        {
+          text: '确定',
+          handler: data => {
+            if (data.address == "") {
+              this.noticeService.showToast("服务器地址为空");
+            } else if (data.port == "") {
+              this.noticeService.showToast("服务器端口为空");
+            } else {
+              if (!data.address.includes("http://") && !data.address.includes("https://")) {
+                data.address = "http://" + data.address;
+              }
+              HttpUtils.setUrlToProperties(data.address, data.port);
+              //保存到本地
+              this.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS, data.address);
+              this.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT, data.port);
+              this.noticeService.showToast("设置成功");
+            }
+          }
+        }
+      ]
+    }).present();
   }
 
   /**
@@ -203,31 +258,9 @@ export class LoginService {
   }
 
 
-  // /**
-  //  * 如果本地数据字典表中没有数据从服务器中下载数据
-  //  */
-  // downloadDictDetailIfEmpty(workerNumber:string){
-  //   return new Promise((resolve,reject)=>{
-  //     this.pubDBProvider.queryListFromDictDetail(1,1).then((data)=>{
-  //       if(data==null||data.length==0){
-  //         //说明本地没有员工信息，进行下载
-  //         this.getAndSaveDictDetailFromServe(workerNumber).then(()=>{
-  //           resolve(data);
-  //         },(error)=>{
-  //           reject(error);
-  //         });
-  //       }else{
-  //         //有数据就不用再下载了
-  //         resolve(data);
-  //       }
-  //     },(error)=>{
-  //       reject(error);
-  //     })
-  //   })
-  // }
 
   /**
-   * 从服务器获取员工精简信息表，并保存
+   * 从服务器获取字典附加表，并保存
    */
   getAndSaveDictDetailFromServe(lastRequestTime){
     return new Promise((resolve, reject) => {
@@ -267,11 +300,6 @@ export class LoginService {
 
     });
   }
-  
-
-
-
-
   /////////////数据下载同步END///////////////
 
 
@@ -437,13 +465,7 @@ export class LoginService {
    * @param userId
    */
   getUserInfoFromServeByUserId(userId:string){
-    return new Promise<User>((resolve,reject)=>{
-      this.loginWebProvider.getUserMessage(userId).then((user)=>{
-        resolve(user);
-      },(error)=>{
-        reject(error.message);
-      })
-    });
+    return this.loginWebProvider.getUserMessage(userId);
   }
 
   /**

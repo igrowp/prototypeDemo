@@ -7,9 +7,8 @@ import { AlertController } from 'ionic-angular/components/alert/alert-controller
 
 
 /**
- * Generated class for the TransformPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info * on Ionic pages and navigation. */
+ * 资产领用页面
+ */
 
 @IonicPage()
 @Component({
@@ -33,60 +32,34 @@ export class ConvertPage {
     this.cvtNotice = navParams.get("cvtNotice");
     this.custodian=navParams.get("custodian");
     this.workerNumber=navParams.get("workerNumber");
-    
-
   }
 
   ionViewDidLoad() {
+    //获取资产领用附加表信息
     this.cvtService.getCvtNoticeSubByNoticeId(this.cvtNotice.noticeId).then((data) => {
       this.dataTable = data;
       this.slideSize=data.length;
-      
-      // if (this.fixedAssets.length == 0) {
-      //   //没有得到数据，说明不是领用人，一条一条插入
-      //   this.workerType = 0;
-      // } else {
-      //   //领用人
-      //   this.fixedAssets = fixedAssets;
-      //   console.log(this.fixedAssets);
-      //   this.workerType = 1;
-      // }
     })
   }
 
 
   //点击详情
   handleDetail(noticeSub){
-    this.cvtService.getCvtAssetBySubNoticeId(noticeSub.subNoticeId).then((data)=>{
-      console.log(data);
-      console.log(noticeSub);
+    this.cvtService.getCvtAssetListBySubNoticeId(noticeSub.subNoticeId).then((data)=>{
       this.navCtrl.push("ConvertNonDetailPage",{
         fixedAssets:data,
         CvtNonNoticeSub:noticeSub
       })
-      // this.modalCtrl.create("ConvertNonDetailPage",{
-      //   fixedAssets:data,
-      //   CvtNonNoticeSub:noticeSub
-      // }).present();
     })
   }
 
   //签名确认
-  handleSure(){
-    this.showSelect();
-  }
-
-
-  showSelect(){
+  handleSignature(){
     this.alertCtrl.create({
       title:'提示',
       subTitle:'是否再次发放？',
       cssClass:'alert-conform',
       buttons:[
-        // {
-        //   text:'取消',
-        //   role:'concel'
-        // },
         {
           text:'否',
           handler:data=>{

@@ -24,27 +24,30 @@ import { ConvertUtil } from '../../providers/utils/convertUtil';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 declare let ReadRFID: any;
 
+/**
+ * 首页
+ */
 @IonicPage()
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
-  public wFOAddress = "";
-  public userName = "";
-  private workForOrg = ""
-  private workInOrg = "";
-  private workerNumber = "";
+  public wFOAddress = "";  //所属单位中文名称
+  public userName = "";    //用户名
+  private workForOrg = ""  //所属单位编码
+  private workInOrg = "";  //所在单位编码
+  private workerNumber = "";  //员工编号
   public badgeValueInv;  //徽章，用于记录转产或者清点时的消息提醒
   public badgeValuePro;  //徽章，用于流程审批时的消息提醒
 
 
-  public listConvert:Array<CvtNonNotice>;//需要领用的通知
+  public listConvert:Array<CvtNonNotice>;  //需要领用的通知
   public listGranting:Array<CvtNonNotice>; //需要发放的通知
 
   public invNotice: InvNotice = new InvNotice();   //清点的通知
-  public cvtNoticeList: Array<CvtNonNotice>;  //转产通知ID
-  public finishTime="";
+  public cvtNoticeList: Array<CvtNonNotice>;       //转产通知ID
+  public finishTime="";    //用于记录盘点通知结束时间
 
   private fileTransfer: TransferObject;
 
@@ -82,7 +85,6 @@ export class HomePage {
       //初始化数据
       setTimeout(() => {
         this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_ACCOUNT).then(() => {
-
           this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_USER_NAME).then((userName) => {
             this.userName = userName;
             this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_WFO_ADDRESS).then((wFOAddress) => {
@@ -94,7 +96,6 @@ export class HomePage {
                   this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_WORK_FOR_ORG).then((wForOrg) => {
                     this.workForOrg = wForOrg;
                     this.getNoticeFromServe();
-
                   });
                 })
               })
@@ -106,7 +107,11 @@ export class HomePage {
   }
 
   ionViewDidEnter() {
+    //每次进入页面调用此方法
+
+    //初始化转产信息
     this.initCvt();
+    //获取审批任务
     this.getTaskListFromServe();
     // if (this.workForOrg) {
     //   this.getNoticeFromServe();  //每次进入主界面，从服务器获取一次数据
@@ -123,12 +128,6 @@ export class HomePage {
     //   alert(data);
     // })
     // modal.present();
-
-  }
-  test11(){
-    alert("this.listConvert.length="+this.listConvert.length);
-    alert("this.listGranting.length="+this.listGranting.length);
-
 
   }
 
@@ -162,7 +161,7 @@ export class HomePage {
         this.navTo(cvtNotice);
       }else if(cvtNoticeList.length>1){
         //有多个通知的情况
-        this.navCtrl.push("TransPage",{
+        this.navCtrl.push("ConvertListPage",{
           listConvert:this.listConvert,
           listGranting: this.listGranting,
           workerNumber: this.workerNumber,
@@ -238,12 +237,12 @@ export class HomePage {
         } else {
           //说明此时还不应该盘点呢
           loading.dismiss();
-          this.noticeService.showNativeToast("未在盘点时间范围内");
+          this.noticeService.showToast("未在盘点时间范围内");
         }
 
       }, (error) => {
         loading.dismiss();
-        this.noticeService.showNativeToast("网络连接超时，请确认当前为内网环境");
+        this.noticeService.showToast("网络连接超时，请确认当前为内网环境");
       })
     } else if (this.badgeValueInv > 0) {
       this.navCtrl.push("InventoryPage", {
@@ -254,6 +253,7 @@ export class HomePage {
   }
   //转到我的资产页面
   navToMyAsset(param?:boolean) {
+    //用于在侧边栏点击完成后退出侧边栏
     if(param){
       setTimeout(()=>{
         this.menuCtrl.close();
@@ -268,11 +268,7 @@ export class HomePage {
     this.navCtrl.push("ProcessPage",{
       workerNumber:this.workerNumber
     });
-    // this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME).then((time)=>{
-    //   alert("上次数据下载时间"+time);
-    // })
-    
-    // alert("功能开发中");
+
     if(param){
       setTimeout(()=>{
         this.menuCtrl.close();
@@ -291,51 +287,11 @@ export class HomePage {
 
   }
 
+  /**
+   * 设置服务器的地址和端口
+   */
   setting(){
-    var address=HttpUtils.getUrlAddressFromProperties();
-    var port=HttpUtils.getUrlPortFromProperties();
-    this.alertCtrl.create({
-      title:"设置服务器地址/端口",
-      inputs: [
-        {
-          label:'地址',
-          name: 'address',
-          placeholder: '地址：'+address
-        },
-        {
-          name:'port',
-          placeholder:'端口：'+port
-        }
-      ],
-      buttons:[
-        {
-          text:'恢复默认值',
-          handler:data=>{
-            HttpUtils.setDefaultUrlToProperties();
-            this.noticeService.showNativeToast("设置成功");
-          }
-        },
-        {
-          text: '确定',
-          handler: data => {
-            if (data.address == "") {
-              this.noticeService.showNativeToast("服务器地址为空");
-            } else if (data.port == "") {
-              this.noticeService.showNativeToast("服务器端口为空");
-            } else {
-              if (!data.address.includes("http://") && !data.address.includes("https://")) {
-                data.address = "http://" + data.address;
-              }
-              HttpUtils.setUrlToProperties(data.address, data.port);
-              //保存到本地
-              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS, data.address);
-              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT, data.port);
-              this.noticeService.showNativeToast("设置成功");
-            }
-          }
-        }
-      ]
-    }).present();
+    this.loginService.settingHttpAddressAndPort();
   }
 
   /**
@@ -435,9 +391,11 @@ export class HomePage {
   //用户信息
   userMessage() {
     this.noticeService.showIonicAlert("当前用户：" + this.userName);
-
   }
 
+  /**
+   * 下载数据
+   */
   download() {
     let loading = this.loadingCtrl.create({
       spinner: 'bubbles',
@@ -449,7 +407,7 @@ export class HomePage {
       this.getNoticeFromServe().then(() => {
         loading.setContent("正在从服务器获取资产信息");
         this.assetService.downloadAndSaveData(this.workerNumber).then(()=>{
-          this.noticeService.showNativeToast("数据下载成功");
+          this.noticeService.showToast("数据下载成功");
           loading.dismiss();
         }, (error) => {
           this.noticeService.showIonicAlert(error);
@@ -463,8 +421,6 @@ export class HomePage {
       this.noticeService.showIonicAlert(error);
       loading.dismiss();
     });
-
-    // this.assetService.downloadAndSaveData(this.workerNumber);
   }
   /**
    * 从服务器获取通知
@@ -488,6 +444,9 @@ export class HomePage {
     })
   }
 
+  /**
+   * 从服务器获取审批任务列表
+   */
   getTaskListFromServe() {
     return new Promise((resolve, reject) => {
       //获取流程审批数据
@@ -501,6 +460,10 @@ export class HomePage {
       })
     })
   }
+
+  /**
+   * 从服务器获取盘点通知
+   */
   getInvNoticeFromServe() {
     return new Promise((resolve, reject) => {
       if (this.badgeValueInv == 0 || this.invNotice == null) {
@@ -518,7 +481,7 @@ export class HomePage {
           resolve();
         }, (error) => {
           reject(error);
-          //this.noticeService.showNativeToast("网络连接超时，请确认当前为内网环境");
+          //this.noticeService.showToast("网络连接超时，请确认当前为内网环境");
         })
       } else {
         resolve();
@@ -612,7 +575,7 @@ export class HomePage {
             loading.setContent("正在同步附件表...")
             this.attachmentService.synchroAttachmentToServe().then(()=>{
               loading.dismiss();
-              this.noticeService.showNativeToast("同步成功");
+              this.noticeService.showToast("同步成功");
             }, error => {
               loading.dismiss();
               this.noticeService.showIonicAlert(error);
@@ -635,43 +598,6 @@ export class HomePage {
     })
   }
 
-  // /**
-  //  * 同步盘点数据
-  //  */
-  // private _synchroInvData() {
-  //   let loading = this.loadingCtrl.create({
-  //     spinner: 'bubbles',
-  //     content: '正在同步资产盘点数据...',
-  //     duration: 30000
-  //   });
-  //   loading.present();
-  //   this.assetService.synchroInvData(this.workerNumber).then(() => {
-  //     loading.dismiss();
-  //     this.noticeService.showNativeToast("同步成功");
-  //   }, error => {
-  //     loading.dismiss();
-  //     this.noticeService.showIonicAlert(error);
-  //   })
-  // }
-
-  // /**
-  //  * 同步转产数据
-  //  */
-  // private _synchroCvtData() {
-  //   let loading = this.loadingCtrl.create({
-  //     spinner: 'bubbles',
-  //     content: '正在同步资产转产数据...',
-  //     duration: 30000
-  //   });
-  //   loading.present();
-  //   this.cvtService.synchroCvtData(this.cvtNoticeList).then(()=>{
-  //     loading.dismiss();
-  //     this.noticeService.showNativeToast("同步成功");
-  //   },error=>{
-  //     loading.dismiss();
-  //     this.noticeService.showIonicAlert(error);
-  //   })
-  // }
 
   //软件更新
   /**

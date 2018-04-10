@@ -13,7 +13,6 @@ import { LoadingController } from 'ionic-angular/components/loading/loading-cont
 import { LoginService } from '../../providers/service/login.service';
 import { ConvertUtil } from '../../providers/utils/convertUtil';
 /// <reference path="plugin/SignaturePad.d.ts"/>
-//import * as SignaturePad from 'signature_pad';
 /**
  * 手写签名页面
  */
@@ -86,7 +85,6 @@ export class SignaturePage {
 
     var clearButton = document.getElementById("clear");
     var undoButton = document.getElementById("undo");
-    //  var savePNGButton =document.getElementById("save-png");
 
 
     //清除
@@ -349,7 +347,7 @@ export class SignaturePage {
               this.saveTolocal(dataURL, this.signatureFolderName).then(() => {
                 this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_DEFAULT_SIGNATURE_PATH, this.signaturePath);
                 this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_DEFAULT_SIGNATURE_NAME, this.signatureName);
-                this.noticeService.showNativeToast("设置成功");
+                this.noticeService.showToast("设置成功");
               })
             }
           }

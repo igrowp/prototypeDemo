@@ -11,16 +11,13 @@ export class AssetHandleService {
 
   constructor(private assetHandleDbProvider:AssetHandleDBProvider,
       private assetHandelWebProvider:AssetHandleWebProvider) {
-
   }
-  
-  
-
-
-
   ////web端
 
-  //从服务器中获取闲置资产
+  /**
+   * 从服务器中获取闲置资产
+   * @param assetId 
+   */
   getIdleFromServe(assetId: string) {
     return new Promise<Idle>((resolve, reject) => {
       this.assetHandelWebProvider.getIdleFromServe(assetId)
@@ -223,10 +220,6 @@ export class AssetHandleService {
       },error=>reject("获取报废资产数据失败"))
     })
   }
-
-
-
-
 
 
 

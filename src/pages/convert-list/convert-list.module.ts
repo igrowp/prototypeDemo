@@ -1,16 +1,16 @@
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { TransPage } from './trans';
+import { ConvertListPage } from './convert-list';
 
 @NgModule({
   declarations: [
-    TransPage,
+    ConvertListPage,
   ],
   imports: [
-    IonicPageModule.forChild(TransPage),
+    IonicPageModule.forChild(ConvertListPage),
   ],providers:[
     BarcodeScanner
   ]
 })
-export class TransPageModule {}
+export class ConvertListPageModule {}

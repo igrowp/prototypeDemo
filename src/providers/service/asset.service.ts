@@ -212,13 +212,7 @@ export class AssetService {
    * 从本地固定资产台账中获得数据
    */
   queryAssetsFromFixed(workerNumber: string, isSynchro?: number) {
-    return new Promise<Array<FixedAsset>>((resolve, reject) => {
-      this.pubDBProvider.queryAssetsFromFixed(workerNumber, isSynchro).then((data) => {
-        resolve(data);
-      }, (err) => {
-        reject(err);
-      });
-    });
+    return this.pubDBProvider.queryAssetsFromFixed(workerNumber, isSynchro);
   }
 
   /**
@@ -228,13 +222,7 @@ export class AssetService {
    * @param workerNumber 员工编号
    */
   queryAssetsFormFixedByPage(pageSize: number, pageIndex: number, workerNumber: string) {
-    return new Promise<Array<FixedAsset>>((resolve, reject) => {
-      this.pubDBProvider.queryAssetsFromFixedByPage(pageSize, pageIndex, workerNumber).then((data) => {
-        resolve(data);
-      }, (err) => {
-        reject(err);
-      });
-    });
+    return this.pubDBProvider.queryAssetsFromFixedByPage(pageSize, pageIndex, workerNumber);
 
   }
 
@@ -242,13 +230,7 @@ export class AssetService {
    * 从本地固定资产台账中获得数据
    */
   queryAssetsFromInv(preWorkerNumber: string, isSignatured: number) {
-    return new Promise<Array<InvAsset>>((resolve, reject) => {
-      this.invDbProvider.queryAssetsFromInv(preWorkerNumber, isSignatured).then((data) => {
-        resolve(data);
-      }, (err) => {
-        reject(err);
-      });
-    });
+    return this.invDbProvider.queryAssetsFromInv(preWorkerNumber, isSignatured);
   }
 
   /**
@@ -257,13 +239,7 @@ export class AssetService {
    * @param code 二维码编号 
    */
   queryAssetFromFixedByIdAndCode(assetId, code) {
-    return new Promise<FixedAsset>((resolve, reject) => {
-      this.pubDBProvider.queryFromFixedByIdAndCode(assetId, code).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject("查询数据失败:" + error);
-      })
-    })
+    return this.pubDBProvider.queryFromFixedByIdAndCode(assetId, code);
   }
 
 
@@ -272,13 +248,7 @@ export class AssetService {
    * @param assetId 
    */
   queryAssetFromFixedById(assetId) {
-    return new Promise<FixedAsset>((resolve, reject) => {
-      this.pubDBProvider.queryFromFixedById(assetId).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.queryFromFixedById(assetId);
   }
 
   /**
@@ -286,13 +256,7 @@ export class AssetService {
    * @param Code 
    */
   queryAssetFromFixedByRFID(rfid) {
-    return new Promise<FixedAsset>((resolve, reject) => {
-      this.pubDBProvider.queryFromFixedByRFID(rfid).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.queryFromFixedByRFID(rfid);
   }
 
   queryListFromDictDetailByCategoryCode(categoryCode) {
@@ -304,13 +268,7 @@ export class AssetService {
    * @param Code 
    */
   queryAssetFromFixedByCode(Code) {
-    return new Promise<FixedAsset>((resolve, reject) => {
-      this.pubDBProvider.queryFromFixedByCode(Code).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.queryFromFixedByCode(Code);
   }
 
 
@@ -341,13 +299,7 @@ export class AssetService {
    * @param asset 
    */
   insertToFixed(asset: FixedAsset) {
-    return new Promise((resolve, reject) => {
-      this.pubDBProvider.insertToFixed(asset).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.insertToFixed(asset);
   }
 
   /**
@@ -355,13 +307,7 @@ export class AssetService {
    * @param asset 
    */
   insertToInv(asset: InvAsset) {
-    return new Promise((resolve, reject) => {
-      this.invDbProvider.insertToInv(asset).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject("插入数据失败:" + error);
-      })
-    })
+    return this.invDbProvider.insertToInv(asset);
   }
 
   ///////////////本地数据库插入END//////////////////
@@ -372,13 +318,7 @@ export class AssetService {
    * @param asset 
    */
   updateToInv(asset: InvAsset) {
-    return new Promise((resolve, reject) => {
-      this.invDbProvider.updateToInv(asset).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.invDbProvider.updateToInv(asset);
   }
 
   /**
@@ -386,13 +326,7 @@ export class AssetService {
    * @param asset 
    */
   updateToFixed(asset: FixedAsset) {
-    return new Promise((resolve, reject) => {
-      this.pubDBProvider.updateToFixed(asset).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.updateToFixed(asset);
   }
 
   ///////////////本地数据库更新END//////////////////
@@ -402,50 +336,26 @@ export class AssetService {
    * 在日志表中插入
    */
   insertToChangeRecord(changeRecord: ChangeRecord) {
-    return new Promise((resolve, reject) => {
-      this.pubDBProvider.insertToChangeRecord(changeRecord).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.insertToChangeRecord(changeRecord);
   }
 
   /**
    * 在日志表中插入
    */
   updateToChangeRecord(changeRecord: ChangeRecord) {
-    return new Promise((resolve, reject) => {
-      this.pubDBProvider.updateToChangeRecord(changeRecord).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.updateToChangeRecord(changeRecord);
   }
   /**
   * 获取所有的日志文件
   */
   queryListFromChangeRecord(workerNumber: string) {
-    return new Promise<Array<ChangeRecord>>((resolve, reject) => {
-      this.pubDBProvider.queryListFromChangeRecord(workerNumber).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.queryListFromChangeRecord(workerNumber);
   }
   /**
   * 根据资产ID获取日志
   */
   queryFromChangeRecordByAssetId(assetId: string) {
-    return new Promise((resolve, reject) => {
-      this.pubDBProvider.queryFromChangeRecordByAssetId(assetId).then((data) => {
-        resolve(data);
-      }, (error) => {
-        reject(error);
-      })
-    })
+    return this.pubDBProvider.queryFromChangeRecordByAssetId(assetId);
   }
 
   ////////////////////////日志更改END//////////////////////////////

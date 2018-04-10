@@ -12,11 +12,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation';
   templateUrl: 'app.html'
 })
 export class MyApp {
-  //rootPage:any = "LoginPage";
   rootPage: any = null;
-  //rootPage:any = "HomePage";
-  //rootPage:any = "Test2Page";
-
 
   constructor(platform: Platform,
     statusBar: StatusBar,
@@ -69,13 +65,9 @@ export class MyApp {
                 this.rootPage = "LoginPage";
               }
             })
-            // this.loginService.queryUserInfoByUserNameAndPWD(userName,password).then((data)=>{
-
-            // })
           })
         }
       })
-
     }
   }
 
@@ -91,7 +83,6 @@ export class MyApp {
         })
       }
     })
-
   }
 
 

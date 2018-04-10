@@ -1,16 +1,14 @@
 import { PubConstant } from './../entity/constant.provider';
 import { CvtNonNotice, CvtNonNoticeSub,CvtNonReceive } from './../entity/cvt.entity.provider';
 import { FixedAsset } from './../entity/entity.provider';
-import { Http, Headers,RequestOptions } from '@angular/http';
+import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { HttpUtils } from '../utils/httpUtils';
-import { PhotoLibrary } from '@ionic-native/photo-library';
 import { AttachmentWebProvider } from './attachment.web.provider';
 
 @Injectable()
 export class CvtWebProvider{
     constructor(public http: Http,
-      private photoLibrary: PhotoLibrary,
     private attaWebProvider:AttachmentWebProvider) {
     }
     getUrl(){
@@ -72,8 +70,11 @@ export class CvtWebProvider{
   }
 
 
-  
-  getCvtNonNoticeSub(noticeId:string){
+  /**
+   * 获取资产转产附加通知列表
+   * @param noticeId 
+   */
+  getCvtNonNoticeSubList(noticeId:string){
     let params= "?noticeId="+noticeId;
     return new Promise<Array<CvtNonNoticeSub>>((resolve,reject)=>{
       this.http.get(this.getUrl()+'/notice/sub/list'+params)
@@ -112,7 +113,7 @@ export class CvtWebProvider{
    * 根据通知单详情获取某一项资产的列表
    * @param subNoticeId 
    */
-  getCvtAssetBySubNoticeId(subNoticeId:string){
+  getCvtAssetListBySubNoticeId(subNoticeId:string){
     let params= "?subNoticeId="+subNoticeId;
     return new Promise<Array<FixedAsset>>((resolve,reject)=>{
       this.http.get(this.getUrl()+'/fixed/list/sub'+params)
@@ -156,7 +157,7 @@ export class CvtWebProvider{
         .map(res => res.json())
         .timeout(PubConstant.HTTP_TIME_OUT_LONG)
         .subscribe((data) => {
-          var receiveId = cvtNonReceives[cvtNonReceives.length - 1].receiveId;
+          //var receiveId = cvtNonReceives[cvtNonReceives.length - 1].receiveId;
           for (var i = 0; i < cvtNonReceives.length; i++) {
             //图片上传成功
             //传签名

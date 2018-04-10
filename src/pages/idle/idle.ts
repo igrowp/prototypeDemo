@@ -10,10 +10,7 @@ import { NoticeService } from '../../providers/service/notice.service';
 import { AssetHandleService } from '../../providers/service/asset.handle.service';
 
 /**
- * Generated class for the IdlePage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 资产闲置页面
  */
 
 @IonicPage()
@@ -22,10 +19,10 @@ import { AssetHandleService } from '../../providers/service/asset.handle.service
   templateUrl: 'idle.html',
 })
 export class IdlePage {
-  public photoBase64s: Array<string> = new Array<string>();
-  public photoPaths: Array<string> = new Array<string>();
-  public idle:Idle=new Idle();
-  private assetId="";
+  public photoBase64s: Array<string> = new Array<string>();  //选择图片列表——存储base64格式
+  public photoPaths: Array<string> = new Array<string>();    //选择图片列表——存储图片路径
+  public idle:Idle=new Idle();    //闲置信息
+  private assetId="";             //资产ID
   constructor(public navCtrl: NavController,
     private assetHandleService:AssetHandleService,
     private fileService:FileService,
@@ -35,6 +32,7 @@ export class IdlePage {
      public navParams: NavParams) {
        this.idle=this.navParams.get("idle");
        this.assetId=this.navParams.get("assetId");
+       //获取之前选择的图片信息
        this.attachmentService.getAttachments(this.assetId,PubConstant.ATTACHMENT_TYPE_IDLE).then((attachments)=>{
          if(attachments.length>0){
            for(let i=0;i<attachments.length;i++){
@@ -46,11 +44,6 @@ export class IdlePage {
            }
          }
        })
-  }
-
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad IdlePage');
   }
 
   //提交
@@ -93,7 +86,7 @@ export class IdlePage {
    * 确认是否删除按钮
    * @param file 
    */
-  private isDeleteImg(index) {
+  isDeleteImg(index) {
     let alert = this.alertCtrl.create({
       title: '提示',
       subTitle: '是否要删除该照片?',
@@ -114,14 +107,12 @@ export class IdlePage {
         }
       ]
     });
-
     alert.present();
   }
 
-
   /**
-* 添加图片
-*/
+   * 添加图片
+   */
   add() {
     if (this.photoBase64s.length >= 3) {
       //只能上传三张照片
@@ -156,10 +147,4 @@ export class IdlePage {
       }
     },null);
   }
-
-
-
-
-
-  
 }

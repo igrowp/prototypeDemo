@@ -1,11 +1,8 @@
 import { Camera } from '@ionic-native/camera';
-import { Content } from 'ionic-angular/components/content/content';
-import { AlertController } from 'ionic-angular/components/alert/alert-controller';
 import { IonicPage, ActionSheetController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
 import { ImagePicker } from '@ionic-native/image-picker';
-import { AttachmentWebProvider } from '../../providers/web/attachment.web.provider';
 /**
  * Generated class for the Test2Page page.
  *
@@ -27,9 +24,7 @@ export class Test2Page {
   constructor(public popoverCtrl: PopoverController,
     private actionSheetCtrl:ActionSheetController,
     private imagePicker:ImagePicker,
-    private camera:Camera,
-    private attachmentWebProvider:AttachmentWebProvider,
-    private alertCtrl: AlertController) {
+    private camera:Camera) {
 
   }
   navToMyAsset() {

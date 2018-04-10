@@ -1,9 +1,8 @@
 import { PubConstant } from './../../providers/entity/constant.provider';
-import { HttpUtils } from './../../providers/utils/httpUtils';
 import { LoginService } from './../../providers/service/login.service';
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams, ViewController, AlertController } from 'ionic-angular';
-import { NoticeService } from '../../providers/service/notice.service';
+import { IonicPage, LoadingController, NavController, NavParams, ViewController } from 'ionic-angular';
+
 
 /**
  * Generated class for the PopupPage page.
@@ -25,8 +24,6 @@ export class PopupPage {
   constructor(public navCtrl: NavController,
     public loadingCtrl: LoadingController,
     public navParams: NavParams,
-    private alertCtrl: AlertController,
-    private noticeService: NoticeService,
     private loginService: LoginService,
     public viewCtrl: ViewController) {
   }
@@ -100,52 +97,7 @@ export class PopupPage {
 
 
   setting() {
-    // this.Local_URL=HttpUtils.getUrlFromProperties();
-    // var url=this.Local_URL.substring(0,this.Local_URL.lastIndexOf('/'));
-    var address = HttpUtils.getUrlAddressFromProperties();
-    var port = HttpUtils.getUrlPortFromProperties();
-    this.alertCtrl.create({
-      title: "设置服务器地址/端口",
-      inputs: [
-        {
-          label: '地址',
-          name: 'address',
-          placeholder: '地址：' + address
-        },
-        {
-          name: 'port',
-          placeholder: '端口：' + port
-        }
-      ],
-      buttons: [
-        {
-          text: '恢复默认值',
-          handler: data => {
-            HttpUtils.setDefaultUrlToProperties();
-            this.noticeService.showNativeToast("设置成功");
-          }
-        },
-        {
-          text: '确定',
-          handler: data => {
-            if (data.address == "") {
-              this.noticeService.showNativeToast("服务器地址为空");
-            } else if (data.port == "") {
-              this.noticeService.showNativeToast("服务器端口为空");
-            } else {
-              if (!data.address.includes("http://") && !data.address.includes("https://")) {
-                data.address = "http://" + data.address;
-              }
-              HttpUtils.setUrlToProperties(data.address, data.port);
-              //保存到本地
-              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS, data.address);
-              this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT, data.port);
-              this.noticeService.showNativeToast("设置成功");
-            }
-          }
-        }
-      ]
-    }).present();
+    this.loginService.settingHttpAddressAndPort();
   }
 
 }

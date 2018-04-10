@@ -1,62 +1,63 @@
 <ion-header>
-        <ion-navbar color="title">
-            <ion-title class="border-left-white">资产领用</ion-title>
-        </ion-navbar>
-    </ion-header>
-    <ion-content class="bg-content">
-        <ion-card>
-            <ion-card-header style="padding-top:0px;padding-bottom:0px;">
-                <ion-item style="padding-left:0px;">
-                    <ion-card-title>
-                        资产领用通知单
-                    </ion-card-title>
-                    <h2 *ngIf="cvtNotice.workOrderNumber"> 发料单号：{{cvtNotice.workOrderNumber}}</h2>
-                    <ion-icon name="ios-arrow-dropdown" item-end *ngIf="!isShow" (click)="isShow=!isShow"></ion-icon>
-                    <ion-icon name="ios-arrow-dropup" item-end *ngIf="isShow" (click)="isShow=!isShow"></ion-icon>
-                </ion-item>
-                </ion-card-header>
-                <ion-card-content *ngIf="isShow">
-                    <ion-row>
-                        <ion-col col-4 offset-1>
-                            <h2>用料单位：</h2>
-                        </ion-col>
-                        <ion-col col-7>
-                            <h2>{{cvtNotice.orgName}}</h2>
-                        </ion-col>
-                        <ion-col col-4 offset-1>
-                            <h2>领料人：</h2>
-                        </ion-col>
-                        <ion-col col-7>
-                            <h2>{{custodian}}</h2>
-                        </ion-col>
-                        <ion-col col-4 offset-1>
-                            <h2>库房保管员：</h2>
-                        </ion-col>
-                        <ion-col col-7>
-                            <h2>{{cvtNotice.storeroomKeeper}}</h2>
-                        </ion-col>
-                    </ion-row>
-            </ion-card-content>
-        </ion-card>
-        
-        <ion-list>
-            <ion-item-divider>
-                <h2>领用资产详情</h2>
-            </ion-item-divider>
-            <ion-item *ngFor="let item of dataTable">
-                <!-- <ion-checkbox [(ngModel)]="cucumber" (ionChange)="updateCucumber()"></ion-checkbox> -->
-                <!-- <ion-checkbox></ion-checkbox> -->
-                <ion-label>
-                    <h2>{{item.assetName}}[{{item.specModel}}]</h2>
-                    <p>数量：{{item.sentQuantity}}</p>
-                </ion-label>
-        
-                <button ion-button item-end (click)="handleDetail(item)">详情</button>
+    <ion-navbar color="title">
+        <ion-title class="border-left-white">资产领用</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="bg-content">
+    <ion-card>
+        <ion-card-header style="padding-top:0px;padding-bottom:0px;">
+            <ion-item style="padding-left:0px;">
+                <ion-card-title>
+                    资产领用通知单
+                </ion-card-title>
+                <h2 *ngIf="cvtNotice.workOrderNumber"> 发料单号：{{cvtNotice.workOrderNumber}}</h2>
+                <ion-icon name="ios-arrow-dropdown" item-end *ngIf="!isShow" (click)="isShow=!isShow"></ion-icon>
+                <ion-icon name="ios-arrow-dropup" item-end *ngIf="isShow" (click)="isShow=!isShow"></ion-icon>
             </ion-item>
-        </ion-list>
-    
-        <!-- 轮播图形式 -->
-        <!-- <ion-card>
+        </ion-card-header>
+        <ion-card-content *ngIf="isShow">
+            <ion-row>
+                <ion-col col-4 offset-1>
+                    <h2>用料单位：</h2>
+                </ion-col>
+                <ion-col col-7>
+                    <h2>{{cvtNotice.orgName}}</h2>
+                </ion-col>
+                <ion-col col-4 offset-1>
+                    <h2>领料人：</h2>
+                </ion-col>
+                <ion-col col-7>
+                    <h2>{{custodian}}</h2>
+                </ion-col>
+                <ion-col col-4 offset-1>
+                    <h2>库房保管员：</h2>
+                </ion-col>
+                <ion-col col-7>
+                    <h2>{{cvtNotice.storeroomKeeper}}</h2>
+                </ion-col>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+
+    <ion-list>
+        <ion-item-divider>
+            <h2>领用资产详情</h2>
+        </ion-item-divider>
+        <ion-item *ngFor="let item of dataTable">
+            <!-- <ion-checkbox [(ngModel)]="cucumber" (ionChange)="updateCucumber()"></ion-checkbox> -->
+            <!-- <ion-checkbox></ion-checkbox> -->
+            <ion-label>
+                <h2>{{item.assetName}}[{{item.specModel}}]</h2>
+                <p>数量：{{item.sentQuantity}}</p>
+            </ion-label>
+
+            <button ion-button item-end (click)="handleDetail(item)">详情</button>
+        </ion-item>
+    </ion-list>
+
+    <!-- 轮播图形式 -->
+    <!-- <ion-card>
             <ion-card-header style="padding-top:0px;padding-bottom:0px;">
                 <ion-item style="padding-left:0px;">
                     <h2>领用资产信息 ({{slideActivityIndex}}/{{slideSize}})</h2>
@@ -126,13 +127,13 @@
                 </ion-slide>
             </ion-slides>
         </ion-card> -->
-    
-    </ion-content>
-    
-    <ion-footer>
-        <ion-buttons>
-            <button ion-button full (click)="handleSure()">
-                签名确认
-            </button>
-        </ion-buttons>
-    </ion-footer>
+
+</ion-content>
+
+<ion-footer>
+    <ion-buttons>
+        <button ion-button full (click)="handleSignature()">
+            签名确认
+        </button>
+    </ion-buttons>
+</ion-footer>

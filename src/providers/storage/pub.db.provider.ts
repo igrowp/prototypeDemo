@@ -15,17 +15,8 @@ export class PubDBProvider {
     ) {
         this.dbService.getSqliteObject().then((db) => {
             this.dataBase = db;
-            //alert("pub ==="+this.dbService)
         })
     }
-
-
-
-
-
-
-
-
 
 
 
@@ -870,11 +861,8 @@ export class PubDBProvider {
                 asset.workForOrg = data.rows.item(i).WORK_FOR_ORG;
                 asset.workInOrg = data.rows.item(i).WORK_IN_ORG;
                 asset.subordinateBlock = data.rows.item(i).SUBORDINATE_BLOCK;
-                //   asset.productionTime=data.rows.item(i).PRODUCTION_TIME;
                 asset.techStatus = data.rows.item(i).TECH_STATUS;
                 asset.useState = data.rows.item(i).USE_STATE;
-                //   asset.manufactureDate=data.rows.item(i).MANUFACTURE_DATE;
-                //   asset.increaseDate=data.rows.item(i).INCREASE_DATE;
                 asset.manufactureDate = ConvertUtil.formatDate(new Date(data.rows.item(i).MANUFACTURE_DATE));
                 asset.productionTime = ConvertUtil.formatDate(new Date(data.rows.item(i).PRODUCTION_TIME));
                 asset.increaseDate = ConvertUtil.formatDate(new Date(data.rows.item(i).INCREASE_DATE));

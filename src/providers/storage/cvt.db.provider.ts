@@ -115,7 +115,7 @@ export class CvtDBProvider {
         return new Promise<CvtNonNoticeSub>((resolve, reject) => {
             this.dbService.executeSql('select * from cvt_noninstall_notice_sub where SUB_NOTICE_ID=?', [subNoticeId])
                 .then((data) => {
-                    var notice = this._getCvtNonNoticeSubFromDBResult(data);
+                    var notice = this._getCvtNonNoticeSubListFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
                     reject("数据库操作：<br>查询非安设备通知表失败<br>" + error.message);
@@ -131,7 +131,7 @@ export class CvtDBProvider {
         return new Promise<Array<CvtNonNoticeSub>>((resolve, reject) => {
             this.dbService.executeSql('select * from cvt_noninstall_notice_sub where NOTICE_ID=?', [noticeId])
                 .then((data) => {
-                    var notice = this._getCvtNonNoticeSubsFromDBResult(data);
+                    var notice = this._getCvtNonNoticeSubListsFromDBResult(data);
                     resolve(notice);
                 }, (error) => {
                     reject("数据库操作：<br>查询非安设备通知表失败<br>" + error.message);
@@ -313,7 +313,7 @@ export class CvtDBProvider {
      * 从数据库查询结果中返回CvtNonNoticeSub的值
      * @param data 
      */
-    private _getCvtNonNoticeSubFromDBResult(data): CvtNonNoticeSub {
+    private _getCvtNonNoticeSubListFromDBResult(data): CvtNonNoticeSub {
         var cvtNonNoticeSub: CvtNonNoticeSub = null;
         if (data.rows.length > 0) {
             cvtNonNoticeSub = new CvtNonNoticeSub();
@@ -338,7 +338,7 @@ export class CvtDBProvider {
      * 从数据库查询结果中返回CvtNonNoticeSub的值
      * @param data 
      */
-    private _getCvtNonNoticeSubsFromDBResult(data): Array<CvtNonNoticeSub> {
+    private _getCvtNonNoticeSubListsFromDBResult(data): Array<CvtNonNoticeSub> {
         var cvtNonNoticeSubs: Array<CvtNonNoticeSub> = new Array<CvtNonNoticeSub>();
         if (data.rows.length > 0) {
             cvtNonNoticeSubs = new Array<CvtNonNoticeSub>();

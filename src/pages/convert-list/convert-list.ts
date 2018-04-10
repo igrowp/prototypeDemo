@@ -1,6 +1,5 @@
 import { CvtNonNotice } from './../../providers/entity/cvt.entity.provider';
 import { LoginService } from './../../providers/service/login.service';
-import { CvtService } from './../../providers/service/cvt.service';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
@@ -9,19 +8,16 @@ import { PubConstant } from '../../providers/entity/constant.provider';
 
 
 /**
- * Generated class for the TransPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
+ * 资产转产-列表页面
  */
 
  
 @IonicPage()
 @Component({
-  selector: 'page-trans',
-  templateUrl: 'trans.html',
+  selector: 'page-convert-list',
+  templateUrl: 'convert-list.html',
 })
-export class TransPage {
+export class ConvertListPage {
   public listConvert:Array<CvtNonNotice>=new Array<CvtNonNotice>();
   public listGranting:Array<CvtNonNotice>=new Array<CvtNonNotice>();
   private workerNumber;

@@ -3,10 +3,11 @@ import { AppInfo } from './../entity/pub.entity';
 import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-// import 'rxjs/add/operator/timeout'
 import { HttpUtils } from '../utils/httpUtils';
 import { Observable } from 'rxjs/Observable';
-
+/**
+ * 公共的服务器数据请求
+ */
 @Injectable()
 export class PubWebProvider {
   constructor(public http: Http) {
@@ -21,7 +22,7 @@ export class PubWebProvider {
   getRecentAppVersion():Observable<AppInfo>{
     return this.http.get(this.getPubUrl() + '/app/version')
         .map(res => res.json())
-        .timeout(PubConstant.HTTP_TIME_OUT_SHORT);//.timeout(PubConstant.HTTP_TIME_OUT_SHORT);
+        .timeout(PubConstant.HTTP_TIME_OUT_SHORT);
   }
 
 }

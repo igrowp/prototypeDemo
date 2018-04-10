@@ -54,7 +54,6 @@
 
     <ion-list *ngIf="dataTable.length!=null&&dataTable.length>0">
 
-        <!-- <ion-scroll scrollY="true"> -->
         <ion-item *ngFor="let item of dataTable;let i = index">
             <ion-label>
                 <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
@@ -71,7 +70,6 @@
 
         </ion-item>
 
-        <!-- </ion-scroll> -->
         <!-- 底部刷新  -->
         <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="80px" style="background-color:transparent">
             <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="数据加载中...">
@@ -97,8 +95,5 @@
             <button ion-fab Large class="fab-control fab-two" (click)="scanTwoDimensionCode(fab)"></button>
             <button ion-fab Large class="fab-control fab-rfid" (click)="scanrfid(fab)"></button>
         </ion-fab-list>
-        <!-- <ion-fab-list side="left">
-            
-        </ion-fab-list> -->
     </ion-fab>
 </ion-content>

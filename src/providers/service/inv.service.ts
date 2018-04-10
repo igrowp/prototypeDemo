@@ -17,38 +17,6 @@ export class InvService {
   ) {
   }
 
-  // /**
-  //  * 从本地固定资产台账中获得数据
-  //  */
-  // queryAssetsFormInv(preWorkerNumber:string,isSignatured:string){
-  //   return new Promise<Array<InvAsset>>((resolve,reject)=>{
-  //     this.invDBProvider.queryAssetsFromInv(preWorkerNumber,isSignatured).then((data)=>{
-  //       resolve(data);
-  //     },(err)=>{
-  //       reject(err);
-  //     });
-  //   });
-  // }
-
-  // /**
-  //  * 根据资产id从资产盘点记录中获取资产信息
-  //  * @param assetId 
-  //  * @param noticeId
-  //  */
-  // queryAssetFromInvByIdAndNoticeId(assetId,noticeId){
-  //   return new Promise<InvAsset>((resolve,reject)=>{
-  //     if(assetId==null||noticeId==null){
-  //       reject("错误：资产ID为空或通知ID为空");
-  //       return;
-  //     }
-  //     this.invDBProvider.queryFromInvByIdAndNotice(assetId,noticeId).then((data)=>{
-  //       resolve(data);
-  //     },(error)=>{
-  //       reject(error);
-  //     })
-  //   })
-  // }
-
   /**
    * 判断盘点通知单是否可用
    * @param invNotice 
@@ -208,67 +176,6 @@ export class InvService {
       })
     })
   }
-
-
-
-  // /**
-  //  * 从本地数据库中查询所有的组织机构
-  //  */
-  // queryListFromOrgInfo() {
-  //   return new Promise<Array<OrgInfo>>((resolve, reject) => {
-  //     this.pubDBProvider.queryListFromOrgInfo(0, 0).then((data) => {
-  //       resolve(data);
-  //     }, (error) => {
-  //       reject(error);
-  //     })
-  //   })
-  // }
-
-  // /**
-  //  * 从本地数据库中查询所有的组织机构
-  //  */
-  // queryListFromUserSimple() {
-  //   return new Promise<Array<UserSimple>>((resolve, reject) => {
-  //     this.pubDBProvider.queryListFromUserSimple(0, 0).then((data) => {
-  //       resolve(data);
-  //     }, (error) => {
-  //       reject(error);
-  //     })
-  //   })
-  // }
-
-  //  /**
-  //  * 向资产盘点记录表中更新数据
-  //  * @param asset 
-  //  */
-  // updateToInv(asset:InvAsset){
-  //   return new Promise((resolve,reject)=>{
-  //     this.invDBProvider.updateToInv(asset).then((data)=>{
-  //       resolve(data);
-  //     },(error)=>{
-  //       reject(error);
-  //     })
-  //   })
-  // }
-
-  // /**
-  //  * 向资产盘点记录表中插入数据
-  //  * @param asset 
-  //  */
-  // insertToInv(asset:InvAsset){
-  //   return new Promise((resolve,reject)=>{
-  //     this.invDBProvider.insertToInv(asset).then((data)=>{
-  //       resolve(data);
-  //     },(error)=>{
-  //       this.alertCtrl.create({
-  //             title:"提醒",
-  //             subTitle:"插入数据失败:"+error,
-  //             buttons:["确定"]
-  //           }).present();
-  //       reject(error);
-  //     })
-  //   })
-  // }
 
   ////////////进行时间判断///////////////////////
 

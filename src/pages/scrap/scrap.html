@@ -1,56 +1,48 @@
-<!--
-  Generated template for the ScrapPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
-  <ion-navbar color="title">
-    <ion-title class="border-left-white">资产报废</ion-title>
-  </ion-navbar>
-
+    <ion-navbar color="title">
+        <ion-title class="border-left-white">资产报废</ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content class="bg-content">
-  <ion-list>
-      <ion-item>
-          <ion-label class="item-head">报废类别：</ion-label>
-          <ion-select class="item-body" [(ngModel)]="scrap.scrapCategory" placeholder="选择" interface="popover">
-              <ion-option [value]="0">非正常</ion-option>
-              <ion-option [value]="1">正常</ion-option>
-          </ion-select>
-      </ion-item>
-      <ion-item>
-          <ion-label class="item-head">停产日期：</ion-label>
-          <p class="item-body default" *ngIf="scrap.unproductionTime==null||scrap.unproductionTime==''" item-end>选择日期</p>
-          <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消"
-              [(ngModel)]="scrap.unproductionTime"></ion-datetime>
-      </ion-item>
-      <ion-item>
-          <p class="item-head">存放地点：</p>
-          <input item-end class="item-body input" type="text" [(ngModel)]="scrap.storageLocation" placeholder="存放地点">
-      </ion-item>
-      <ion-item>
-          <p class="item-head">资产简况：</p>
-          <div>
-              <textarea class="input-reason" rows="3" [(ngModel)]="scrap.assetBrief"></textarea>
-          </div>
-      </ion-item>
-      <ion-item>
-          <p class="item-head">报废原因：</p>
-          <div>
-              <textarea class="input-reason" rows="3" [(ngModel)]="scrap.scrapReason"></textarea>
-          </div>
-      </ion-item>
-  </ion-list>
+    <ion-list>
+        <ion-item>
+            <ion-label class="item-head">报废类别：</ion-label>
+            <ion-select class="item-body" [(ngModel)]="scrap.scrapCategory" placeholder="选择" interface="popover">
+                <ion-option [value]="0">非正常</ion-option>
+                <ion-option [value]="1">正常</ion-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">停产日期：</ion-label>
+            <p class="item-body default" *ngIf="scrap.unproductionTime==null||scrap.unproductionTime==''" item-end>选择日期</p>
+            <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消"
+                [(ngModel)]="scrap.unproductionTime"></ion-datetime>
+        </ion-item>
+        <ion-item>
+            <p class="item-head">存放地点：</p>
+            <input item-end class="item-body input" type="text" [(ngModel)]="scrap.storageLocation" placeholder="存放地点">
+        </ion-item>
+        <ion-item>
+            <p class="item-head">资产简况：</p>
+            <div>
+                <textarea class="input-reason" rows="3" [(ngModel)]="scrap.assetBrief"></textarea>
+            </div>
+        </ion-item>
+        <ion-item>
+            <p class="item-head">报废原因：</p>
+            <div>
+                <textarea class="input-reason" rows="3" [(ngModel)]="scrap.scrapReason"></textarea>
+            </div>
+        </ion-item>
+    </ion-list>
 
 </ion-content>
 
 <ion-footer>
-    <ion-buttons start >
-      <button ion-button block (click)="handleSubmit()">
-        提交
-      </button>
+    <ion-buttons start>
+        <button ion-button block (click)="handleSubmit()">
+            提交
+        </button>
     </ion-buttons>
-  </ion-footer>
+</ion-footer>

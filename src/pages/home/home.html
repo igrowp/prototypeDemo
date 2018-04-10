@@ -121,8 +121,6 @@
 
 <ion-content class="bg-content" #content>
     <!-- <button ion-button (click)="test()">测试</button> -->
-    <!-- <button ion-button block (click)="test()">Toggle Menu</button> -->
-    <!-- <button ion-button (click)="test11()">目前的结果</button> -->
 
     <ion-card>
         <ion-card-content>
@@ -158,20 +156,6 @@
         </ion-card-content>
     </ion-card>
 
-    <!-- <ion-card *ngIf="isSynchro" (click)="handleCvtSynchro()">
-            <ion-card-content>
-                <ion-card-title>
-                    待完成项
-                </ion-card-title>
-                <ion-item>
-                    <ion-thumbnail item-start>
-                        <img src="./assets/imgs/synchro1.png">
-                    </ion-thumbnail>
-                    <h1 style="padding:3px;">同步转产数据
-                    </h1>
-                </ion-item>
-            </ion-card-content>
-        </ion-card> -->
     <div *ngIf="listGranting!=null&&listGranting.length!=0">
         <ion-card (click)="navTo(item)" *ngFor="let item of listGranting" >
             <ion-card-content>
@@ -221,7 +205,6 @@
             </ion-item>
         </ion-card-content>
     </ion-card>
-    <!-- <img src="http://11.10.97.76/usr/tomcat/apache-tomcat-8.5.11/webapps/eaam-app/upload/dzceshi/2018-2-7-2.png"> -->
 </ion-content>
 
 
@@ -244,9 +227,6 @@
             <h2 (click)="navToProcess(true)">流程审批</h2>
         </ion-item>
         <ion-item no-lines>
-            <!-- <ion-avatar item-left>
-                <img class="thumbnail" src="./assets/imgs/synchro.png">
-            </ion-avatar> -->
             <ion-icon name="cloud-upload" item-start></ion-icon>
             <label (click)="navToSynchro()">数据同步</label>
         </ion-item>

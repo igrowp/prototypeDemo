@@ -57,7 +57,7 @@ export class AssetHandleDBProvider {
      */
     updateToIdle(idle: Idle) {
         return new Promise((resolve, reject) => {
-            if (idle == null) {
+            if (!idle) {
                 resolve(null);
             } else {
                 this.dbService.executeSql(`update idle_apply_device set ASSET_ID=? ,INSTALL_LOCATION=?, OLD_INSTALL_LOCATION=?,STOP_REASON=?,
@@ -94,7 +94,7 @@ export class AssetHandleDBProvider {
      */
     insertToIdle(idle:Idle) {
         return new Promise((resolve, reject) => {
-            if (idle == null) {
+            if (!idle) {
                 resolve();
             }else{
                 this.dbService.executeSql('insert into idle_apply_device values (?,?,?,?,?,?,?,?,?,?,?)',
@@ -192,7 +192,7 @@ export class AssetHandleDBProvider {
      */
     insertToScrap(scrap:Scrap) {
         return new Promise((resolve, reject) => {
-            if (scrap == null) {
+            if (!scrap) {
                 resolve();
             }else{
                 this.dbService.executeSql('insert into scrap_apply_fix values (?,?,?,?,?,?,?,?,?)',

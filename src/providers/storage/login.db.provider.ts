@@ -13,7 +13,6 @@ export class LoginDBProvider {
   ) {
     this.dbService.getSqliteObject().then((db)=>{
       this.dataBase=db;
-      //alert("login==="+this.dbService)
     })
   }
 
