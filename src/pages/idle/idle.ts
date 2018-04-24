@@ -33,7 +33,7 @@ export class IdlePage {
        this.idle=this.navParams.get("idle");
        this.assetId=this.navParams.get("assetId");
        //获取之前选择的图片信息
-       this.attachmentService.getAttachments(this.assetId,PubConstant.ATTACHMENT_TYPE_IDLE).then((attachments)=>{
+       this.attachmentService.getAttachments(this.assetId,PubConstant.ATTACHMENT_TYPE_IMG_IDLE).then((attachments)=>{
          if(attachments.length>0){
            for(let i=0;i<attachments.length;i++){
              let attachment=attachments[i];
@@ -67,7 +67,7 @@ export class IdlePage {
       }
       let loading=this.noticeService.showIonicLoading("正在提交",10000);
       loading.present();
-      this.attachmentService.uploadOrSavePhotos(this.idle.assetId,PubConstant.ATTACHMENT_TYPE_IDLE,null,this.photoPaths,PubConstant.UPLOAD_TYPE_BASE64);
+      this.attachmentService.uploadOrSavePhotos(this.idle.assetId,PubConstant.ATTACHMENT_TYPE_IMG_IDLE,null,this.photoPaths,PubConstant.UPLOAD_TYPE_BASE64);
       this.assetHandleService.synchroIdleToServe(this.idle).then((result) => {
         loading.dismiss();
         this.noticeService.showIonicAlert("提交成功");

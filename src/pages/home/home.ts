@@ -399,6 +399,7 @@ export class HomePage {
   download() {
     let loading = this.loadingCtrl.create({
       spinner: 'bubbles',
+      duration:20000,
       content: '正在从服务器获取数据',
     });
     loading.present();

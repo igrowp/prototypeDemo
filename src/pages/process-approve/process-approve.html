@@ -15,7 +15,28 @@
       </ion-select>
     </ion-item>
     <div *ngIf="workflowBean.outcome=='同意'">
-      <ion-card>
+      <div *ngFor="let nextStep of nextStepInfos;let i=index">
+
+
+        <ion-item style="margin-top:20px">
+          <ion-label class="item-head">下一步骤：</ion-label>
+          <p *ngIf="nextStep.nextStepName!=''&&nextStep.nextStepName!=undefined" item-end class="item-body">{{nextStep.nextStepName}}</p>
+          <p *ngIf="nextStep.nextStepName==''||nextStep.nextStepName==undefined" item-end class="item-body">完成</p>
+        </ion-item>
+        
+        <ion-item *ngIf="nextStep.nextStepApprovers.length>1">
+          <ion-label class="item-head">下一审批人：</ion-label>
+          <ion-select class="item-body" placeholder="选择" interface="popover">
+            <ion-option *ngFor="let nextStepApprover of nextStep.nextStepApprovers" (ionSelect)="selectOptions(nextStepApprover.processInstanceId,nextStep.nodeId)">{{nextStepApprover.approverName}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="nextStep.nextStepApprovers.length==1">
+          <ion-label class="item-head">下一审批人：</ion-label>
+          <p class="item-body" item-end>{{nextStep.nextStepApprovers[0].approverName}}</p>
+        </ion-item>
+      </div>
+
+      <!-- <ion-card>
         <ion-grid>
           <ion-row>
             <ion-col class="item-head center" col-6>
@@ -43,47 +64,17 @@
           </ion-row>
 
         </ion-grid>
-      </ion-card>
+      </ion-card> -->
     </div>
     <!-- 驳回的情况，需要选择驳回到上一级还是申请人 -->
     <ion-item *ngIf="workflowBean.outcome=='驳回'">
       <ion-label class="item-head">驳回到：</ion-label>
       <ion-select class="item-body" [(ngModel)]="workflowBean.rejectTo" placeholder="选择" interface="popover">
-        <ion-option value="APPLICATE">申请人</ion-option>
+        <ion-option value="APPLICATE">流程开始</ion-option>
         <ion-option value="PREVIOUS">上一步</ion-option>
       </ion-select>
     </ion-item>
 
-
-
-    <!-- <ion-item>
-        <ion-label>
-          <p class="item-head">下一步骤：</p>
-        </ion-label>
-        <p *ngIf="nextStep.nextStepName!=''&&nextStep.nextStepName!=undefined" class="item-body" item-end>{{nextStep.nextStepName}}</p>
-        <p *ngIf="nextStep.nextStepName==''||nextStep.nextStepName==undefined" class="item-body" item-end>完成</p>
-      </ion-item>
-      <ion-item>
-          <ion-label class="item-head">下一步审批人：</ion-label>
-          <ion-select class="item-body" placeholder="选择" interface="popover">
-            <ion-option *ngFor="let nextStepApprover of nextStep.nextStepApprovers;let j=index" [value]="">{{nextStepApprover.approverName}}</ion-option>
-          </ion-select>
-      </ion-item> -->
-
-
-    <!-- <ion-item>
-      <ion-label>
-        <p class="item-head">下一步骤：</p>
-      </ion-label>
-      <p  *ngIf="todoEvent.nextStepName!=''"  class="item-body" item-end>{{todoEvent.nextStepName}}</p>
-      <p  *ngIf="todoEvent.nextStepName==''||todoEvent.nextStepName==undefined"  class="item-body" item-end>完成</p>
-    </ion-item>
-    <ion-item *ngIf="todoEvent.nextApprovalPersonName!=''" >
-      <ion-label>
-        <p class="item-head">下一步审核人：</p>
-      </ion-label>
-      <p class="item-body"  item-end>{{todoEvent.nextApprovalPersonName}}</p>
-    </ion-item> -->
     <ion-item>
       <p class="item-head">审核意见：</p>
       <div>

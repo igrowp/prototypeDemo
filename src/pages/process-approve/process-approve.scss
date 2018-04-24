@@ -12,8 +12,8 @@ page-process-approve {
     }
     .select-center{
         width: auto;
-padding: 0 2%;
-margin: 0;
+        padding: 0 2%;
+        margin: 0;
     }
     .border{
         border:1px solid #000;
@@ -30,6 +30,11 @@ margin: 0;
         color:#000;
         padding-right: 2%;
         // text-align: right;
+        // display:block;                     /*内联对象需加*/
+        word-break:keep-all;           /* 不换行 */
+        white-space:nowrap;        /* 不换行 */
+        overflow:hidden;           /* 内容超出宽度时隐藏超出部分的内容 */
+        text-overflow:ellipsis;    /*溢出时显示省略标记...；需与overflow:hidden;一起使用*/
     }
     .default{
         color: #9A9A9A;
@@ -41,7 +46,7 @@ margin: 0;
     }
 
     .input-reason {
-        // border-style: none;
+        resize:none;
         margin-left: 5%;
         padding: 5px;
         margin-top: 15px;

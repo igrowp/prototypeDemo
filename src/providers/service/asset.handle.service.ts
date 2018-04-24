@@ -187,6 +187,7 @@ export class AssetHandleService {
   }
 
 
+
   /**
    * 同步报废列表
    * @param workerNumber 
@@ -221,6 +222,21 @@ export class AssetHandleService {
     })
   }
 
+  /**
+   * 从服务器获取闲置申请单
+   * @param applyId 
+   */
+  getScrapBillFromServe(applyId:String){
+    return this.assetHandelWebProvider.getScrapBillFromServe(applyId);
+  }
+
+  /**
+   * 从服务器获取闲置申请单
+   * @param applyId 
+   */
+  getScrapAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getScrapAssetListFromServe(applyId);
+  }
 
 
 
@@ -317,6 +333,40 @@ export class AssetHandleService {
    */
   getAlloAssetListFromServe(allocateId:String){
     return this.assetHandelWebProvider.getAlloAssetListFromServe(allocateId);
+  }
+
+  //闲置处置
+  /**
+   * 从服务器获取闲置处置申请单
+   * @param applyId 
+   */
+  getHandleIdleBillFromServe(applyId:String){
+    return this.assetHandelWebProvider.getHandleIdleBillFromServe(applyId);
+  }
+
+  /**
+   * 从服务器获取闲置处置资产列表
+   * @param applyId 
+   */
+  getHandleIdleAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getHandleIdleAssetListFromServe(applyId);
+  }
+
+  //报废处置
+  /**
+   * 从服务器获取报废处置申请单
+   * @param applyId 
+   */
+  getHandleScrapBillFromServe(applyId:String){
+    return this.assetHandelWebProvider.getHandleScrapBillFromServe(applyId);
+  }
+
+  /**
+   * 从服务器获取报废处置资产列表
+   * @param applyId 
+   */
+  getHandleScrapAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getHandleScrapAssetListFromServe(applyId);
   }
 
   

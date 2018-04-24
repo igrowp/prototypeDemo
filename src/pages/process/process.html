@@ -36,17 +36,39 @@
 
     <ion-list *ngIf="convertList.length>0">
       <ion-item-divider>
-        转产发放审批
+        非安设备转产-发放通知单
       </ion-item-divider>
       <ion-item *ngFor="let item of convertList;let i=index" (click)="handleDetail(item)">
         <ion-row>
           <ion-col col-12>
             <h2>{{item.eventName}}</h2>
           </ion-col>
-          <ion-col col-4 class="center">
+          <ion-col col-5 class="center">
             {{item.eventType}}
           </ion-col>
+          <ion-col col-3 class="center">
+            {{item.eventPerson}}
+          </ion-col>
           <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="checkList.length>0">
+      <ion-item-divider>
+        非安设备转产-资产验收单
+      </ion-item-divider>
+      <ion-item *ngFor="let item of checkList;let i=index" (click)="handleDetail(item)">
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-5 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-3 class="center">
             {{item.eventPerson}}
           </ion-col>
           <ion-col col-4 class="center">
@@ -58,7 +80,7 @@
 
     <ion-list *ngIf="allocateList.length>0">
       <ion-item-divider>
-        调拨审批
+        资产调拨审批
       </ion-item-divider>
       <ion-item *ngFor="let item of allocateList;let i=index" (click)="handleDetail(item)">
         <ion-row>
@@ -80,9 +102,75 @@
 
     <ion-list *ngIf="idleList.length>0">
       <ion-item-divider>
-        闲置审批
+        资产闲置认定
       </ion-item-divider>
       <ion-item *ngFor="let item of idleList;let i=index" (click)="handleDetail(item)">
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventPerson}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="scrapList.length>0">
+      <ion-item-divider>
+        资产报废申请
+      </ion-item-divider>
+      <ion-item *ngFor="let item of scrapList;let i=index" (click)="handleDetail(item)">
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventPerson}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="handleIdleList.length>0">
+      <ion-item-divider>
+        闲置资产处置
+      </ion-item-divider>
+      <ion-item *ngFor="let item of handleIdleList;let i=index" (click)="handleDetail(item)">
+        <ion-row>
+          <ion-col col-12>
+            <h2>{{item.eventName}}</h2>
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventType}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventPerson}}
+          </ion-col>
+          <ion-col col-4 class="center">
+            {{item.eventDate}}
+          </ion-col>
+        </ion-row>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="handleScrapList.length>0">
+      <ion-item-divider>
+        报废资产处置
+      </ion-item-divider>
+      <ion-item *ngFor="let item of handleScrapList;let i=index" (click)="handleDetail(item)">
         <ion-row>
           <ion-col col-12>
             <h2>{{item.eventName}}</h2>

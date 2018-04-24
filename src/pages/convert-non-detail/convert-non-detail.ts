@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { CvtNonNoticeSub } from '../../providers/entity/cvt.entity.provider';
+import { FixedAsset } from '../../providers/entity/entity.provider';
 
 /**
  * 资产领用详情页
@@ -23,11 +24,20 @@ export class ConvertNonDetailPage {
     this.item=navParams.get("CvtNonNoticeSub");
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ConvertNonDetailPage');
-  }
-
   handleBack(){
     this.viewCtrl.dismiss();
+  }
+
+  handleDetail(item:FixedAsset){
+    this.navCtrl.push("ProcessAssetMessagePage", {
+      eventType: "资产详情页",
+      fixedAsset: item
+    })
+    // this.assetWebProvider.getFixedByAssetId(item.assetId).then((data)=>{
+    //   this.navCtrl.push("ProcessAssetMessagePage", {
+    //     eventType: "资产详情页",
+    //     fixedAsset: data,
+    //   })
+    // })
   }
 }

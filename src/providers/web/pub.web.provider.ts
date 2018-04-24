@@ -12,7 +12,7 @@ import { Observable } from 'rxjs/Observable';
 export class PubWebProvider {
   constructor(public http: Http) {
   }
-  getPubUrl() {
+  private getPubUrl() {
     return HttpUtils.getUrlFromProperties() + "/pub";
   }
   

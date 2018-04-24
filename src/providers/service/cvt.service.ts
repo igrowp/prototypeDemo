@@ -229,7 +229,7 @@ export class CvtService {
     return new Promise((resolve, reject) => {
       this.cvtWebProvider.receiverNoGranting(cvtNonNotice.noticeId, recipient).then((data) => {
         if (data != null) {
-          this.attaWebProvider.uploadSignature(recipient, signaturePath, signatureName, null, data,null, PubConstant.ATTACHMENT_TYPE_CVT_RECEIVER_NO_GRANTING,this.attaWebProvider.UploadType.BASE64).then(() => {
+          this.attaWebProvider.uploadSignature(recipient, signaturePath, signatureName, null, data,null, PubConstant.ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER2,this.attaWebProvider.UploadType.BASE64).then(() => {
 
           }, (error) => {
             reject("上传签名失败，请检查网络是否通畅");

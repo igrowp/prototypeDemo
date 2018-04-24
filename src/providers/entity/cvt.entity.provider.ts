@@ -59,3 +59,22 @@ export class CvtNonReceive {
 	signatureName; //签名文件名称
 }
 
+
+export class CvtNonCheck{
+	checkBillNum; //验收申请单号
+	checkOrg;  //验收单位
+	assetName;  //资产名称
+	specModel; //规格型号
+	workInOrg;  //使用单位
+	checkPerson; //责任人
+	manufacturer; //制造单位
+	originalValue; //资产原值
+	assetCode;     //资产编号
+	selfNumber;   //自编号
+	serialNumber; //出厂编号
+	manufactureDate; //出厂日期
+	isReadyForUse;   //是否达到预定使用状态 true/false
+	checkDate;   //验收日期
+
+}
+

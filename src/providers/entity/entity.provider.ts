@@ -44,11 +44,13 @@ export class FixedAsset{
 	  specModel;        //规格型号
 	  licenseplatWellno;//车牌井号
 	  workForOrg;       //所属单位
-	  workInOrg;        //所在单位
+    workInOrg;        //所在单位
+    wfoAddress;       //所属单位中文名称
 	  subordinateBlock; //所属区块
     productionTime;   //投产时间
   	techStatus;       //技术状况
-	  useState;         //使用状况
+    useState;         //使用状况
+    useStateDesc;     //使用状况描述
 	  manufactureDate;    //出产日期
   	increaseDate;       //增加日期
 	  increaseReason;     //增加原因

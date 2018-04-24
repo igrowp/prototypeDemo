@@ -11,16 +11,37 @@ import { HttpUtils } from '../utils/httpUtils';
 export class AssetWebProvider {
   constructor(public http: Http) {
   }
-  getUrl() {
+  private getUrl() {
     return HttpUtils.getUrlFromProperties() + "/asset";
   }
 
 
   /**
- * 获取资产列表数据
- */
-  getListFormFixedByWorkerNumber(workerNumber: string,lastRequestTime: string) {
-    let params = "?workerNumber=" + workerNumber+"&lastRequestTime=" + lastRequestTime;
+   * 获取资产列表数据
+   */
+  getFixedByAssetId(assetId:string) {
+    let params = "?assetId=" + assetId;
+    return new Promise<FixedAsset>((resolve, reject) => {
+      this.http.get(this.getUrl() + '/fixed' + params)
+        .map(res => res.json())
+        .subscribe((data) => {
+          if(data=="{}"){
+            resolve(null);
+          }else{
+            resolve(data);
+          }
+        }, err => {
+          reject(err);
+        })
+    })
+  }
+
+
+  /**
+   * 获取资产列表数据
+   */
+  getListFormFixedByWorkerNumber(workerNumber: string, lastRequestTime: string) {
+    let params = "?workerNumber=" + workerNumber + "&lastRequestTime=" + lastRequestTime;
     return new Promise<Array<FixedAsset>>((resolve, reject) => {
       this.http.get(this.getUrl() + '/fixed/list' + params)
         .map(res => res.json())

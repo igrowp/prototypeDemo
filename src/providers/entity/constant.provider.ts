@@ -114,33 +114,30 @@ export class PubConstant{
 
 	///附件表类型
 	/**
-	 * 转产领用人签名的附件类型
+	 * 转产-资产保管人签名的附件类型
 	 */
-	static ATTACHMENT_TYPE_CVT_SIGNATURE="CVT_SIGNATURE";
+	static ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER2="SIGNATURE_CVT_RECEIVER2";
 	/**
-	 * 转产保管人签名的附件类型
+	 * 转产-第一级领用人领用时签名的附件类型
 	 */
-	static ATTACHMENT_TYPE_CVT_RECEIVER="CVT_RECEIVER";
-	/**
-	 * 转产领用人签名的附件类型-未下发情况
-	 */
-	static ATTACHMENT_TYPE_CVT_RECEIVER_NO_GRANTING="CVT_RECEIVER_NO_GRANTING";
+	static ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER="SIGNATURE_CVT_RECEIVER";
 	/**
 	 * 盘点时签名保存的附件类型
 	 */
-	static ATTACHMENT_TYPE_INV_SIGNATURE="INV_SIGNATURE";
+	static ATTACHMENT_TYPE_SIGNATURE_INV="SIGNATURE_INV";
 	/**
 	 * 盘点时图片保存的的附件类型
 	 */
-	static ATTACHMENT_TYPE_INV_IMG="INV_IMG";
+	static ATTACHMENT_TYPE_IMG_INV="IMG_INV";
 	/**
 	 * 闲置时的附件类型
 	 */
-	static ATTACHMENT_TYPE_IDLE="IDLE_IMG";
+	static ATTACHMENT_TYPE_IMG_IDLE="IMG_IDLE";
 	/**
 	 * 资产图片的附件类型
 	 */
-	static ATTACHMENT_TYPE_ASSET="ASSET_IMG";
+	static ATTACHMENT_TYPE_IMG_ASSET="IMG_ASSET";
+	
 
 
 
@@ -163,15 +160,15 @@ export class PubConstant{
 	/**
 	 * 使用状况
 	 */
-	static DICT_TYPE_USE_STATE=20;
+	static DICT_TYPE_USE_STATE="20";
 	/**
 	 * 技术状况
 	 */
-	static DICT_TYPE_TECH_STATE=21;
+	static DICT_TYPE_TECH_STATE="21";
 	/**
 	 * 安全现状
 	 */
-	static DICT_TYPE_SECURITY_STATE=26;
+	static DICT_TYPE_SECURITY_STATE="26";
 
 	//数据字典名字
 	/**

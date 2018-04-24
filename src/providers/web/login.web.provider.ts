@@ -12,7 +12,7 @@ import 'rxjs/add/operator/map';
 export class LoginWebProvider{
     constructor(public http: Http) {
   }
-  getUrl(){
+  private getUrl(){
     return HttpUtils.getUrlFromProperties()+"/login";
   }
 

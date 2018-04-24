@@ -28,7 +28,7 @@ export class PubDBProvider {
     queryAssetsFromFixed(workerNumber: string, isSynchro?: number) {
         let sql: string = "";
         let params: any = [];
-        if (isSynchro==null||isSynchro == -1) {
+        if (isSynchro == null || isSynchro == -1) {
             //搜索全部
             sql = "select * from asset_account_fixed where WORKER_NUMBER=?";
             params = [workerNumber];
@@ -137,7 +137,7 @@ export class PubDBProvider {
             this.dbService.executeSql("insert into asset_account_fixed values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 [asset.assetId, asset.assetName, asset.assetType, asset.assetCategory, asset.assetClass, asset.specModel, asset.licenseplatWellno, asset.workForOrg, asset.workInOrg, asset.subordinateBlock,
                 asset.productionTime, asset.techStatus, asset.useState, asset.manufactureDate, asset.increaseDate, asset.increaseReason, asset.unit, asset.quantity, asset.yardStatus, asset.assetGroup,
-                asset.remainingLife, asset.netWorth, asset.workerNumber, asset.custodian, asset.installLocation, asset.remark, asset.twoDimensionCode, asset.rfid, asset.recordFlag, "0", "0", asset.selfNumber, asset.assetCode, asset.originalValue, asset.singleQuantity, asset.complexQuantity, asset.certificateNumber, asset.securityState, asset.changeCustodian, asset.changeWorkerNumber, asset.manufacturer, asset.serialNumber, asset.fundChannel,asset.photoPath])
+                asset.remainingLife, asset.netWorth, asset.workerNumber, asset.custodian, asset.installLocation, asset.remark, asset.twoDimensionCode, asset.rfid, asset.recordFlag, "0", "0", asset.selfNumber, asset.assetCode, asset.originalValue, asset.singleQuantity, asset.complexQuantity, asset.certificateNumber, asset.securityState, asset.changeCustodian, asset.changeWorkerNumber, asset.manufacturer, asset.serialNumber, asset.fundChannel, asset.photoPath])
                 .then((data) => {
                     resolve(data);
                 })
@@ -156,8 +156,8 @@ export class PubDBProvider {
             this.dbService.executeSql(`update asset_account_fixed 
                                        set TECH_STATUS=?,USE_STATE=?,QUANTITY=?,INSTALL_LOCATION=?,TWO_DIMENSION_CODE=?,IS_CHECKED=?,IS_SYNCHRO=?,SECURITY_STATE=?,RFID=?,CUSTODIAN=?,WORKER_NUMBER=?,CHANGE_CUSTODIAN=?,CHANGE_WORKER_NUMBER=?,
                                        LICENSEPLAT_WELLNO=?,SELF_NUMBER=?,SERIAL_NUMBER=?,MANUFACTURE_DATE=?,INSTALL_LOCATION=?,PHOTO_PATH=? where ASSET_ID=?`,
-                                        [asset.techStatus, asset.useState, asset.quantity, asset.installLocation, asset.twoDimensionCode, asset.isChecked, asset.isSynchro, asset.securityState, asset.rfid, asset.custodian, asset.workerNumber, asset.changeCustodian, asset.changeWorkerNumber,
-                                            asset.licenseplatWellno,asset.selfNumber,asset.serialNumber,asset.manufactureDate,asset.installLocation,asset.photoPath, asset.assetId])
+                [asset.techStatus, asset.useState, asset.quantity, asset.installLocation, asset.twoDimensionCode, asset.isChecked, asset.isSynchro, asset.securityState, asset.rfid, asset.custodian, asset.workerNumber, asset.changeCustodian, asset.changeWorkerNumber,
+                asset.licenseplatWellno, asset.selfNumber, asset.serialNumber, asset.manufactureDate, asset.installLocation, asset.photoPath, asset.assetId])
                 .then((data) => {
                     resolve(data);
                 })
@@ -311,7 +311,7 @@ export class PubDBProvider {
     //             })
     //     })
     // }
-    
+
     // /**
     //   * 更新数据到员工精简表中
     //   * @param UserSimple 
@@ -353,9 +353,9 @@ export class PubDBProvider {
      * @param assetId 
      * @param attachmentType 
      */
-    queryFromAttachments(assetId: string,attachmentType:string) {
+    queryFromAttachments(assetId: string, attachmentType: string) {
         return new Promise<Array<Attachment>>((resolve, reject) => {
-            this.dbService.executeSql('select * from sys_attachments where ASSET_ID=? AND ATTACHMENT_TYPE=?', [assetId,attachmentType])
+            this.dbService.executeSql('select * from sys_attachments where ASSET_ID=? AND ATTACHMENT_TYPE=?', [assetId, attachmentType])
                 .then((data) => {
                     var attachments = this._getAttachmentsFromDBResult(data);
                     resolve(attachments);
@@ -368,7 +368,7 @@ export class PubDBProvider {
      * 根据是否同步查询附件表
      * @param isUpload 
      */
-    queryFromAttachmentsByIsUpload(isUpload:number) {
+    queryFromAttachmentsByIsUpload(isUpload: number) {
         return new Promise<Array<Attachment>>((resolve, reject) => {
             this.dbService.executeSql('select * from sys_attachments where IS_UPLOAD=?', [isUpload])
                 .then((data) => {
@@ -384,9 +384,9 @@ export class PubDBProvider {
       * 更新数据到附件表中
       * @param attachment 
       */
-      updateToAttachment(attachment: Attachment) {
+    updateToAttachment(attachment: Attachment) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql("update sys_attachments set IS_UPLOAD=? where ASSET_ID=? and ATTACHMENT_TYPE=? and STORAGE_PATH=?", [ attachment.isUpload,attachment.assetId,attachment.attachmentType,attachment.storagePath])
+            this.dbService.executeSql("update sys_attachments set IS_UPLOAD=? where ASSET_ID=? and ATTACHMENT_TYPE=? and STORAGE_PATH=?", [attachment.isUpload, attachment.assetId, attachment.attachmentType, attachment.storagePath])
                 .then((data) => {
 
                     resolve(data);
@@ -404,7 +404,7 @@ export class PubDBProvider {
        */
     insertToAttachment(attachment: Attachment) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql('insert into sys_attachments values (?,?,?,?,?)', [attachment.assetId,attachment.workerNumber, attachment.attachmentType,attachment.storagePath,attachment.isUpload])
+            this.dbService.executeSql('insert into sys_attachments values (?,?,?,?,?)', [attachment.assetId, attachment.workerNumber, attachment.attachmentType, attachment.storagePath, attachment.isUpload])
                 .then((data) => {
                     resolve(data);
                 }, (error) => {
@@ -415,9 +415,9 @@ export class PubDBProvider {
     /**
      * 删除附件表
      */
-    deleteFromAttachment(assetId: string,attachment:string) {
+    deleteFromAttachment(assetId: string, attachment: string) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql('delete from sys_attachments where ASSET_ID=? and ATTACHMENT_TYPE=?', [assetId,attachment])
+            this.dbService.executeSql('delete from sys_attachments where ASSET_ID=? and ATTACHMENT_TYPE=?', [assetId, attachment])
                 .then((data) => {
                     resolve(data);
                 })
@@ -513,10 +513,26 @@ export class PubDBProvider {
     }
 
     /**
+      * 根据Id查询数据字典明细
+      * @param dictDetailId 
+      */
+    queryFromDictDetailByCategoryAndDictCode(categoryCode: string, dictCode: string) {
+        return new Promise<DictDetail>((resolve, reject) => {
+            this.dbService.executeSql('select * from sys_dict_detail where CATEGORY_CODE=? and DICT_CODE=?', [categoryCode, dictCode])
+                .then((data) => {
+                    var dictDetail = this._getDictDetailFromDBResult(data);
+                    resolve(dictDetail);
+                }, (error) => {
+                    reject("数据库操作：<br>查询数据字典明细表失败<br>" + error.message);
+                })
+        })
+    }
+
+    /**
       * 根据DictId查询数据字典明细
       * @param dictDetailId 
       */
-      queryListFromDictDetailByCategoryCode(categoryCode: string) {
+    queryListFromDictDetailByCategoryCode(categoryCode: string) {
         return new Promise<Array<DictDetail>>((resolve, reject) => {
             this.dbService.executeSql('select * from sys_dict_detail where CATEGORY_CODE=? order by DICT_CODE', [categoryCode])
                 .then((data) => {
@@ -560,10 +576,10 @@ export class PubDBProvider {
       * 更新数据到字典明细表中
       * @param UserSimple 
       */
-      updateToDictDetail(dictDetail: DictDetail) {
+    updateToDictDetail(dictDetail: DictDetail) {
         return new Promise((resolve, reject) => {
             this.dbService.executeSql("update sys_dict_detail set CATEGORY_CODE=?,DICT_CODE=?,DICT_CODE_DESC=?,CODE_TYPE=?,CODE_SIZE=? where DICT_DETAIL_ID=?",
-             [dictDetail.categoryCode,dictDetail.dictCode,dictDetail.dictCodeDesc,dictDetail.codeType,dictDetail.codeSize,dictDetail.dictDetailId])
+                [dictDetail.categoryCode, dictDetail.dictCode, dictDetail.dictCodeDesc, dictDetail.codeType, dictDetail.codeSize, dictDetail.dictDetailId])
                 .then((data) => {
                     resolve(data);
                 })
@@ -738,7 +754,7 @@ export class PubDBProvider {
         }
         return attachments;
     }
-    
+
 
 
     //获取数据字典数据

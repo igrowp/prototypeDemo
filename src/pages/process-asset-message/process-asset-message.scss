@@ -1,13 +1,17 @@
-page-idle {
+page-process-asset-message {
+    .full{
+        height: 100%;
+        width: 100%;
+    }
     ion-list{
         padding-top:20px;
     }
-
     .item-head{
         font-size: 2rem;
         color: #9A9A9A;
         font-weight: 600;
     }
+    
     .item-body{
         font-size: 2rem;
         font-weight: 600;
@@ -15,13 +19,14 @@ page-idle {
         padding-right: 2%;
         text-align: right;
     }
-
+    .default{
+        color: #9A9A9A;
+    }
     .input{
         border-style: none;
         background-color: #fff;
-        width: 50%;
+        width: 60%;
     }
-
     .input-reason {
         resize:none;
         margin-left: 5%;
@@ -45,8 +50,4 @@ page-idle {
         text-align: center;
         height: 100px;
     }
-    .imgs-add {
-        margin-top: 15px;
-    }
-
 }

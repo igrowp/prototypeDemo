@@ -86,20 +86,22 @@ export class ProcessApprovePage {
     // this.workflowBean.rejectTo  //与页面绑定
     // this.workflowBean.comment  //与页面绑定
     this.workflowBean.nextStepApprovers = JSON.stringify(this.selectedApprovers);
-    // switch (this.todoEvent.eventType) {
-    //   case "转产发放审批":
-    //     this.workflowBean.approveType = "SUBMITNOTICE";
-    //     break;
-    //   case "调拨审批":
-    //     this.workflowBean.approveType = "调拨审批";
-    //     break; 
-    //   case "闲置审批":
-    //     this.workflowBean.approveType = "闲置审批";
-    //     break;
-    // }
-    this.workflowWebProvider.submitToServe(this.workflowBean).subscribe(() => {
-      this.noticeService.showIonicAlert("提交成功");
-      this.navCtrl.popToRoot();
+    
+    let process=this.noticeService.showIonicLoading("正在提交",10000);
+    process.present();
+    this.workflowWebProvider.submitToServe(this.workflowBean).subscribe((result) => {
+      if(result.result){
+        process.dismiss();
+        this.noticeService.showIonicAlert("提交成功");
+        this.navCtrl.popToRoot();
+      }else{
+        this.noticeService.showIonicAlert("提交失败");
+        process.dismiss();
+      }
+      
+    },error=>{
+      process.dismiss();
+      this.noticeService.showIonicAlert("提交失败，网络连接异常"+error);
     })
   }
 

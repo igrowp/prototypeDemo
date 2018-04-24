@@ -13,7 +13,7 @@
 </ion-header>
 
 
-<ion-content class="full" class="bg-content">
+<ion-content class="full bg-content">
     <ion-list *ngIf="handleType=='提交'">
         <ion-item>
             <ion-label class="item-head">资产名称：</ion-label>
@@ -58,6 +58,21 @@
             <ion-label class="item-head">资产名称：</ion-label>
             <p class="item-body" item-end>{{fixedAsset.assetName}}</p>
         </ion-item>
+        <ion-item>
+            <ion-label class="item-head">资产编码：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.assetCode!=null&&fixedAsset.assetCode!=''" item-end>{{fixedAsset.assetCode}}</p>
+            <p class="item-body" *ngIf="fixedAsset.assetCode==null||fixedAsset.assetCode==''" item-end>无</p>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">规格型号：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.specModel!=null&&fixedAsset.specModel!=''" item-end>{{fixedAsset.specModel}}</p>
+            <p class="item-body" *ngIf="fixedAsset.specModel==null||fixedAsset.specModel==''" item-end>无</p>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">自编码：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.selfNumber!=null&&fixedAsset.selfNumber!=''" item-end>{{fixedAsset.selfNumber}}</p>
+            <p class="item-body" *ngIf="fixedAsset.selfNumber==null||fixedAsset.selfNumber==''" item-end>无</p>
+        </ion-item>
 
         <ion-item>
             <ion-label class="item-head">车牌井号：</ion-label>
@@ -66,51 +81,40 @@
         </ion-item>
 
         <ion-item>
-            <ion-label class="item-head">规格型号：</ion-label>
-            <p class="item-body" *ngIf="fixedAsset.assetType!=null&&fixedAsset.assetType!=''" item-end>{{fixedAsset.assetType}}</p>
-            <p class="item-body" *ngIf="fixedAsset.assetType==null||fixedAsset.assetType==''" item-end>无</p>
+            <ion-label class="item-head">所属单位：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.wfoAddress!=null&&fixedAsset.wfoAddress!=''" item-end>{{fixedAsset.wfoAddress}}</p>
+            <p class="item-body" *ngIf="fixedAsset.wfoAddress==null||fixedAsset.wfoAddress==''" item-end>无</p>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">使用（保管）人：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.custodian!=null&&fixedAsset.custodian!=''" item-end>{{fixedAsset.custodian}}</p>
+            <p class="item-body" *ngIf="fixedAsset.custodian==null||fixedAsset.custodian==''" item-end>无</p>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">技术状况：</ion-label>
+            <p class="item-body" *ngIf="techStatusDesc!=null&&techStatusDesc!=''" item-end>{{techStatusDesc}}</p>
+            <p class="item-body" *ngIf="techStatusDesc==null||techStatusDesc==''" item-end>无</p>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">使用状况：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.useStateDesc!=null&&fixedAsset.useStateDesc!=''" item-end>{{fixedAsset.useStateDesc}}</p>
+            <p class="item-body" *ngIf="fixedAsset.useStateDesc==null||fixedAsset.useStateDesc==''" item-end>无</p>
+        </ion-item>
+        <ion-item>
+            <ion-label class="item-head">生产厂家：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.manufacturer!=null&&fixedAsset.manufacturer!=''" item-end>{{fixedAsset.manufacturer}}</p>
+            <p class="item-body" *ngIf="fixedAsset.manufacturer==null||fixedAsset.manufacturer==''" item-end>无</p>
         </ion-item>
 
+        <ion-item>
+            <ion-label class="item-head">出厂编号：</ion-label>
+            <p class="item-body" *ngIf="fixedAsset.serialNumber!=null&&fixedAsset.serialNumber!=''" item-end>{{fixedAsset.serialNumber}}</p>
+            <p class="item-body" *ngIf="fixedAsset.serialNumber==null||fixedAsset.serialNumber==''" item-end>无</p>
+        </ion-item>
         <ion-item>
             <ion-label class="item-head">出厂日期：</ion-label>
             <p *ngIf="fixedAsset.manufactureDate!='NaN-NaN-NaN'" class="item-body" item-end>{{fixedAsset.manufactureDate}}</p>
             <p *ngIf="fixedAsset.manufactureDate=='NaN-NaN-NaN'" class="item-body" item-end>无</p>
-        </ion-item>
-
-        <ion-item>
-            <ion-label class="item-head">投产日期：</ion-label>
-            <p *ngIf="fixedAsset.productionTime!='NaN-NaN-NaN'" class="item-body" item-end>{{fixedAsset.productionTime}}</p>
-            <p *ngIf="fixedAsset.productionTime=='NaN-NaN-NaN'" class="item-body" item-end>无</p>
-        </ion-item>
-
-        <ion-item>
-            <ion-label class="item-head">尚可使用月数：</ion-label>
-            <p class="item-body" *ngIf="fixedAsset.remainingLife!=null&&fixedAsset.remainingLife!=0" item-end>{{fixedAsset.remainingLife}}个月</p>
-            <p class="item-body" *ngIf="fixedAsset.remainingLife==null||fixedAsset.remainingLife==0" item-end>无</p>
-        </ion-item>
-
-        <ion-item>
-            <ion-label class="item-head">计量单位：</ion-label>
-            <p class="item-body" *ngIf="fixedAsset.unit!=null&&fixedAsset.unit!=''" item-end>{{fixedAsset.unit}}</p>
-            <p class="item-body" *ngIf="fixedAsset.unit==null||fixedAsset.unit==''" item-end>无</p>
-        </ion-item>
-
-        <ion-item>
-            <ion-label class="item-head">单台数量：</ion-label>
-            <p class="item-body" *ngIf="fixedAsset.singleQuantity!=null&&fixedAsset.singleQuantity!=''" item-end>{{fixedAsset.singleQuantity}}</p>
-            <p class="item-body" *ngIf="fixedAsset.singleQuantity==null||fixedAsset.singleQuantity==''" item-end>无</p>
-        </ion-item>
-
-        <ion-item>
-            <ion-label class="item-head">复合数量：</ion-label>
-            <p class="item-body" *ngIf="fixedAsset.complexQuantity!=null&&fixedAsset.complexQuantity!=''" item-end>{{fixedAsset.complexQuantity}}</p>
-            <p class="item-body" *ngIf="fixedAsset.complexQuantity==null||fixedAsset.complexQuantity==''" item-end>无</p>
-        </ion-item>
-
-        <ion-item>
-            <ion-label class="item-head">产权证号：</ion-label>
-            <p class="item-body" *ngIf="fixedAsset.certificateNumber!=null&&fixedAsset.certificateNumber!=''" item-end>{{fixedAsset.certificateNumber}}</p>
-            <p class="item-body" *ngIf="fixedAsset.certificateNumber==null||fixedAsset.certificateNumber==''" item-end>无</p>
         </ion-item>
 
         <ion-item>
@@ -123,6 +127,14 @@
             <ion-label class="item-head">资产净值（元）：</ion-label>
             <p class="item-body" *ngIf="fixedAsset.netWorth!=null&&fixedAsset.netWorth!=''" item-end>￥{{fixedAsset.netWorth}}</p>
             <p class="item-body" *ngIf="fixedAsset.netWorth==null||fixedAsset.netWorth==''" item-end>无</p>
+        </ion-item>
+        <ion-item>
+            <p class="item-head">资产图片({{photoBase64s.length}}/3)：</p>
+            <ion-row>
+                <ion-col col-4 class="img-content" *ngFor="let item of photoBase64s;let i=index">
+                    <img class="imgs-item" [src]="item" />
+                </ion-col>
+            </ion-row>
         </ion-item>
     </ion-list>
     

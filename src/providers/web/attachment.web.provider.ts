@@ -1,4 +1,4 @@
-import { PostRequestResult } from './../entity/pub.entity';
+import { PostRequestResult, AttachmentBase64 } from './../entity/pub.entity';
 import { HttpUtils } from './../utils/httpUtils';
 import { Http } from '@angular/http';
 import { ForkJoinObservable } from 'rxjs/observable/ForkJoinObservable';
@@ -23,6 +23,28 @@ export class AttachmentWebProvider {
   }
   private getUrl() {
     return HttpUtils.getFileUploadUrlFromProperties() + "/upload";
+  }
+
+  /**
+   * 根据资产ID和图片类型获取图片信息
+   * @param recordId 
+   * @param attachmentType 
+   */
+  getPhotosFromServe(recordId:string,attachmentType:string){
+    let params= "?recordId="+recordId+"&attachmentType="+attachmentType;
+    return new Promise<Array<AttachmentBase64>>((resolve,reject)=>{
+      this.http.get(this.getUrl()+'/base64'+params)
+      .map(res=>res.json())
+      .subscribe((data)=>{
+        if(data=="[]"){
+          resolve(new Array<AttachmentBase64>());
+        }else{
+          resolve(data);
+        }
+      },err=>{
+        reject(err);
+      })
+    })
   }
 
   /**

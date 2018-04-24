@@ -1,0 +1,211 @@
+<!--
+  Generated template for the ProcessAssetMessagePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+    <ion-navbar color="title">
+        <ion-title class="border-left-white">{{title}}</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="full bg-content">
+    <ion-list>
+        <div *ngIf="eventType=='资产详情页'">
+            <ion-item>
+                <ion-label class="item-head">资产名称：</ion-label>
+                <p class="item-body" item-end>{{fixedAsset.assetName}}</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">资产编码：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.assetCode!=null&&fixedAsset.assetCode!=''" item-end>{{fixedAsset.assetCode}}</p>
+                <p class="item-body" *ngIf="fixedAsset.assetCode==null||fixedAsset.assetCode==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">规格型号：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.specModel!=null&&fixedAsset.specModel!=''" item-end>{{fixedAsset.specModel}}</p>
+                <p class="item-body" *ngIf="fixedAsset.specModel==null||fixedAsset.specModel==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">自编码：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.selfNumber!=null&&fixedAsset.selfNumber!=''" item-end>{{fixedAsset.selfNumber}}</p>
+                <p class="item-body" *ngIf="fixedAsset.selfNumber==null||fixedAsset.selfNumber==''" item-end>无</p>
+            </ion-item>
+
+            <ion-item>
+                <ion-label class="item-head">车牌井号：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.licenseplatWellno!=null&&fixedAsset.licenseplatWellno!=''" item-end>{{fixedAsset.licenseplatWellno}}</p>
+                <p class="item-body" *ngIf="fixedAsset.licenseplatWellno==null||fixedAsset.licenseplatWellno==''" item-end>无</p>
+            </ion-item>
+
+            <ion-item>
+                <ion-label class="item-head">所属单位：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.wfoAddress!=null&&fixedAsset.wfoAddress!=''" item-end>{{fixedAsset.wfoAddress}}</p>
+                <p class="item-body" *ngIf="fixedAsset.wfoAddress==null||fixedAsset.wfoAddress==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">使用（保管）人：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.custodian!=null&&fixedAsset.custodian!=''" item-end>{{fixedAsset.custodian}}</p>
+                <p class="item-body" *ngIf="fixedAsset.custodian==null||fixedAsset.custodian==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">技术状况：</ion-label>
+                <p class="item-body" *ngIf="techStatusDesc!=null&&techStatusDesc!=''" item-end>{{techStatusDesc}}</p>
+                <p class="item-body" *ngIf="techStatusDesc==null||techStatusDesc==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">使用状况：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.useStateDesc!=null&&fixedAsset.useStateDesc!=''" item-end>{{fixedAsset.useStateDesc}}</p>
+                <p class="item-body" *ngIf="fixedAsset.useStateDesc==null||fixedAsset.useStateDesc==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">生产厂家：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.manufacturer!=null&&fixedAsset.manufacturer!=''" item-end>{{fixedAsset.manufacturer}}</p>
+                <p class="item-body" *ngIf="fixedAsset.manufacturer==null||fixedAsset.manufacturer==''" item-end>无</p>
+            </ion-item>
+
+            <ion-item>
+                <ion-label class="item-head">出厂编号：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.serialNumber!=null&&fixedAsset.serialNumber!=''" item-end>{{fixedAsset.serialNumber}}</p>
+                <p class="item-body" *ngIf="fixedAsset.serialNumber==null||fixedAsset.serialNumber==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">出厂日期：</ion-label>
+                <p *ngIf="fixedAsset.manufactureDate!='NaN-NaN-NaN'&&fixedAsset.manufactureDate!=''" class="item-body" item-end>{{fixedAsset.manufactureDate}}</p>
+                <p *ngIf="fixedAsset.manufactureDate=='NaN-NaN-NaN'||fixedAsset.manufactureDate==''" class="item-body" item-end>无</p>
+            </ion-item>
+
+            <ion-item>
+                <ion-label class="item-head">资产原值（元）：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.originalValue!=null&&fixedAsset.originalValue!=''" item-end>￥{{fixedAsset.originalValue}}</p>
+                <p class="item-body" *ngIf="fixedAsset.originalValue==null||fixedAsset.originalValue==''" item-end>无</p>
+            </ion-item>
+
+            <ion-item>
+                <ion-label class="item-head">资产净值（元）：</ion-label>
+                <p class="item-body" *ngIf="fixedAsset.netWorth!=null&&fixedAsset.netWorth!=''" item-end>￥{{fixedAsset.netWorth}}</p>
+                <p class="item-body" *ngIf="fixedAsset.netWorth==null||fixedAsset.netWorth==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <p class="item-head">资产图片({{photoBase64s.length}}/3)：</p>
+                <ion-row>
+                    <ion-col col-4 class="img-content" *ngFor="let item of photoBase64s;let i=index">
+                        <img class="imgs-item" [src]="item" />
+                    </ion-col>
+                </ion-row>
+            </ion-item>
+
+        </div>
+
+
+        <div *ngIf="eventType=='资产闲置认定'">
+
+            <ion-item>
+                <ion-label class="item-head">资产名称：</ion-label>
+                <p class="item-body" *ngIf="idle.assetName!=undefined&&idle.assetName!=''" item-end>{{idle.assetName}}</p>
+                <p class="item-body" *ngIf="idle.assetName==undefined||idle.assetName==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">资产编码：</ion-label>
+                <p class="item-body" *ngIf="idle.assetCode!=undefined&&idle.assetCode!=''" item-end>{{idle.assetCode}}</p>
+                <p class="item-body" *ngIf="idle.assetCode==undefined||idle.assetCode==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">规格型号：</ion-label>
+                <p class="item-body" *ngIf="idle.specModel!=undefined&&idle.specModel!=''" item-end>{{idle.specModel}}</p>
+                <p class="item-body" *ngIf="idle.specModel==undefined||idle.specModel==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">现存放地点：</ion-label>
+                <p class="item-body" *ngIf="idle.installLocation!=undefined&&idle.installLocation!=''" item-end>{{idle.installLocation}}</p>
+                <p class="item-body" *ngIf="idle.installLocation==undefined||idle.installLocation==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <p class="item-head">鉴定结果：</p>
+                <div>
+                    <textarea class="input-reason" [(ngModel)]="idle.testResult" rows="3" readonly></textarea>
+                </div>
+            </ion-item>
+            <ion-item>
+                <p class="item-head">停用原因及目前保护措施：</p>
+                <div>
+                    <textarea class="input-reason" [(ngModel)]="idle.stopReason" rows="3" readonly></textarea>
+                </div>
+            </ion-item>
+            <ion-item>
+                <p class="item-head">资产现状描述：</p>
+                <div>
+                    <textarea class="input-reason" [(ngModel)]="idle.assetDesc" rows="3" readonly></textarea>
+                </div>
+            </ion-item>
+            <ion-item>
+                <p class="item-head">资产照片({{photoBase64s.length}}/3)：</p>
+                <ion-row>
+                    <ion-col col-4 class="img-content" *ngFor="let item of photoBase64s;let i=index">
+                        <img class="imgs-item" [src]="item" />
+                    </ion-col>
+                </ion-row>
+            </ion-item>
+        </div>
+
+
+        <div *ngIf="eventType=='资产报废申请'">
+
+            <ion-item>
+                <ion-label class="item-head">资产名称：</ion-label>
+                <p class="item-body" *ngIf="scrap.assetName!=undefined&&scrap.assetName!=''" item-end>{{scrap.assetName}}</p>
+                <p class="item-body" *ngIf="scrap.assetName==undefined||scrap.assetName==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">资产编码：</ion-label>
+                <p class="item-body" *ngIf="scrap.assetCode!=undefined&&scrap.assetCode!=''" item-end>{{scrap.assetCode}}</p>
+                <p class="item-body" *ngIf="scrap.assetCode==undefined||scrap.assetCode==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">规格型号：</ion-label>
+                <p class="item-body" *ngIf="scrap.specModel!=undefined&&scrap.specModel!=''" item-end>{{scrap.specModel}}</p>
+                <p class="item-body" *ngIf="scrap.specModel==undefined||scrap.specModel==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">存放地点：</ion-label>
+                <p class="item-body" *ngIf="scrap.storageLocation!=undefined&&scrap.storageLocation!=''" item-end>{{scrap.storageLocation}}</p>
+                <p class="item-body" *ngIf="scrap.storageLocation==undefined||scrap.storageLocation==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">报废类别：</ion-label>
+                <p class="item-body" *ngIf="scrap.scrapCategory!=undefined&&scrap.scrapCategory!=''" item-end>{{scrap.scrapCategory}}</p>
+                <p class="item-body" *ngIf="scrap.scrapCategory==undefined||scrap.scrapCategory==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">批复文号：</ion-label>
+                <p class="item-body" *ngIf="scrap.approveNumber!=undefined&&scrap.approveNumber!=''" item-end>{{scrap.approveNumber}}</p>
+                <p class="item-body" *ngIf="scrap.approveNumber==undefined||scrap.approveNumber==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">批复日期：</ion-label>
+                <p class="item-body" *ngIf="scrap.approveDate!=undefined&&scrap.approveDate!=''" item-end>{{scrap.approveDate}}</p>
+                <p class="item-body" *ngIf="scrap.approveDate==undefined||scrap.approveDate==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <ion-label class="item-head">是否处置：</ion-label>
+                <p class="item-body" *ngIf="scrap.isHandle!=undefined&&scrap.isHandle!=''" item-end>{{scrap.isHandle}}</p>
+                <p class="item-body" *ngIf="scrap.isHandle==undefined||scrap.isHandle==''" item-end>无</p>
+            </ion-item>
+            <ion-item>
+                <p class="item-head">报废原因：</p>
+                <div>
+                    <textarea class="input-reason" rows="3" [(ngModel)]="scrap.scrapReason" readonly></textarea>
+                </div>
+            </ion-item>
+            
+        </div>
+
+
+
+    </ion-list>
+
+</ion-content>

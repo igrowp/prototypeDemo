@@ -24,6 +24,9 @@ export class DictDetail{
 export class Idle{
     idleId:string;  //主键
     assetId;        //资产id
+    specModel;      //规格型号
+    assetName;      //资产名称
+    assetCode;      //资产编号
     installLocation;  //现存放地点
     oldInstallLocation; //停用前安装地点及位置
     stopReason;   //停用原因及目前保护措施
@@ -44,7 +47,6 @@ export class IdleBill{
     appOrg;    //申请单位
     appDate;   //申请日期
     appPerson;    //申请人
-
 }
 
 /**
@@ -53,6 +55,9 @@ export class IdleBill{
 export class Scrap{
     scrapId;   //主键
     assetId;   //资产主键
+    specModel;      //规格型号
+    assetName;      //资产名称
+    assetCode;      //资产编号
     scrapCategory; //报废类别
     unproductionTime;  //停产日期
     storageLocation;  //存放地点（安装地点）
@@ -60,9 +65,27 @@ export class Scrap{
     scrapReason;   //报废原因
     applyState:string;   //申请状态  0未提交，1审批中，2审批通过，3驳回
     recordFlag;    //删除标识
+
+    approveNumber; //批复文号
+    approveDate;  //批复日期
+    isHandle;     //是否处置
 }
 
+/**
+ * 闲置申请单
+ */
+export class ScrapBill{
+    applyId;     //申请ID
+    appTitle;  //申请标题
+    appNo;     //申请单号
+    appOrg;    //申请单位
+    appDate;   //申请日期
+    appPerson;    //申请人
+}
 
+/**
+ * post请求服务器传回的结果
+ */
 export class PostRequestResult{
     result:boolean;  //结果  true:成功  , false:失败
     applyState:string;    //申请单状态, 详情见常量类
@@ -118,13 +141,27 @@ export class WorkflowBean{
  */
 export class AllocateBill{
     allocateId; //申请单Id
-    allocateType; //申请单类型（气矿内部调拨、作业区内部调拨、分公司调入气矿、气矿调入分公司）
+    allocateType; //申请单类型（气矿内部调拨、作业区内部调动、分公司调入气矿、气矿调入分公司）
     appNo;     //申请单号
     appOrg;    //申请单位
     userId;   //申请人userId
     appDate;   //申请日期
     appOutOrg; //调出单位
     appInOrg;  //调入单位
+    appPerson; //申请人姓名
+}
+
+/**
+ * 资产处置申请单
+ */
+export class HandleBill{
+    applyId; //申请单Id
+    handleCategory; //申请单类型
+    appNo;     //申请单号
+    appOrg;    //申请单位
+    userId;   //申请人员工编号
+    appDate;   //申请日期
+    appTitle;  //申请单标题
     appPerson; //申请人姓名
 }
 
@@ -156,6 +193,12 @@ export class Attachment{
     attachmentType; //附件类型
     storagePath;  //存储路径
     isUpload;   //是否上传 0未上传，1已上传
+}
+
+export class AttachmentBase64{
+    assetId;  //资产ID
+    attachmentType; //图片类型
+    base64;  //图片base64格式
 }
 
 

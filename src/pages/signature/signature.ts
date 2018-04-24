@@ -167,9 +167,9 @@ export class SignaturePage {
             loading.present();
             this.cvtService.saveCvtAssetsFromServe(this.cvtNotice.recipient, this.cvtNotice.noticeId).then(() => {
               //同过base64上传图片
-              // this.attachmentWebProvider.uploadBase64( null, null, this.cvtNotice.noticeId,PubConstant.ATTACHMENT_TYPE_CVT_RECEIVER,dataURL).then((data)=>{
+              // this.attachmentWebProvider.uploadBase64( null, null, this.cvtNotice.noticeId,PubConstant.ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER,dataURL).then((data)=>{
                 //通过blob上传图片
-                this.attachmentWebProvider.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, null, null, this.cvtNotice.noticeId, PubConstant.ATTACHMENT_TYPE_CVT_RECEIVER,this.attachmentWebProvider.UploadType.BASE64).then((data) => {
+                this.attachmentWebProvider.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, null, null, this.cvtNotice.noticeId, PubConstant.ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER,this.attachmentWebProvider.UploadType.BASE64).then((data) => {
                 this.cvtService.insertCvtNonNoticeSubFromServe(this.cvtNotice.noticeId).then(() => {
                   //修改状态
                   this.cvtNotice.noticeState = "GRANTING";

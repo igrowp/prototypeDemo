@@ -259,8 +259,21 @@ export class AssetService {
     return this.pubDBProvider.queryFromFixedByRFID(rfid);
   }
 
+  /**
+   * 通过分类编码获取该编码下的所有字典明细列表
+   * @param categoryCode 
+   */
   queryListFromDictDetailByCategoryCode(categoryCode) {
     return this.pubDBProvider.queryListFromDictDetailByCategoryCode(categoryCode);
+  }
+
+  /**
+   * 通过分类编码和字典编码获取字典明细信息
+   * @param categoryCode 
+   * @param dictCode 
+   */
+  queryFromDictDetailByCategoryAndDictCode(categoryCode: string,dictCode:string) {
+    return this.pubDBProvider.queryFromDictDetailByCategoryAndDictCode(categoryCode,dictCode);
   }
 
   /**

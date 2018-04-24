@@ -6,7 +6,7 @@ import { AttachmentWebProvider } from '../web/attachment.web.provider';
 @Injectable()
 export class AttachmentService {
     constructor(private attachmentWebProvider: AttachmentWebProvider,
-                private pubDbProvider:PubDBProvider) {
+        private pubDbProvider: PubDBProvider) {
 
     }
 
@@ -19,21 +19,21 @@ export class AttachmentService {
      * @param photoPaths 图片路径，字符串数组
      * @param uploadType 上传类型
      */
-    uploadOrSavePhotos(assetId:string, attachmentType:string, workerNumber:string, photoPaths:Array<string>, uploadType:number){
-        return new Promise((resolve,reject)=>{
-            this.attachmentWebProvider.uploadFile(assetId,attachmentType,workerNumber,photoPaths,this.attachmentWebProvider.UploadType.BASE64).then((data)=>{
+    uploadOrSavePhotos(assetId: string, attachmentType: string, workerNumber: string, photoPaths: Array<string>, uploadType: number) {
+        return new Promise((resolve, reject) => {
+            this.attachmentWebProvider.uploadFile(assetId, attachmentType, workerNumber, photoPaths, this.attachmentWebProvider.UploadType.BASE64).then((data) => {
                 //存储到本地
-                if(data.result==false){
+                if (data.result == false) {
                     //上传失败
-                    this.addNewestAttachment(assetId,attachmentType,workerNumber,photoPaths,0);
-                }else{
-                    this.addNewestAttachment(assetId,attachmentType,workerNumber,photoPaths,1);
+                    this.addNewestAttachment(assetId, attachmentType, workerNumber, photoPaths, 0);
+                } else {
+                    this.addNewestAttachment(assetId, attachmentType, workerNumber, photoPaths, 1);
                 }
                 resolve("提交成功");
             }, error => {
                 //网络连接失败
                 //存储到本地
-                this.addNewestAttachment(assetId,attachmentType,workerNumber,photoPaths,0);
+                this.addNewestAttachment(assetId, attachmentType, workerNumber, photoPaths, 0);
                 resolve("提交成功");
             })
         })
@@ -44,29 +44,29 @@ export class AttachmentService {
      * 同步附件表到服务器
      * @param attachments 
      */
-    synchroAttachmentToServe(){
-        return new Promise((resolve,reject)=>{
-            this.getUnSynchroAttachments().then((attachments)=>{
-                if(attachments.length==0||!attachments){
+    synchroAttachmentToServe() {
+        return new Promise((resolve, reject) => {
+            this.getUnSynchroAttachments().then((attachments) => {
+                if (attachments.length == 0 || !attachments) {
                     resolve("同步成功");
-                }else{
-                    let lastPath=attachments[attachments.length-1].storagePath;
-                    for(let i=0;i<attachments.length;i++){
-                        let attachment=attachments[i];
-                        let photoPaths=new Array<string>();
+                } else {
+                    let lastPath = attachments[attachments.length - 1].storagePath;
+                    for (let i = 0; i < attachments.length; i++) {
+                        let attachment = attachments[i];
+                        let photoPaths = new Array<string>();
                         photoPaths.push(attachment.storagePath);
-                        this.attachmentWebProvider.uploadFile(attachment.assetId,attachment.attachmentType,attachment.workerNumber,photoPaths,this.attachmentWebProvider.UploadType.BASE64).then(()=>{
-                            attachment.isUpload=1;
+                        this.attachmentWebProvider.uploadFile(attachment.assetId, attachment.attachmentType, attachment.workerNumber, photoPaths, this.attachmentWebProvider.UploadType.BASE64).then(() => {
+                            attachment.isUpload = 1;
                             this.pubDbProvider.updateToAttachment(attachment);
-                            if(attachment.storagePath==lastPath){
+                            if (attachment.storagePath == lastPath) {
                                 resolve("同步成功");
                             }
-                        },error=>{
+                        }, error => {
                             reject("上传文件失败，请检查网络问题")
                         })
                     }
                 }
-            },error=>{
+            }, error => {
                 reject("获取附件表数据失败");
             })
         })
@@ -76,7 +76,7 @@ export class AttachmentService {
     /**
      * 获取未同步的附件信息
      */
-    getUnSynchroAttachments(){
+    getUnSynchroAttachments() {
         return this.pubDbProvider.queryFromAttachmentsByIsUpload(0);
     }
 
@@ -85,8 +85,8 @@ export class AttachmentService {
      * @param assetId 
      * @param attachmentType 
      */
-    getAttachments(assetId,attachmentType){
-        return this.pubDbProvider.queryFromAttachments(assetId,attachmentType);
+    getAttachments(assetId, attachmentType) {
+        return this.pubDbProvider.queryFromAttachments(assetId, attachmentType);
     }
 
     /**
@@ -97,21 +97,31 @@ export class AttachmentService {
      * @param photoPaths 
      * @param isUpload 
      */
-    private addNewestAttachment(assetId:string, attachmentType:string, workerNumber:string, photoPaths:Array<string>,isUpload:number){
+    private addNewestAttachment(assetId: string, attachmentType: string, workerNumber: string, photoPaths: Array<string>, isUpload: number) {
         //存储到本地
         this.pubDbProvider.deleteFromAttachment(assetId, attachmentType).then((data) => {
             //插入附件信息
-            for(let i=0;i<photoPaths.length;i++){
-                let photoPath=photoPaths[i];
+            for (let i = 0; i < photoPaths.length; i++) {
+                let photoPath = photoPaths[i];
                 let attachment = new Attachment();
                 attachment.assetId = assetId;
                 attachment.attachmentType = attachmentType;
-                attachment.workerNumber=workerNumber;
-                attachment.storagePath=photoPath;
-                attachment.isUpload=isUpload;
+                attachment.workerNumber = workerNumber;
+                attachment.storagePath = photoPath;
+                attachment.isUpload = isUpload;
                 this.pubDbProvider.insertToAttachment(attachment);
             }
         })
+    }
+
+
+    /**
+   * 根据资产ID和图片类型获取图片信息
+   * @param recordId 
+   * @param attachmentType 附件类型
+   */
+    getPhotosFromServe(recordId: string, attachmentType: string) {
+        return this.attachmentWebProvider.getPhotosFromServe(recordId, attachmentType);
     }
 
 

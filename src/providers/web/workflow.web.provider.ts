@@ -11,7 +11,7 @@ import { Observable } from 'rxjs/Observable';
 export class WorkflowWebProvider {
   constructor(public http: Http) {
   }
-  getUrl() {
+  private getUrl() {
     return HttpUtils.getUrlFromProperties() + "/workflow";
   }
 
@@ -35,15 +35,24 @@ export class WorkflowWebProvider {
         .map(res => res.json());
   }
   
-
   /**
    * 提交审批到服务器
    * @param taskId 
    */
   submitToServe(workflowBean:WorkflowBean):Observable<PostRequestResult>{
-    let params = "?taskId=" + workflowBean.taskId+"&comment="+workflowBean.comment+"&outcome="+workflowBean.outcome+"&workerNumber="+workflowBean.workerNumber+"&rejectTo="+workflowBean.rejectTo+"&approveType="+workflowBean.approveType+"&nextStepApprovers="+workflowBean.nextStepApprovers;
-    return this.http.get(this.getUrl() + '/submit' + params)
-        .map(res => res.json());
+
+    let options = HttpUtils.getRequestOptions();
+    let obj: any = {
+      taskId: workflowBean.taskId,
+      comment: workflowBean.comment,
+      outcome: workflowBean.outcome,
+      workerNumber: workflowBean.workerNumber,
+      rejectTo: workflowBean.rejectTo,
+      approveType: workflowBean.approveType,
+      nextStepApprovers: workflowBean.nextStepApprovers,
+    }
+    return this.http.post(this.getUrl() + "/submit", HttpUtils.toQueryString(obj), options)
+          .map(res => res.json());
   }
 
 }

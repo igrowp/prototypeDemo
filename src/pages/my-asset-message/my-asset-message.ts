@@ -28,6 +28,7 @@ export class MyAssetMessagePage {
   public handleType = "完善资产信息";
   public fixedAsset: FixedAsset = new FixedAsset();
   public dateNow = ConvertUtil.formatDate(new Date());  //当前时间
+  public techStatusDesc="";  //技术状况中文名
 
   constructor(public navCtrl: NavController,
     private noticeService: NoticeService,
@@ -39,25 +40,31 @@ export class MyAssetMessagePage {
     private navParams: NavParams) {
     //初始化数据
     this.fixedAsset = this.navParams.get("fixedAsset");
+    //获取图片
+    this.attachmentService.getAttachments(this.fixedAsset.assetId,PubConstant.ATTACHMENT_TYPE_IMG_ASSET).then((attachments)=>{
+      this.photoPaths=new Array<string>();
+      this.photoBase64s=new Array<string>();
+      if(attachments.length>0){
+        for(let i=0;i<attachments.length;i++){
+          let attachment=attachments[i];
+          this.photoPaths.push(attachment.storagePath);
+          ConvertUtil.fileUrlToBase64(attachment.storagePath).then((base64)=>{
+            this.photoBase64s.push(base64);
+          })
+        }
+      }
+    })
+
+    this.assetService.queryFromDictDetailByCategoryAndDictCode(PubConstant.DICT_TYPE_TECH_STATE,this.fixedAsset.techStatus).then((dictDetail)=>{
+      if(dictDetail){
+        this.techStatusDesc=dictDetail.dictCodeDesc;
+      }
+    })
   }
 
 
   handleSubmit() {
     if (this.handleType == "完善资产信息") {
-      //获取图片
-      this.attachmentService.getAttachments(this.fixedAsset.assetId,PubConstant.ATTACHMENT_TYPE_ASSET).then((attachments)=>{
-        this.photoPaths=new Array<string>();
-        this.photoBase64s=new Array<string>();
-        if(attachments.length>0){
-          for(let i=0;i<attachments.length;i++){
-            let attachment=attachments[i];
-            this.photoPaths.push(attachment.storagePath);
-            ConvertUtil.fileUrlToBase64(attachment.storagePath).then((base64)=>{
-              this.photoBase64s.push(base64);
-            })
-          }
-        }
-      })
       this.handleType = "提交";
     } else {
       this.fixedAsset.isSynchro = 1;
@@ -68,7 +75,7 @@ export class MyAssetMessagePage {
           this.fixedAsset.isSynchro = 2;
           this.assetService.updateToFixed(this.fixedAsset);
         })
-        this.attachmentService.uploadOrSavePhotos(this.fixedAsset.assetId,PubConstant.ATTACHMENT_TYPE_ASSET,null,this.photoPaths,PubConstant.UPLOAD_TYPE_BASE64);
+        this.attachmentService.uploadOrSavePhotos(this.fixedAsset.assetId,PubConstant.ATTACHMENT_TYPE_IMG_ASSET,null,this.photoPaths,PubConstant.UPLOAD_TYPE_BASE64);
         this.noticeService.showIonicAlert("提交成功");
         this.navCtrl.pop();
       })
