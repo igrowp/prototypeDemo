@@ -62,13 +62,13 @@ export class InvWebProvider {
               //传签名
               let invAsset = invAssets[i];
               //上传签名文件
-              this.attaWebProvider.uploadSignature(invAsset.workerNumber, invAsset.signaturePath, invAsset.signature, invAsset.invRecordId, null, null, PubConstant.ATTACHMENT_TYPE_SIGNATURE_INV, this.attaWebProvider.UploadType.BASE64).then((data) => {
+              this.attaWebProvider.uploadSignature(invAsset.workerNumber, invAsset.signaturePath, invAsset.signature, invAsset.assetId, null, null, PubConstant.ATTACHMENT_TYPE_SIGNATURE_INV, this.attaWebProvider.UploadType.BASE64).then((data) => {
                 //上传图片
                 let photos: Array<string> = new Array<string>();
                 if (invAsset.photoPath != "") {
                   photos = JSON.parse(invAsset.photoPath);
                 }
-                this.attaWebProvider.uploadFile(invAsset.noticeId, PubConstant.ATTACHMENT_TYPE_IMG_INV, invAsset.workerNumber, photos, this.attaWebProvider.UploadType.BASE64).then(() => {
+                this.attaWebProvider.uploadFile(invAsset.assetId, PubConstant.ATTACHMENT_TYPE_IMG_INV, invAsset.workerNumber, photos, this.attaWebProvider.UploadType.BASE64).then(() => {
                   if (invAsset.assetId == invAssets[invAssets.length - 1].assetId) {
                     //说明完成了最后一个的图片上传
                     resolve("同步成功");

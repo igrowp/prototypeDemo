@@ -44,7 +44,7 @@ export class ScrapPage {
       
       let loading=this.noticeService.showIonicLoading("正在提交",10000);
       loading.present();
-      this.assetHandleService.synchroScrapToServe(this.scrap).then((result) => {
+      this.assetHandleService.synchroScrapFixToServe(this.scrap).then((result) => {
         loading.dismiss();
         this.noticeService.showIonicAlert(result);
         this.navCtrl.pop();

@@ -313,7 +313,9 @@ CHANGE_WORKER_NUMBER varchar(20),
 MANUFACTURER varchar(100),
 SERIAL_NUMBER varchar(100),
 FUND_CHANNEL varchar(100),
-PHOTO_PATH varchar(512))`, {})//建表
+PHOTO_PATH varchar(512),
+USE_STATE_DESC varchar(32),
+WFO_ADDRESS varchar(50))`, {})//建表
           .then(() => console.log('建立本地固定资产台账表成功'))
           .catch(e => alert(e.message));
         //创建账户表

@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-navbar color="title">
+  <ion-navbar color="theme">
     <ion-title class="border-left-white">流程办理</ion-title>
   </ion-navbar>
 </ion-header>
@@ -15,9 +15,13 @@
       </ion-select>
     </ion-item>
     <div *ngIf="workflowBean.outcome=='同意'">
+      <!-- <div *ngIf="nextStepInfos.length==0">
+          <ion-item style="margin-top:20px">
+              <ion-label class="item-head">下一步骤：</ion-label>
+              <p item-end class="item-body">流程结束</p>
+            </ion-item>
+      </div> -->
       <div *ngFor="let nextStep of nextStepInfos;let i=index">
-
-
         <ion-item style="margin-top:20px">
           <ion-label class="item-head">下一步骤：</ion-label>
           <p *ngIf="nextStep.nextStepName!=''&&nextStep.nextStepName!=undefined" item-end class="item-body">{{nextStep.nextStepName}}</p>
@@ -88,7 +92,7 @@
 
 <ion-footer>
   <ion-buttons start>
-    <button ion-button block (click)="handleSubmit()">
+    <button ion-button block (click)="handleSubmit()" color="theme">
       提交
     </button>
   </ion-buttons>

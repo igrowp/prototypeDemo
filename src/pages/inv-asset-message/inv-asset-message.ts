@@ -130,12 +130,13 @@ export class InvAssetMessagePage {
   }
 
   getInitAsset() {
-    //下面为增加资产盘点记录，出下面信息外，其他资产信息会跟着输入进行改变。
+    //下面为增加资产盘点记录，除下面信息外，其他资产信息会跟着输入进行改变。
     this.invAsset.assetId = this.fixedAsset.assetId;
     this.invAsset.noticeId = this.invNoticeId;
     this.invAsset.useState = this.fixedAsset.useState;
     this.invAsset.techStatus = this.fixedAsset.techStatus;
     this.invAsset.securityState = this.fixedAsset.securityState;
+    this.invAsset.securityStateDesc=this.getDictCodeDesc(this.securityStates,this.fixedAsset.securityState);
     //this.invAsset.installLocation;
     // this.invAsset.useOrg;   //
     // this.invAsset.handleScrapMode=?

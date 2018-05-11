@@ -18,9 +18,9 @@ export class AssetHandleService {
    * 从服务器中获取闲置资产
    * @param assetId 
    */
-  getIdleFromServe(assetId: string) {
+  getIdleDeviceFromServe(assetId: string) {
     return new Promise<Idle>((resolve, reject) => {
-      this.assetHandelWebProvider.getIdleFromServe(assetId)
+      this.assetHandelWebProvider.getIdleDeviceFromServe(assetId)
         .subscribe((idle) => {
           if (idle.idleId) {
             this.addOrUpdateToIdle(idle);
@@ -42,13 +42,13 @@ export class AssetHandleService {
   }
 
 
-  /**
+  /**A320——WIFI
    * 同步闲置资产到服务器端，离线状态则存储到本地
    * @param idle 
    */
-  synchroIdleToServe(idle:Idle){
+  synchroIdleDeviceToServe(idle:Idle){
     return new Promise<string>((resolve,reject)=>{
-      this.assetHandelWebProvider.synchroIdleToServe(idle).subscribe((data)=>{
+      this.assetHandelWebProvider.synchroIdleDeviceToServe(idle).subscribe((data)=>{
         if(data.result==true){
             //没有数据，上传成功
             //删除本地的资产闲置记录
@@ -86,7 +86,7 @@ export class AssetHandleService {
           let lastIdleId = idleList[idleList.length - 1].idleId;
           for (let i = 0; i < idleList.length; i++) {
             let idle = idleList[i];
-            this.assetHandelWebProvider.synchroIdleToServe(idle).subscribe((result) => {
+            this.assetHandelWebProvider.synchroIdleDeviceToServe(idle).subscribe((result) => {
               if (result.result == true) {
                 //没有数据，上传成功
                 //删除本地的资产闲置记录
@@ -107,7 +107,6 @@ export class AssetHandleService {
     })
   }
 
-
   /**
    * 从服务器获取闲置申请单
    * @param applyId 
@@ -117,14 +116,21 @@ export class AssetHandleService {
   }
 
   /**
-   * 从服务器获取闲置申请单
+   * 从服务器获取闲置申请单——设备类
    * @param applyId 
    */
-  getIdleAssetListFromServe(applyId:String){
-    return this.assetHandelWebProvider.getIdleAssetListFromServe(applyId);
+  getIdleDeviceAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getIdleDeviceAssetListFromServe(applyId);
   }
 
 
+  /**
+   * 从服务器获取闲置申请单——非设备类
+   * @param applyId 
+   */
+  getIdleUnDeviceAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getIdleUnDeviceAssetListFromServe(applyId);
+  }
 
 
 
@@ -132,9 +138,9 @@ export class AssetHandleService {
 
 
   //从服务器中获取报废资产
-  getScrapFromServe(assetId: string) {
+  getScrapFixFromServe(assetId: string) {
     return new Promise<Scrap>((resolve, reject) => {
-      this.assetHandelWebProvider.getScrapFromServe(assetId)
+      this.assetHandelWebProvider.getScrapFixFromServe(assetId)
         .subscribe((scrap) => {
           if (scrap.scrapId) {
             this.addOrUpdateToScrap(scrap);
@@ -160,9 +166,9 @@ export class AssetHandleService {
    * 同步报废资产到服务器端，离线状态则存储到本地
    * @param scrap 
    */
-  synchroScrapToServe(scrap:Scrap){
+  synchroScrapFixToServe(scrap:Scrap){
     return new Promise<string>((resolve,reject)=>{
-      this.assetHandelWebProvider.synchroScrapToServe(scrap).subscribe((data)=>{
+      this.assetHandelWebProvider.synchroScrapFixToServe(scrap).subscribe((data)=>{
         if(data.result==true){
             //没有数据，上传成功
             //删除本地的资产闲置记录
@@ -201,7 +207,7 @@ export class AssetHandleService {
           let lastScrapId = scrapList[scrapList.length - 1].scrapId;
           for (let i = 0; i < scrapList.length; i++) {
             let scrap = scrapList[i];
-            this.assetHandelWebProvider.synchroScrapToServe(scrap).subscribe((result) => {
+            this.assetHandelWebProvider.synchroScrapFixToServe(scrap).subscribe((result) => {
               if (result.result == true) {
                 //没有数据，上传成功
                 //删除本地的资产报废记录
@@ -223,7 +229,7 @@ export class AssetHandleService {
   }
 
   /**
-   * 从服务器获取闲置申请单
+   * 从服务器获取报废申请单
    * @param applyId 
    */
   getScrapBillFromServe(applyId:String){
@@ -231,11 +237,19 @@ export class AssetHandleService {
   }
 
   /**
-   * 从服务器获取闲置申请单
+   * 从服务器获取报废资产列表
    * @param applyId 
    */
-  getScrapAssetListFromServe(applyId:String){
-    return this.assetHandelWebProvider.getScrapAssetListFromServe(applyId);
+  getScrapFixAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getScrapFixAssetListFromServe(applyId);
+  }
+
+  /**
+   * 从服务器获取报废资产列表
+   * @param applyId 
+   */
+  getScrapWellAssetListFromServe(applyId:String){
+    return this.assetHandelWebProvider.getScrapWellAssetListFromServe(applyId);
   }
 
 
@@ -244,7 +258,6 @@ export class AssetHandleService {
 //////////本地数据库
 
   //闲置
-
   addOrUpdateToIdle(idle:Idle){
     return new Promise((resolve,reject)=>{
       this.assetHandleDbProvider.selectIdleByAssetId(idle.assetId).then((data)=>{

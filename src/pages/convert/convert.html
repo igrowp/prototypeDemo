@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="title">
+    <ion-navbar color="theme">
         <ion-title class="border-left-white">资产领用</ion-title>
     </ion-navbar>
 </ion-header>
@@ -52,7 +52,7 @@
                 <p>数量：{{item.sentQuantity}}</p>
             </ion-label>
 
-            <button ion-button item-end (click)="handleDetail(item)">详情</button>
+            <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
         </ion-item>
     </ion-list>
 
@@ -132,7 +132,7 @@
 
 <ion-footer>
     <ion-buttons>
-        <button ion-button full (click)="handleSignature()">
+        <button ion-button full (click)="handleSignature()"  color="theme">
             签名确认
         </button>
     </ion-buttons>

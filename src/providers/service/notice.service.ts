@@ -35,7 +35,7 @@ export class NoticeService {
     }
 
     /**
-     * 显示ionic自带TOAST
+     * 显示ionic提示框
      * @param message 
      */
     showIonicAlert(message: String,title?:string) {
@@ -54,7 +54,7 @@ export class NoticeService {
     }
 
     /**
-     * 显示ionic自带TOAST
+     * 显示ionic提示框（带回调函数）
      * @param message 
      */
     showIonicAlertWithCallBack(message: String,handleMethord,title?:string) {
@@ -75,6 +75,29 @@ export class NoticeService {
                 }
               ]
         }).present();
+    }
+
+    /**
+     * 显示ionic确认框
+     */
+    showIoincAlertConform(message:string,callback?){
+        this.alertCtrl.create({
+            title:'提示',
+            subTitle:message,
+            cssClass:'alert-conform',
+            buttons:[
+              {
+                text:'取消',
+                role:'cancel',
+              },
+              {
+                text:'确定',
+                handler:()=>{
+                    callback();
+                }
+              }
+            ]
+          }).present();
     }
 
     /**

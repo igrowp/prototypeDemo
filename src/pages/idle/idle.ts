@@ -68,7 +68,7 @@ export class IdlePage {
       let loading=this.noticeService.showIonicLoading("正在提交",10000);
       loading.present();
       this.attachmentService.uploadOrSavePhotos(this.idle.assetId,PubConstant.ATTACHMENT_TYPE_IMG_IDLE,null,this.photoPaths,PubConstant.UPLOAD_TYPE_BASE64);
-      this.assetHandleService.synchroIdleToServe(this.idle).then((result) => {
+      this.assetHandleService.synchroIdleDeviceToServe(this.idle).then((result) => {
         loading.dismiss();
         this.noticeService.showIonicAlert("提交成功");
         this.navCtrl.pop();

@@ -11,12 +11,31 @@ import { Observable } from 'rxjs/Observable';
 export class AssetHandleWebProvider {
   constructor(public http: Http) {
   }
+  //闲置
   private getIdleUrl() {
     return HttpUtils.getUrlFromProperties() + "/idle";
   }
+  //设备类报废
+  private getIdleDeviceUrl() {
+    return HttpUtils.getUrlFromProperties() + "/idle/device";
+  }
+  //非设备类报废
+  private getIdleUnDeviceUrl() {
+    return HttpUtils.getUrlFromProperties() + "/idle/undevice";
+  }
 
+
+  //报废
   private getScrapUrl() {
     return HttpUtils.getUrlFromProperties() + "/scrap";
+  }
+  //固定资产报废
+  private getScrapFixUrl() {
+    return HttpUtils.getUrlFromProperties() + "/scrap/fix";
+  }
+  //油气水井报废
+  private getScrapWellUrl() {
+    return HttpUtils.getUrlFromProperties() + "/scrap/well";
   }
 
   private getAlloUrl(){
@@ -48,22 +67,22 @@ export class AssetHandleWebProvider {
    * 从服务器获取闲置资产信息
    * @param assetId 
    */
-  getIdleFromServe(assetId:String):Observable<Idle>{
+  getIdleDeviceFromServe(assetId:String):Observable<Idle>{
     let params = "?assetId=" + assetId;
-    return this.http.get(this.getIdleUrl() + '/device/apply/state' + params)
+    return this.http.get(this.getIdleDeviceUrl() + '/apply/state' + params)
         .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_SHORT);
   }
 
   /**
    * 将本地闲置资产数据同步到服务器
    */
-  synchroIdleToServe(idle: Idle):Observable<PostRequestResult> {
+  synchroIdleDeviceToServe(idle: Idle):Observable<PostRequestResult> {
     let options = HttpUtils.getRequestOptions();
     var json = JSON.stringify(idle);
     let obj: any = {
       idle: json
     }
-    return this.http.post(this.getIdleUrl() + "/device/synchro", HttpUtils.toQueryString(obj), options)
+    return this.http.post(this.getIdleDeviceUrl() + "/synchro", HttpUtils.toQueryString(obj), options)
           .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
   }
 
@@ -72,37 +91,49 @@ export class AssetHandleWebProvider {
    * 从服务器获取闲置申请单
    * @param applyId 
    */
-  getIdleAssetListFromServe(applyId:String):Observable<Array<Idle>>{
+  getIdleDeviceAssetListFromServe(applyId:String):Observable<Array<Idle>>{
     let params = "?applyId=" + applyId;
-    return this.http.get(this.getIdleUrl() + '/device/asset/list' + params)
+    return this.http.get(this.getIdleDeviceUrl() + '/asset/list' + params)
+        .map(res => res.json());
+  }
+
+  ///非设备类
+  /**
+   * 从服务器获取闲置资产信息
+   * @param assetId 
+   */
+  getIdleUnDeviceFromServe(assetId:String):Observable<Idle>{
+    let params = "?assetId=" + assetId;
+    return this.http.get(this.getIdleUnDeviceUrl() + '/apply/state' + params)
+        .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_SHORT);
+  }
+
+  /**
+   * 将本地闲置资产数据同步到服务器
+   */
+  synchroIdleUnDeviceToServe(idle: Idle):Observable<PostRequestResult> {
+    let options = HttpUtils.getRequestOptions();
+    var json = JSON.stringify(idle);
+    let obj: any = {
+      idle: json
+    }
+    return this.http.post(this.getIdleUnDeviceUrl() + "/synchro", HttpUtils.toQueryString(obj), options)
+          .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
+  }
+
+
+  /**
+   * 从服务器获取闲置申请单
+   * @param applyId 
+   */
+  getIdleUnDeviceAssetListFromServe(applyId:String):Observable<Array<Idle>>{
+    let params = "?applyId=" + applyId;
+    return this.http.get(this.getIdleUnDeviceUrl() + '/asset/list' + params)
         .map(res => res.json());
   }
 
   
   ////报废
-  /**
-   * 从服务器获取闲置资产信息
-   * @param assetId 
-   */
-  getScrapFromServe(assetId:String):Observable<Scrap>{
-    let params = "?assetId=" + assetId;
-    return this.http.get(this.getScrapUrl() + '/apply/state' + params)
-        .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_SHORT);
-  }
-  /**
-   * 将本地闲置资产数据同步到服务器
-   */
-  synchroScrapToServe(scrap: Scrap):Observable<PostRequestResult> {
-    let options = HttpUtils.getRequestOptions();
-    var json = JSON.stringify(scrap);
-    let obj: any = {
-      scrap: json
-    }
-    return this.http.post(this.getScrapUrl() + "/synchro", HttpUtils.toQueryString(obj), options)
-          .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
-  }
-
-
   /**
    * 从服务器获取闲置申请单
    * @param applyId 
@@ -113,13 +144,73 @@ export class AssetHandleWebProvider {
         .map(res => res.json());
   }
 
+  //固定资产
   /**
-   * 从服务器获取闲置申请单
+   * 从服务器获取报废资产信息
+   * @param assetId 
+   */
+  getScrapFixFromServe(assetId:String):Observable<Scrap>{
+    let params = "?assetId=" + assetId;
+    return this.http.get(this.getScrapFixUrl() + '/apply/state' + params)
+        .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_SHORT);
+  }
+  /**
+   * 将本地报废资产数据同步到服务器
+   */
+  synchroScrapFixToServe(scrap: Scrap):Observable<PostRequestResult> {
+    let options = HttpUtils.getRequestOptions();
+    var json = JSON.stringify(scrap);
+    let obj: any = {
+      scrap: json
+    }
+    return this.http.post(this.getScrapFixUrl() + "/synchro", HttpUtils.toQueryString(obj), options)
+          .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
+  }
+
+
+
+  /**
+   * 从服务器获取资产列表
    * @param applyId 
    */
-  getScrapAssetListFromServe(applyId:String):Observable<Array<Scrap>>{
+  getScrapFixAssetListFromServe(applyId:String):Observable<Array<Scrap>>{
     let params = "?applyId=" + applyId;
-    return this.http.get(this.getScrapUrl() + '/asset/list' + params)
+    return this.http.get(this.getScrapFixUrl() + '/asset/list' + params)
+        .map(res => res.json());
+  }
+
+  //油气水井
+  /**
+   * 从服务器获取报废资产信息
+   * @param assetId 
+   */
+  getScrapWellFromServe(assetId:String):Observable<Scrap>{
+    let params = "?assetId=" + assetId;
+    return this.http.get(this.getScrapWellUrl() + '/apply/state' + params)
+        .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_SHORT);
+  }
+  /**
+   * 将本地报废资产数据同步到服务器
+   */
+  synchroScrapWellToServe(scrap: Scrap):Observable<PostRequestResult> {
+    let options = HttpUtils.getRequestOptions();
+    var json = JSON.stringify(scrap);
+    let obj: any = {
+      scrap: json
+    }
+    return this.http.post(this.getScrapWellUrl() + "/synchro", HttpUtils.toQueryString(obj), options)
+          .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
+  }
+
+  
+
+  /**
+   * 从服务器获取资产列表
+   * @param applyId 
+   */
+  getScrapWellAssetListFromServe(applyId:String):Observable<Array<Scrap>>{
+    let params = "?applyId=" + applyId;
+    return this.http.get(this.getScrapWellUrl() + '/asset/list' + params)
         .map(res => res.json());
   }
 

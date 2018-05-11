@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="title">
+    <ion-navbar color="theme">
         <ion-title class="border-left-white">资产详情</ion-title>
     </ion-navbar>
 </ion-header>
@@ -24,12 +24,12 @@
                 <ion-col col-7>
                     <h2>{{item.specModel}}</h2>
                 </ion-col>
-                <ion-col col-4 offset-1>
+                <!-- <ion-col col-4 offset-1>
                     <h2 class="slide-head">计量单位：</h2>
                 </ion-col>
                 <ion-col col-7>
                     <h2>{{item.unit}}</h2>
-                </ion-col>
+                </ion-col> -->
                 <ion-col col-4 offset-1>
                     <h2 class="slide-head">数量：</h2>
                 </ion-col>
@@ -58,7 +58,7 @@
             <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
             <h2 *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}]</h2>
             <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
-            <button ion-button item-end (click)="handleDetail(item)">详情</button>
+            <button ion-button item-end (click)="handleDetail(item)"  color="theme">详情</button>
         </ion-item>
     </ion-list>
 

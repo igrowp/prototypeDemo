@@ -118,8 +118,13 @@ body {
 }
 
 ion-grid{
-    height:40%;
     padding-top:10%;
+
+    //手机版
+    height:40%;
+
+    //pad版
+    // height:30%;
 }
 ion-col{
     padding-left:10%;

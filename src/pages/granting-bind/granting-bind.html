@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="title">
+    <ion-navbar color="theme">
         <ion-title class="border-left-white">资产绑定</ion-title>
     </ion-navbar>
   </ion-header>
@@ -43,7 +43,7 @@
         </button>
     </ion-buttons>
     <ion-buttons *ngIf="receivePerson!=''">
-        <button ion-button full (click)="handleSignature()">
+        <button ion-button full (click)="handleSignature()"  color="theme">
             签名确认
         </button>
     </ion-buttons>
@@ -51,7 +51,7 @@
 
 <ion-menu [content]="grantingBind_content" id="grantingSelectPerson" side="right">
     <ion-header>
-        <ion-navbar color="title">
+        <ion-navbar color="theme">
             <ion-toolbar>
                 <ion-searchbar placeholder="搜索" (ionInput)="filterItems($event)"></ion-searchbar>
             </ion-toolbar>

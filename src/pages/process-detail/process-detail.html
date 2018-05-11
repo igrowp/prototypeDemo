@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-navbar color="title">
+  <ion-navbar color="theme">
     <ion-title class="border-left-white">{{title}}</ion-title>
     <ion-buttons right>
       <button ion-button (click)="handleApprove()" class="btn-submit" color="light">
@@ -42,14 +42,14 @@
     </ion-list>
     <ion-list>
       <ion-item-divider>
-        资产信息列表  ({{assetList.length}})
+        资产信息列表  ({{cvtNonNoticeSubList.length}})
       </ion-item-divider>
       <ion-item *ngFor="let item of cvtNonNoticeSubList;let i=index">
         <ion-label>
           <h2>{{item.assetName}}[{{item.specModel}}]</h2>
           <p>数量：{{item.sentQuantity}}</p>
         </ion-label>
-        <button ion-button item-end (click)="handleDetail(item)">详情</button>
+        <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
       </ion-item>
     </ion-list>
   </div>
@@ -168,7 +168,7 @@
             <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!='undefined'">{{item.assetName}} [{{item.selfNumber}}] </h2>
           <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
         </ion-label>
-        <button ion-button item-end (click)="handleDetail(item)">详情</button>
+        <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
       </ion-item>
     </ion-list>
   </div>
@@ -204,15 +204,29 @@
       </ion-list>
       <ion-list>
         <ion-item-divider>
-          设备类资产  ({{assetList.length}})
+          设备类资产  ({{deviceList.length}})
         </ion-item-divider>
-        <ion-item *ngFor="let item of assetList;let i=index">
+        <ion-item *ngFor="let item of deviceList;let i=index">
           <ion-label>
             <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
             <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
             <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
           </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)">详情</button>
+          <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
+        </ion-item>
+      </ion-list>
+
+      <ion-list>
+        <ion-item-divider>
+          非设备类资产  ({{unDeviceList.length}})
+        </ion-item-divider>
+        <ion-item *ngFor="let item of unDeviceList;let i=index">
+          <ion-label>
+            <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
+            <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
+            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+          </ion-label>
+          <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
         </ion-item>
       </ion-list>
     </div>
@@ -240,7 +254,6 @@
             <ion-label class="item-head">申请单位：</ion-label>
             <p class="item-body" item-end>{{scrapBill.appOrg}}</p>
           </ion-item>
-  
         <ion-item>
           <ion-label class="item-head">申请日期：</ion-label>
           <p class="item-body" item-end>{{scrapBill.appDate}}</p>
@@ -248,15 +261,29 @@
       </ion-list>
       <ion-list>
         <ion-item-divider>
-          固定资产报废列表  ({{assetList.length}})
+          固定资产报废列表  ({{scrapFixList.length}})
         </ion-item-divider>
-        <ion-item *ngFor="let item of assetList;let i=index">
+        <ion-item *ngFor="let item of scrapFixList;let i=index">
           <ion-label>
             <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
             <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
             <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
           </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)">详情</button>
+          <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
+        </ion-item>
+      </ion-list>
+
+      <ion-list>
+        <ion-item-divider>
+          油气水井报废列表  ({{scrapWellList.length}})
+        </ion-item-divider>
+        <ion-item *ngFor="let item of scrapWellList;let i=index">
+          <ion-label>
+            <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
+            <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
+            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+          </ion-label>
+          <button ion-button item-end (click)="handleDetail(item)"  color="theme">详情</button>
         </ion-item>
       </ion-list>
     </div>
@@ -305,9 +332,10 @@
             <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
             <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
           </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)">详情</button>
+          <button ion-button item-end (click)="handleDetail(item)"  color="theme">详情</button>
         </ion-item>
       </ion-list>
     </div>
     
+
 </ion-content>

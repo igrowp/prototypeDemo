@@ -42,19 +42,19 @@ export class SignaturePage {
   private signatureType;   //签名类型，是转产(trans)还是盘点(inv)
   private signaturePath = "";  //用于存储签名返回路径，包括文件名。保存到手机中，
   private signatureName = "";  //签名的文件名
-  private signatureFolderName = "signature";   //本地签名图片保存的文件名
-  
-  public isShowDefaultSignature=false;  //判断是否使用默认签名
-  public buttonColor='primary';
+  private SIGNATURE_FOLDER_NAME = "signature";   //本地签名图片保存的文件名
+
+  public isShowDefaultSignature = false;  //判断是否使用默认签名
+  public buttonColor = 'title';
   constructor(public navParams: NavParams,
     public navCtrl: NavController,
     public cvtService: CvtService,
     public alertCtrl: AlertController,
-    private attachmentWebProvider:AttachmentWebProvider,
+    private attachmentWebProvider: AttachmentWebProvider,
     private photoLibrary: PhotoLibrary,
     private loadingCtrl: LoadingController,
     private noticeService: NoticeService,
-    private assetHandleService:AssetHandleService,
+    private assetHandleService: AssetHandleService,
     private loginService: LoginService,
     public assetService: AssetService) {
     this.signatureType = navParams.get("signatureType");
@@ -112,43 +112,45 @@ export class SignaturePage {
     this.resizeCanvas(signaturePad);
   }
 
-  
+
   /**
    * 保存并提交
    */
   save() {
-    if (this.signature.isEmpty()&&(this.signaturePath==null||this.signaturePath=="")) {
+    if (this.signature.isEmpty() && (this.signaturePath == null || this.signaturePath == "")) {
       this.noticeService.showIonicAlert("请先签名");
     } else {
       var dataURL = this.signature.toDataURL();
       //保存到本地
-      this.saveTolocal(dataURL, this.signatureFolderName).then(() => {
+      this.saveTolocal(dataURL, this.SIGNATURE_FOLDER_NAME).then(() => {
         //判断签名类型
         if (this.signatureType == "inv") {
-          let lastAssetId = this.invAssets[this.invAssets.length - 1].assetId;
-          for (var i = 0; i < this.invAssets.length; i++) {
-            let invAsset = this.invAssets[i];
-            if (invAsset.isSignatured == 1) {
-              this.assetService.queryAssetFromFixedById(invAsset.assetId).then((fixedAsset) => {
-                fixedAsset.isSynchro = 1;
-                fixedAsset.isChecked = 2;
-                this.assetService.updateToFixed(fixedAsset).then((data) => {
-                  invAsset.isSignatured = 2;
-                  invAsset.signaturePath = this.signaturePath;
-                  invAsset.signature = this.signatureName;
-                  this.assetService.updateToInv(invAsset).then(() => {
-                    if (invAsset.assetId == lastAssetId) {
-                      //同步数据
-                      this.assetService.synchroInvData(this.workerNumber);
-                      //同步报废和闲置资产信息
-                      this.assetHandleService.synchroIdleListToServe(this.workerNumber);
-                      this.assetHandleService.synchroScrapListToServe(this.workerNumber);
-                    }
+          if (this.invAssets.length > 0) {
+            let lastAssetId = this.invAssets[this.invAssets.length - 1].assetId;
+            for (var i = 0; i < this.invAssets.length; i++) {
+              let invAsset = this.invAssets[i];
+              if (invAsset.isSignatured == 1) {
+                this.assetService.queryAssetFromFixedById(invAsset.assetId).then((fixedAsset) => {
+                  fixedAsset.isSynchro = 1;
+                  fixedAsset.isChecked = 2;
+                  this.assetService.updateToFixed(fixedAsset).then((data) => {
+                    invAsset.isSignatured = 2;
+                    invAsset.signaturePath = this.signaturePath;
+                    invAsset.signature = this.signatureName;
+                    this.assetService.updateToInv(invAsset).then(() => {
+                      if (invAsset.assetId == lastAssetId) {
+                        //同步数据
+                        this.assetService.synchroInvData(this.workerNumber);
+                        //同步报废和闲置资产信息
+                        this.assetHandleService.synchroIdleListToServe(this.workerNumber);
+                        this.assetHandleService.synchroScrapListToServe(this.workerNumber);
+                      }
+                    })
                   })
+                }, error => {
+                  this.noticeService.showIonicAlert(error);
                 })
-              }, error => {
-                this.noticeService.showIonicAlert(error);
-              })
+              }
             }
           }
           this.noticeService.showIonicAlert("提交成功");
@@ -168,8 +170,8 @@ export class SignaturePage {
             this.cvtService.saveCvtAssetsFromServe(this.cvtNotice.recipient, this.cvtNotice.noticeId).then(() => {
               //同过base64上传图片
               // this.attachmentWebProvider.uploadBase64( null, null, this.cvtNotice.noticeId,PubConstant.ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER,dataURL).then((data)=>{
-                //通过blob上传图片
-                this.attachmentWebProvider.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, null, null, this.cvtNotice.noticeId, PubConstant.ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER,this.attachmentWebProvider.UploadType.BASE64).then((data) => {
+              //通过blob上传图片
+              this.attachmentWebProvider.uploadSignature(this.workerNumber, this.signaturePath, this.signatureName, null, null, this.cvtNotice.noticeId, PubConstant.ATTACHMENT_TYPE_SIGNATURE_CVT_RECEIVER, this.attachmentWebProvider.UploadType.BASE64).then((data) => {
                 this.cvtService.insertCvtNonNoticeSubFromServe(this.cvtNotice.noticeId).then(() => {
                   //修改状态
                   this.cvtNotice.noticeState = "GRANTING";
@@ -233,16 +235,16 @@ export class SignaturePage {
             //同步资产
             let cvtNoticeList = new Array<CvtNonNotice>();
             cvtNoticeList.push(this.cvtNonNotice);
-            this.cvtService.synchroCvtData(cvtNoticeList).then(()=>{
+            this.cvtService.synchroCvtData(cvtNoticeList).then(() => {
 
-            },error=>{
+            }, error => {
               //同步失败
-               
+
             })
           }, (error) => {
             this.noticeService.showIonicAlert(error);
           })
-        }else{
+        } else {
           this.navCtrl.pop();
         }
       }, (error) => {
@@ -258,17 +260,23 @@ export class SignaturePage {
    */
   saveTolocal(dataURL, albumName) {
     return new Promise((resolve, reject) => {
-      this.photoLibrary.saveImage(dataURL, albumName).then((res) => {
-        if (res != null) {
-          this.signaturePath = res.id;
-          this.signatureName = res.fileName;
-          resolve();
-        } else {
-          reject();
-        }
-      }).catch(e => {
-        reject(e);
-      })
+      if(this.signaturePath!=""&&this.signaturePath){
+        //已经使用了默认签名，不需要保存到本地
+        resolve();
+      }else{
+        //需要保存到本地
+        this.photoLibrary.saveImage(dataURL, albumName).then((res) => {
+          if (res != null) {
+            this.signaturePath = res.id;
+            this.signatureName = res.fileName;
+            resolve();
+          } else {
+            reject();
+          }
+        }).catch(e => {
+          reject(e);
+        })
+      }
     })
   }
 
@@ -343,8 +351,8 @@ export class SignaturePage {
             var dataURL = this.signature.toDataURL();
             if (this.signature.isEmpty()) {
               this.noticeService.showIonicAlert("请先签名");
-            }else{
-              this.saveTolocal(dataURL, this.signatureFolderName).then(() => {
+            } else {
+              this.saveTolocal(dataURL, this.SIGNATURE_FOLDER_NAME).then(() => {
                 this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_DEFAULT_SIGNATURE_PATH, this.signaturePath);
                 this.loginService.setInStorage(PubConstant.LOCAL_STORAGE_KEY_DEFAULT_SIGNATURE_NAME, this.signatureName);
                 this.noticeService.showToast("设置成功");
@@ -357,10 +365,11 @@ export class SignaturePage {
   }
 
   //取消默认签名
-  handleRemoveDefaultSignature(){
-    this.isShowDefaultSignature=false;
-    this.buttonColor="primary";
-    this.signaturePath="";
+  handleRemoveDefaultSignature() {
+    this.isShowDefaultSignature = false;
+    this.buttonColor = "title";
+    this.signaturePath = "";
+    this.signatureName="";
     //刷新画布
     this.ionViewDidEnter();
 
@@ -372,16 +381,18 @@ export class SignaturePage {
       if (defalutSignaturePath == null || defalutSignaturePath == "") {
         this.noticeService.showIonicAlert("未设定默认签名");
       } else {
-        this.isShowDefaultSignature=true;
-        this.buttonColor="danger";
         this.photoLibrary.getPhoto(defalutSignaturePath).then((blob) => {
+          this.isShowDefaultSignature = true;
+          this.buttonColor = "danger";
           ConvertUtil.blobToCanvas(blob, (canvas) => {
             //获取默认签名文件名称
-            this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_DEFAULT_SIGNATURE_NAME).then((defalutSignatureName)=>{
-              this.signatureName=defalutSignatureName;
-              this.signaturePath=defalutSignaturePath;
+            this.loginService.getFromStorage(PubConstant.LOCAL_STORAGE_KEY_DEFAULT_SIGNATURE_NAME).then((defalutSignatureName) => {
+              this.signatureName = defalutSignatureName;
+              this.signaturePath = defalutSignaturePath;
             })
           })
+        }, (error) => {
+          this.noticeService.showIonicAlert("找不到默认签名图片，请重新进行设置");
         })
       }
     })

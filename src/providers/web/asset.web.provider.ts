@@ -17,7 +17,7 @@ export class AssetWebProvider {
 
 
   /**
-   * 获取资产列表数据
+   * 根据资产id获取资产信息
    */
   getFixedByAssetId(assetId:string) {
     let params = "?assetId=" + assetId;

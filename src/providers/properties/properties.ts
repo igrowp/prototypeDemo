@@ -10,38 +10,36 @@ export class Properties {
   }
 
   static webConfig={
+    //本地
     //address:"http://10.88.133.45",
-    address:"http://11.10.97.76",
+    //测试环境
+    // address:"http://11.10.97.76",
+    //正式环境
+    address:"http://10.89.128.4",
     port:8080+"",
     project:"eaam-app",
 
     //mas接口
-    // address:"http://10.89.3.216",
-    // port:9091+"",
-    // project:"10000015/public/eaam-app",
-
-    //本地https接口
-    // address:"https://10.88.133.45",
-    // port:8443+"",
-    // project:"eaam-app",
+    // address:"https://119.4.40.57",
+    // port:10443+"",
+    // project:"cqzcfzmasin/10000015/public/eaam-app",
   }
 
 
   static webConfigDefault={
+    //本地
     //address:"http://10.88.133.45",
-    address:"http://11.10.97.76",
+    //测试环境
+    // address:"http://11.10.97.76",
+    //正式环境
+    address:"http://10.89.128.4",
     port:8080+"",
     project:"eaam-app",
 
     //mas接口
-    // address:"http://10.89.3.216",
-    // port:9091+"",
-    // project:"10000015/public/eaam-app",
-    
-     //本地https接口
-    // address:"https://10.88.133.45",
-    // port:8443+"",
-    // project:"eaam-app",
+    // address:"https://119.4.40.57",
+    // port:10443+"",
+    // project:"cqzcfzmasin/10000015/public/eaam-app",
   }
 
   /**
@@ -50,6 +48,6 @@ export class Properties {
   static fileUploadURL="http://11.10.97.76:8080/eaam-app";
   //static fileUploadURL="http://10.88.133.45:8080/eaam-app";
 
-  static apkDownloadURL="http://10.88.133.45:8080/eaam-app/resources/apk/demo_signed.apk"
+  static apkDownloadURL="http://11.10.97.76:8080/eaam-app/resources/apk/demo_signed.apk"
 
 }

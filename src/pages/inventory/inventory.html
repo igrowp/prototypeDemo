@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="title">
+    <ion-navbar color="theme">
         <ion-title class="border-left-white">资产盘点</ion-title>
         <ion-buttons right>
             <button ion-button icon-only (click)="doSearch()">
@@ -12,7 +12,7 @@
 
 <ion-content class="full" class="bg-content">
     <!-- 搜索框 -->
-    <ion-toolbar color="title" [hidden]="judge">
+    <ion-toolbar color="theme" [hidden]="judge">
         <ion-searchbar placeholder="搜索" (ionInput)="getItems($event)"></ion-searchbar>
     </ion-toolbar>
     
@@ -29,22 +29,22 @@
         </ion-card-header>
         <ion-card-content *ngIf="isShow">
             <ion-row>
-                <ion-col col-4 offset-1>
-                    <h2>内容：</h2>
+                <ion-col col-3>
+                    <h2 class="card-th">内容：</h2>
                 </ion-col>
-                <ion-col col-7>
+                <ion-col col-9>
                     <h2>{{invNotice.content}}</h2>
                 </ion-col>
-                <ion-col col-4 offset-1>
-                    <h2>开始时间：</h2>
+                <ion-col col-3>
+                    <h2  class="card-th">开始时间：</h2>
                 </ion-col>
-                <ion-col col-7>
+                <ion-col col-9>
                     <h2>{{startTime}}</h2>
                 </ion-col>
-                <ion-col col-4 offset-1>
-                    <h2>截止时间：</h2>
+                <ion-col col-3>
+                    <h2 class="card-th">截止时间：</h2>
                 </ion-col>
-                <ion-col col-7>
+                <ion-col col-9>
                     <h2>{{finishTime}}</h2>
                 </ion-col>
             </ion-row>
@@ -87,13 +87,13 @@
 
 
     <ion-fab bottom right #fab>
-        <button ion-fab>
+        <button ion-fab  color="theme">
             <ion-icon name="add"></ion-icon>
         </button>
         <ion-fab-list side="top">
             <button ion-fab Large class="fab-control fab-signature" (click)="signature(fab)"></button>
             <button ion-fab Large class="fab-control fab-two" (click)="scanTwoDimensionCode(fab)"></button>
-            <button ion-fab Large class="fab-control fab-rfid" (click)="scanrfid(fab)"></button>
+            <button ion-fab Large class="fab-control fab-rfid" (click)="scanRFID(fab)"></button>
         </ion-fab-list>
     </ion-fab>
 </ion-content>

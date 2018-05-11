@@ -30,10 +30,10 @@ export class PubDBProvider {
         let params: any = [];
         if (isSynchro == null || isSynchro == -1) {
             //搜索全部
-            sql = "select * from asset_account_fixed where WORKER_NUMBER=?";
+            sql = "select * from asset_account_fixed where WORKER_NUMBER=? and RECORD_FLAG=0";
             params = [workerNumber];
         } else {
-            sql = "select * from asset_account_fixed where WORKER_NUMBER=? and IS_SYNCHRO=?";
+            sql = "select * from asset_account_fixed where WORKER_NUMBER=? and IS_SYNCHRO=? and RECORD_FLAG=0";
             params = [workerNumber, isSynchro];
         }
         return new Promise<Array<FixedAsset>>((resolve, reject) => {
@@ -56,7 +56,7 @@ export class PubDBProvider {
     queryAssetsFromFixedByPage(pageSize: number, pageIndex: number, workerNumber: string) {
         return new Promise<Array<FixedAsset>>((resolve, reject) => {
             var index = pageSize * (pageIndex - 1);
-            this.dbService.executeSql("select * from asset_account_fixed where WORKER_NUMBER=? limit ? offset ?", [workerNumber, pageSize, index])
+            this.dbService.executeSql("select * from asset_account_fixed where WORKER_NUMBER=?  and RECORD_FLAG=0 limit ? offset ?", [workerNumber, pageSize, index])
                 .then((data) => {
                     var assets: Array<FixedAsset> = this._getFixedAssetsFromDBResult(data);
                     resolve(assets);
@@ -71,9 +71,9 @@ export class PubDBProvider {
      * @param id 
      * @param code 
      */
-    queryFromFixedByIdAndCode(id: string, code: string) {
+    queryFromFixedByIdAndCode(id: string, code: string,workerNumber:string) {
         return new Promise<FixedAsset>((resolve, reject) => {
-            this.dbService.executeSql('select * from asset_account_fixed where ASSET_ID=? and TWO_DIMENSION_CODE=?', [id, code])
+            this.dbService.executeSql('select * from asset_account_fixed where ASSET_ID=? and TWO_DIMENSION_CODE=? and WORKER_NUMBER=? and RECORD_FLAG=0', [id, code,workerNumber])
                 .then((data) => {
                     var asset: FixedAsset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
@@ -89,7 +89,7 @@ export class PubDBProvider {
      */
     queryFromFixedById(id: string) {
         return new Promise<FixedAsset>((resolve, reject) => {
-            this.dbService.executeSql('select * from asset_account_fixed where ASSET_ID=?', [id])
+            this.dbService.executeSql('select * from asset_account_fixed where ASSET_ID=? and RECORD_FLAG=0', [id])
                 .then((data) => {
                     var asset: FixedAsset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
@@ -99,9 +99,9 @@ export class PubDBProvider {
         })
     }
 
-    queryFromFixedByRFID(rfid: string) {
+    queryFromFixedByRFID(rfid: string,workerNumber:string) {
         return new Promise<FixedAsset>((resolve, reject) => {
-            this.dbService.executeSql("select * from asset_account_fixed where RFID=?", [rfid])
+            this.dbService.executeSql("select * from asset_account_fixed where RFID=? and WORKER_NUMBER=? and RECORD_FLAG=0", [rfid,workerNumber])
                 .then((data) => {
                     var asset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
@@ -115,9 +115,9 @@ export class PubDBProvider {
      * 根据二维码从固定资产台账中查询资产信息
      * @param code 
      */
-    queryFromFixedByCode(code: string) {
+    queryFromFixedByCode(code: string,workerNumber:string) {
         return new Promise<FixedAsset>((resolve, reject) => {
-            this.dbService.executeSql("select * from asset_account_fixed where TWO_DIMENSION_CODE=?", [code])
+            this.dbService.executeSql("select * from asset_account_fixed where TWO_DIMENSION_CODE=? and WORKER_NUMBER=? and RECORD_FLAG=0", [code,workerNumber])
                 .then((data) => {
                     var asset = this._getFixedAssetFromDBResult(data);
                     resolve(asset);
@@ -134,10 +134,10 @@ export class PubDBProvider {
      */
     insertToFixed(asset: FixedAsset) {
         return new Promise((resolve, reject) => {
-            this.dbService.executeSql("insert into asset_account_fixed values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            this.dbService.executeSql("insert into asset_account_fixed values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 [asset.assetId, asset.assetName, asset.assetType, asset.assetCategory, asset.assetClass, asset.specModel, asset.licenseplatWellno, asset.workForOrg, asset.workInOrg, asset.subordinateBlock,
                 asset.productionTime, asset.techStatus, asset.useState, asset.manufactureDate, asset.increaseDate, asset.increaseReason, asset.unit, asset.quantity, asset.yardStatus, asset.assetGroup,
-                asset.remainingLife, asset.netWorth, asset.workerNumber, asset.custodian, asset.installLocation, asset.remark, asset.twoDimensionCode, asset.rfid, asset.recordFlag, "0", "0", asset.selfNumber, asset.assetCode, asset.originalValue, asset.singleQuantity, asset.complexQuantity, asset.certificateNumber, asset.securityState, asset.changeCustodian, asset.changeWorkerNumber, asset.manufacturer, asset.serialNumber, asset.fundChannel, asset.photoPath])
+                asset.remainingLife, asset.netWorth, asset.workerNumber, asset.custodian, asset.installLocation, asset.remark, asset.twoDimensionCode, asset.rfid, asset.recordFlag, "0", "0", asset.selfNumber, asset.assetCode, asset.originalValue, asset.singleQuantity, asset.complexQuantity, asset.certificateNumber, asset.securityState, asset.changeCustodian, asset.changeWorkerNumber, asset.manufacturer, asset.serialNumber, asset.fundChannel, asset.photoPath,asset.useStateDesc,asset.wfoAddress])
                 .then((data) => {
                     resolve(data);
                 })
@@ -155,9 +155,9 @@ export class PubDBProvider {
         return new Promise((resolve, reject) => {
             this.dbService.executeSql(`update asset_account_fixed 
                                        set TECH_STATUS=?,USE_STATE=?,QUANTITY=?,INSTALL_LOCATION=?,TWO_DIMENSION_CODE=?,IS_CHECKED=?,IS_SYNCHRO=?,SECURITY_STATE=?,RFID=?,CUSTODIAN=?,WORKER_NUMBER=?,CHANGE_CUSTODIAN=?,CHANGE_WORKER_NUMBER=?,
-                                       LICENSEPLAT_WELLNO=?,SELF_NUMBER=?,SERIAL_NUMBER=?,MANUFACTURE_DATE=?,INSTALL_LOCATION=?,PHOTO_PATH=? where ASSET_ID=?`,
+                                       LICENSEPLAT_WELLNO=?,SELF_NUMBER=?,SERIAL_NUMBER=?,MANUFACTURE_DATE=?,INSTALL_LOCATION=?,PHOTO_PATH=?,RECORD_FLAG=?,USE_STATE_DESC=?,WFO_ADDRESS=? where ASSET_ID=?`,
                 [asset.techStatus, asset.useState, asset.quantity, asset.installLocation, asset.twoDimensionCode, asset.isChecked, asset.isSynchro, asset.securityState, asset.rfid, asset.custodian, asset.workerNumber, asset.changeCustodian, asset.changeWorkerNumber,
-                asset.licenseplatWellno, asset.selfNumber, asset.serialNumber, asset.manufactureDate, asset.installLocation, asset.photoPath, asset.assetId])
+                asset.licenseplatWellno, asset.selfNumber, asset.serialNumber, asset.manufactureDate, asset.installLocation, asset.photoPath,asset.recordFlag,asset.useStateDesc,asset.wfoAddress, asset.assetId])
                 .then((data) => {
                     resolve(data);
                 })
@@ -912,6 +912,8 @@ export class PubDBProvider {
                 asset.serialNumber = data.rows.item(i).SERIAL_NUMBER;
                 asset.fundChannel = data.rows.item(i).FUND_CHANNEL;
                 asset.photoPath = data.rows.item(i).PHOTO_PATH;
+                asset.useStateDesc=data.rows.item(i).USE_STATE_DESC;
+                asset.wfoAddress=data.rows.item(i).WFO_ADDRESS;
                 assets.push(asset);
             }
         }
@@ -970,6 +972,8 @@ export class PubDBProvider {
             asset.serialNumber = data.rows.item(0).SERIAL_NUMBER;
             asset.fundChannel = data.rows.item(0).FUND_CHANNEL;
             asset.photoPath = data.rows.item(0).PHOTO_PATH;
+            asset.useStateDesc=data.rows.item(0).USE_STATE_DESC;
+            asset.wfoAddress=data.rows.item(0).WFO_ADDRESS;
         }
         return asset;
     }

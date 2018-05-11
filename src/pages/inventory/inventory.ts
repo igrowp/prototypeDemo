@@ -170,7 +170,7 @@ export class InventoryPage {
         return;
       }
       this.platform.ready().then(() => {
-        this.assetService.queryAssetFromFixedByCode(code).then((fixedAsset) => {
+        this.assetService.queryAssetFromFixedByCode(code,this.workerNumber).then((fixedAsset) => {
           if (fixedAsset == null) {
             this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
             return;
@@ -218,7 +218,7 @@ export class InventoryPage {
           return;
         }
         this.platform.ready().then(() => {
-          this.assetService.queryAssetFromFixedByIdAndCode(id, code).then((fixedAsset) => {
+          this.assetService.queryAssetFromFixedByIdAndCode(id, code,this.workerNumber).then((fixedAsset) => {
             if (fixedAsset == null) {
               this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
               return;
@@ -261,54 +261,42 @@ export class InventoryPage {
   }
 
 
-  scanrfid(fab: FabContainer) {
+  scanRFID(fab: FabContainer) {
     if (fab != null) {
       setTimeout(() => {
         fab.close();
       }, 200);
     }
+    //手机版
     this.noticeService.showIonicAlert("该设备没有硬件支持，不能扫描RFID码");
-  }
 
-  scanRFID() {
-    let loading = this.loadingCtrl.create({
-      spinner: 'bubbles',
-      content: '正在读取RFID码，请稍后',
-      duration: 10000
-    });
-    loading.present();
-
-    ReadRFID.connect((success) => {
-      ReadRFID.start((success) => {
-        var rfid = success;
-        alert(rfid);
-        if (rfid == "") {
-          return;
-        }
-        this.platform.ready().then(() => {
-          this.assetService.queryAssetFromFixedByRFID(rfid).then((fixedAsset) => {
-            if (fixedAsset == null) {
-              this.noticeService.showIonicAlert("查询资产失败,请确认二维码是否正确");
-              return;
-            }
-            this.assetService.queryAssetFromInvByIdAndNoticeId(fixedAsset.assetId, this.invNotice.noticeId).then((invAsset) => {
-              this.navCtrl.push("InvAssetMessagePage", {
-                fixedAsset: fixedAsset,
-                invAsset: invAsset,
-                invNoticeId: this.invNotice.noticeId
-              })
-            })
-          })
-        })
-        ReadRFID.disconnect();
-        ReadRFID.release();
-        loading.dismiss();
-      }, (error) => {
-        this.noticeService.showIonicAlert("启动失败" + error)
-      })
-    }, (err) => {
-      this.noticeService.showIonicAlert("连接失败" + err);
-    });
+    //pad版
+    // let modal = this.modalCtrl.create("ScanRFIDPage");
+    // modal.onDidDismiss((data) => {
+    //   let rfid = data.result;
+    //   if (rfid == "") {
+    //     //this.noticeService.showIonicAlert("RFID码为空")
+    //     return;
+    //   } else {
+    //     this.platform.ready().then(() => {
+    //       this.assetService.queryAssetFromFixedByRFID(rfid,this.workerNumber).then((fixedAsset) => {
+    //         if (fixedAsset == null) {
+    //           this.noticeService.showIonicAlert("查询资产失败,未找到对应资产");
+    //           return;
+    //         } else {
+    //           this.assetService.queryAssetFromInvByIdAndNoticeId(fixedAsset.assetId, this.invNotice.noticeId).then((invAsset) => {
+    //             this.navCtrl.push("InvAssetMessagePage", {
+    //               fixedAsset: fixedAsset,
+    //               invAsset: invAsset,
+    //               invNoticeId: this.invNotice.noticeId
+    //             })
+    //           })
+    //         }
+    //       })
+    //     })
+    //   }
+    // })
+    // modal.present();
   }
 
 

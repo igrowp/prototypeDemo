@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="title">
+    <ion-navbar color="theme">
         <ion-title class="border-left-white">资产信息</ion-title>
         <ion-buttons right>
             <button *ngIf="handleType=='完善资产信息'" ion-button (click)="handleSubmit()" class="btn-submit" color="light">
@@ -143,19 +143,19 @@
     <ion-buttons start>
         <ion-row *ngIf="handleType=='完善资产信息'">
             <ion-col col-6>
-                <button ion-button block (click)="handleIdle()">
+                <button ion-button block (click)="handleIdle()" color="theme">
                     资产闲置
                 </button>
             </ion-col>
             <ion-col col-6>
-                <button ion-button block (click)="handleScrap()">
+                <button ion-button block (click)="handleScrap()" color="theme">
                     资产报废
                 </button>
             </ion-col>
         </ion-row>
         <ion-row *ngIf="handleType=='提交'">
                 <ion-col>
-                    <button ion-button block (click)="handleSubmit()">
+                    <button ion-button block (click)="handleSubmit()"  color="theme">
                         {{handleType}}
                     </button>
                 </ion-col>

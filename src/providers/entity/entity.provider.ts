@@ -15,7 +15,7 @@ export class InvAsset{
     workerNumber;
     assetName;
     assetType;
-    invRecordId;  
+    invRecordId;
     securityStateDesc;
     useOrgName;
     profitLoss;

@@ -73,7 +73,7 @@ export class HomePage {
     private screenOrientation:ScreenOrientation,
     private transfer: Transfer) {
       //控制屏幕方向（当前为强制横屏）
-    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    //this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
 
     this.badgeValueInv = 0;
     this.fileTransfer = this.transfer.create();
@@ -717,6 +717,7 @@ export class HomePage {
         })
       }
     });
+  }
 
     //sso直接退出
     // let alert = this.alertCtrl.create({
@@ -741,75 +742,3 @@ export class HomePage {
     // });
     // alert.present();
   }
-
-
-
-
-
-
-
-
-
-
-  /////////////测试RFID/////////////////////////
-
-  test2() {
-    ReadRFID.connect((success) => {
-      alert("连接成功" + success);
-    }, (err) => {
-      alert("失败" + err);
-    });
-  }
-  test1() {
-    ReadRFID.start((success) => {
-      alert("启动成功");
-      alert(success);
-    }, (error) => {
-      alert("失败：" + error)
-    })
-
-  }
-
-  test3() {
-    ReadRFID.disconnect((data) => {
-      alert("取消连接");
-    }, (error) => {
-      alert(error.message);
-    });
-
-  }
-  test4() {
-    ReadRFID.release((data) => {
-      alert("释放资源");
-    }, (err) => {
-      alert(err);
-    });
-
-  }
-
-  scanRFIDTest() {
-    alert("点击事件");
-    ReadRFID.connect((success) => {
-      alert("连接成功");
-      ReadRFID.start((success) => {
-        alert("启动成功");
-        alert(success);
-        ReadRFID.disconnect((data) => {
-          alert("取消连接");
-        }, (error) => {
-          alert(error.message);
-        });
-        ReadRFID.release((data) => {
-          alert("释放资源");
-        }, (err) => {
-          alert(err);
-        });
-      }, (error) => {
-        alert(error)
-      })
-    }, (err) => {
-      alert(err);
-    });
-  }
-
-}

@@ -238,8 +238,8 @@ export class AssetService {
    * @param assetId 
    * @param code 二维码编号 
    */
-  queryAssetFromFixedByIdAndCode(assetId, code) {
-    return this.pubDBProvider.queryFromFixedByIdAndCode(assetId, code);
+  queryAssetFromFixedByIdAndCode(assetId, code,workerNumber) {
+    return this.pubDBProvider.queryFromFixedByIdAndCode(assetId, code,workerNumber);
   }
 
 
@@ -255,9 +255,18 @@ export class AssetService {
    * 根据RFID从固定资产台账中获取资产信息
    * @param Code 
    */
-  queryAssetFromFixedByRFID(rfid) {
-    return this.pubDBProvider.queryFromFixedByRFID(rfid);
+  queryAssetFromFixedByRFID(rfid,workerNumber) {
+    return this.pubDBProvider.queryFromFixedByRFID(rfid,workerNumber);
   }
+
+  /**
+   * 根据二维码编号从固定资产台账中获取资产信息
+   * @param Code 
+   */
+  queryAssetFromFixedByCode(Code,workerNumber) {
+    return this.pubDBProvider.queryFromFixedByCode(Code,workerNumber);
+  }
+
 
   /**
    * 通过分类编码获取该编码下的所有字典明细列表
@@ -276,14 +285,7 @@ export class AssetService {
     return this.pubDBProvider.queryFromDictDetailByCategoryAndDictCode(categoryCode,dictCode);
   }
 
-  /**
-   * 根据二维码编号从固定资产台账中获取资产信息
-   * @param Code 
-   */
-  queryAssetFromFixedByCode(Code) {
-    return this.pubDBProvider.queryFromFixedByCode(Code);
-  }
-
+  
 
 
   /**

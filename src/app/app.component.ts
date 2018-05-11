@@ -22,8 +22,11 @@ export class MyApp {
     private dbService: DBService,
   ) {
 
-    //控制屏幕方向（当前为强制横屏）
+    //控制屏幕方向（当前为强制竖屏）
     this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    
+    //控制屏幕方向（当前为强制横屏）
+    // this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
 
     //创建数据库
     this.dbService.initDB().then(() => {

@@ -182,17 +182,23 @@ export class ProcessPage {
       case "资产闲置认定":
         this.assetHandleService.getIdleBillFromServe(item.eventId).subscribe((idleBill) => {
           if (idleBill.appPerson != undefined) {
-            this.assetHandleService.getIdleAssetListFromServe(item.eventId).subscribe((assetList) => {
-              loading.dismiss();
-              this.navCtrl.push("ProcessDetailPage", {
-                workerNumber: this.workerNumber,
-                idleBill: idleBill,
-                assetList: assetList,
-                todoEvent: item
-              });
+            this.assetHandleService.getIdleDeviceAssetListFromServe(item.eventId).subscribe((deviceList) => {
+              this.assetHandleService.getIdleUnDeviceAssetListFromServe(item.eventId).subscribe((unDeviceList)=>{
+                loading.dismiss();
+                this.navCtrl.push("ProcessDetailPage", {
+                  workerNumber: this.workerNumber,
+                  idleBill,
+                  deviceList,
+                  unDeviceList,
+                  todoEvent: item
+                });
+              }, (error) => {
+                loading.dismiss();
+                this.noticeService.showIonicAlert("非设备类资产数据获取失败");
+              })
             }, (error) => {
               loading.dismiss();
-              this.noticeService.showIonicAlert("数据获取失败");
+              this.noticeService.showIonicAlert("设备类资产数据获取失败");
             })
           } else {
             loading.dismiss();
@@ -207,17 +213,23 @@ export class ProcessPage {
       case "资产报废申请":
         this.assetHandleService.getScrapBillFromServe(item.eventId).subscribe((scrapBill) => {
           if (scrapBill.applyId != undefined) {
-            this.assetHandleService.getScrapAssetListFromServe(item.eventId).subscribe((assetList) => {
-              loading.dismiss();
-              this.navCtrl.push("ProcessDetailPage", {
-                workerNumber: this.workerNumber,
-                scrapBill: scrapBill,
-                assetList: assetList,
-                todoEvent: item
+            this.assetHandleService.getScrapFixAssetListFromServe(item.eventId).subscribe((scrapFixList) => {
+              this.assetHandleService.getScrapWellAssetListFromServe(item.eventId).subscribe((scrapWellList)=>{
+                loading.dismiss();
+                this.navCtrl.push("ProcessDetailPage", {
+                  workerNumber: this.workerNumber,
+                  scrapBill: scrapBill,
+                  scrapFixList: scrapFixList,
+                  scrapWellList:scrapWellList,
+                  todoEvent: item
+                })
+              }, (error) => {
+                loading.dismiss();
+                this.noticeService.showIonicAlert("油气水井资产数据获取失败");
               })
             }, (error) => {
               loading.dismiss();
-              this.noticeService.showIonicAlert("数据获取失败");
+              this.noticeService.showIonicAlert("固定资产数据获取失败");
             })
           } else {
             loading.dismiss();

@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar color="title">
+    <ion-navbar color="theme">
         <ion-title class="border-left-white">我的资产</ion-title>
         <ion-buttons right>
             <button ion-button icon-only (click)="doSearch()">
@@ -12,31 +12,31 @@
 
 <ion-content class="full" class="bg-content">
     <!-- 搜索框  -->
-    <ion-toolbar color="title" [hidden]="isHiddenSearch">
+    <ion-toolbar color="theme" [hidden]="isHiddenSearch">
         <ion-searchbar placeholder="搜索" (ionInput)="getItems($event)"></ion-searchbar>
     </ion-toolbar>
     <ion-list *ngIf="dataTable.length!=null&&dataTable.length>0">
         <ion-item *ngFor="let item of dataTable;let i=index">
-            <ion-label (click)="scan(item)">
+            <ion-label (click)="navToAssetMessage(item)">
                 <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
                 <h2 *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
                 <h4 class="sub-title">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</h4>
             </ion-label>
 
             <!-- 手机版 -->
-            <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="rfid()" />
-            <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="rfid()" />
+            <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="scanRFID()" />
+            <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="scanRFID()" />
             <!-- Pad版 -->
             <!-- <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="bindRFID(item)" />
-                <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="reBindRFID(item)" /> -->
-
+            <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="reBind(item,i,'rfid')" /> -->
+            
             <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" (click)="bind(item,i)"/>
-            <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" (click)="reBind(item,i)"/>
-        </ion-item>
-
-        <!-- 底部刷新  -->
-        <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="80px" style="background-color:transparent">
-            <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="数据加载中...">
+            <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" (click)="reBind(item,i,'two')"/>
+            </ion-item>
+            
+            <!-- 底部刷新  -->
+            <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="80px" style="background-color:transparent">
+                <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="数据加载中...">
             </ion-infinite-scroll-content>
         </ion-infinite-scroll>
     </ion-list>
@@ -46,12 +46,13 @@
     </div>
 
     <ion-fab bottom right #fab>
-        <button ion-fab>
+        <button ion-fab color="theme">
             <ion-icon name="add"></ion-icon>
         </button>
         <ion-fab-list side="top">
             <button ion-fab Large class="fab-control fab-two" (click)="scanTwoDimensionCode(fab)"></button>
-            <button ion-fab Large class="fab-control fab-rfid" (click)="rfid(fab)"></button>
+            <!-- 手机版 -->
+            <button ion-fab Large class="fab-control fab-rfid" (click)="scanRFID(fab)"></button>
         </ion-fab-list>
     </ion-fab>
 </ion-content>

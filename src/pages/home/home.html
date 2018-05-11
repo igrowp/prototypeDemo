@@ -1,3 +1,4 @@
+<!-- pad版 -->
 <!-- <ion-content padding class="cover background">
     <div style="height:10%">
         <img src="./assets/imgs/title.png" style="height:100%">
@@ -18,12 +19,11 @@
                 </ion-col>
                 <ion-col class="cover" col-4>
                     <div class="yellow cover opacity" (click)="navToCvt()">
-                            <div class="icon-content-size center">
-                                    <img class="icon-size  center" src="./assets/imgs/home-cvt.png">
-                                    <ion-badge class="right-top" color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
-                                </div>
-                        <h5 class="item-title" *ngIf="isGranting==false">资产领用</h5>
-                        <h5 class="item-title" *ngIf="isGranting==true">资产发放</h5>
+                        <div class="icon-content-size center">
+                            <img class="icon-size  center" src="./assets/imgs/home-cvt.png">
+                            <ion-badge class="right-top" color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
+                        </div>
+                        <h5 class="item-title">资产领用</h5>
 
                     </div>
 
@@ -49,7 +49,7 @@
                         </div>
                         <h5 class="item-title">资产盘点
                             <sup>
-                                
+
                             </sup>
                         </h5>
 
@@ -74,19 +74,21 @@
             <ion-row>
                 <ion-col class="cover" col-4>
                     <div class="blue cover opacity" (click)="navToProcess()">
-                        <img class="icon-size center" src="./assets/imgs/home-process.png">
+                        <div class="icon-content-size center">
+                            <img class="icon-size center" src="./assets/imgs/home-process.png">
+                            <ion-badge class="right-top" color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
+                        </div>
                         <h5 class="item-title">流程审核</h5>
-
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-4>
                     <div class="image3 image-set cover"></div>
                 </ion-col>
                 <ion-col class="cover" col-2>
-                    <div class="light-blue cover opacity" (click)="userMessage()">
+                    <div class="light-blue cover opacity" (click)="setting()">
                         <img class="icon-size-petty center" src="./assets/imgs/home-user.png">
-                        <h6 class="item-title-petty">用户信息</h6>
-
+                        <h6 class="item-title-petty">设置</h6>
+            
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-2>
@@ -105,7 +107,7 @@
 
 <!-- 手机端 -->
 <ion-header>
-    <ion-navbar color="title">
+    <ion-navbar color="theme">
         <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
@@ -120,32 +122,26 @@
 </ion-header>
 
 <ion-content class="bg-content" #content>
-    <!-- <button ion-button (click)="test()">测试</button> -->
 
     <ion-card>
         <ion-card-content>
             <ion-row>
                 <ion-col col-3 class="center" (click)="navToMyAsset()">
 
-                    <img src="./assets/imgs/myAsset.png" />
+                    <img src="./assets/imgs/myAsset.png"/>
                     <h2 style="margin-top:10px;">我的资产</h2>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToProcess()">
                     <img src="./assets/imgs/process.png" />
                     <h2 style="margin-top:10px;">流程审批
-                        <!-- <sup>
-                            <ion-badge color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
-                        </sup> -->
                     </h2>
                     <ion-badge color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToCvt()">
                     <img src="./assets/imgs/cvt.png" />
                     <h2 style="margin-top:10px;">资产领用
-                        <sup>
-                            <ion-badge color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
-                        </sup>
                     </h2>
+                    <ion-badge color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToInv()">
                     <img src="./assets/imgs/inv.png" />

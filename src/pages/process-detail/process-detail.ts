@@ -42,12 +42,14 @@ export class ProcessDetailPage {
 
   //闲置审批
   public idleBill: IdleBill = new IdleBill();
-  //public assetList:Array<Asset>=new Array<Asset>();  //已经定义
+  public deviceList:Array<Asset>=new Array<Asset>();    //设备类资产
+  public unDeviceList:Array<Asset>=new Array<Asset>();  //非设备类资产
   //闲置审批END
 
-  //闲置审批
+  //报废审批
   public scrapBill: ScrapBill = new ScrapBill();
-  //public assetList:Array<Asset>=new Array<Asset>();  //已经定义
+  public scrapFixList:Array<Asset>=new Array<Asset>();    //固定资产
+  public scrapWellList:Array<Asset>=new Array<Asset>();   //油气水井
   //闲置审批END
 
   //处置审批
@@ -91,14 +93,16 @@ export class ProcessDetailPage {
         this.eventType = "资产闲置认定";
         this.title = "资产闲置认定";
         this.idleBill = this.navParams.get("idleBill");
-        this.assetList = this.navParams.get("assetList");
+        this.deviceList = this.navParams.get("deviceList");
+        this.unDeviceList = this.navParams.get("unDeviceList");
         break;
       case "资产报废申请":
         this.assetList = new Array<Scrap>();
         this.eventType = "资产报废申请";
         this.title = "资产报废申请";
         this.scrapBill = this.navParams.get("scrapBill");
-        this.assetList = this.navParams.get("assetList");
+        this.scrapFixList = this.navParams.get("scrapFixList");
+        this.scrapWellList = this.navParams.get("scrapWellList");
         break;
       case "闲置资产处置-内部再利用":
       case "闲置资产处置-分公司调用":

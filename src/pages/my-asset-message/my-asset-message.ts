@@ -90,7 +90,7 @@ export class MyAssetMessagePage {
     } else {
       let loading = this.noticeService.showIonicLoading("正在获取资产状态", 100000);
       loading.present();
-      this.assetHandleService.getIdleFromServe(this.fixedAsset.assetId).then((data) => {
+      this.assetHandleService.getIdleDeviceFromServe(this.fixedAsset.assetId).then((data) => {
         loading.dismiss();
         if (data) {
           if (data.applyState == PubConstant.APPLY_STATE_NULL || data.applyState == PubConstant.APPLY_STATE_UNSUBMIT || data.applyState == PubConstant.APPLY_STATE_REJECT) {
@@ -124,12 +124,12 @@ export class MyAssetMessagePage {
 
   handleScrap() {
     if (this.fixedAsset.techStatus == PubConstant.DICT_SUB_TYPE_SCRAP) {
-      //如果当前资产为闲置状态
-      this.noticeService.showIonicAlert("该资产已经是闲置状态");
+      //如果当前资产为报废状态
+      this.noticeService.showIonicAlert("该资产已经是报废状态");
     } else {
       let loading = this.noticeService.showIonicLoading("正在获取资产状态", 100000);
       loading.present();
-      this.assetHandleService.getScrapFromServe(this.fixedAsset.assetId).then((data) => {
+      this.assetHandleService.getScrapFixFromServe(this.fixedAsset.assetId).then((data) => {
         loading.dismiss();
         if (data) {
           if (data.applyState == PubConstant.APPLY_STATE_NULL || data.applyState == PubConstant.APPLY_STATE_UNSUBMIT || data.applyState == PubConstant.APPLY_STATE_REJECT) {
@@ -140,10 +140,10 @@ export class MyAssetMessagePage {
           } else if (data.applyState == PubConstant.APPLY_STATE_SUBMIT) {
             this.noticeService.showIonicAlert("正在审批中");
           } else {
-            this.noticeService.showIonicAlert("该资产已经是闲置状态");
+            this.noticeService.showIonicAlert("该资产已经是报废状态");
           }
         } else {
-          //不是闲置状态，并且没有提交过申请
+          //不是报废状态，并且没有提交过申请
           let scrap: Scrap = new Scrap();
           scrap.scrapId = DataBaseUtil.generateUUID();
           scrap.assetId = this.fixedAsset.assetId;
