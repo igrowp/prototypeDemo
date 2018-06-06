@@ -1,0 +1,36 @@
+page-change-manager {
+    .list{
+        padding-top:20px;
+        box-shadow: 2px 2px 5px #c9c5c5;
+    }
+    .input-reason {
+        resize:none;
+        margin-left: 5%;
+        padding: 5px;
+        margin-top: 15px;
+        border-style: none;
+        border: 1px solid #9A9A9A;
+        background-color: #fff;
+        font-size: 1.8rem;
+        width: 90%;
+    }
+
+    .item-body{
+        font-size: 2rem;
+        font-weight: 600;
+        color:#000;
+        padding-right: 2%;
+        text-align: right;
+    }
+    
+    .default{
+        color: #9A9A9A;
+    }
+    
+    .item-head{
+        font-size: 2rem;
+        color: #9A9A9A;
+        font-weight: 600;
+    }
+
+}

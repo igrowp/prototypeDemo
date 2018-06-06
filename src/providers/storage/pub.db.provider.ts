@@ -205,33 +205,33 @@ export class PubDBProvider {
     }
 
 
-    // /**
-    //    * 分页查询组织机构表
-    //    * @param pageSize 
-    //    * @param pageIndex  页号，从1开始 
-    //    */
-    // queryListFromOrgInfo(pageSize: number, pageIndex: number) {
-    //     return new Promise<Array<OrgInfo>>((resolve, reject) => {
-    //         let sql: string = "";
-    //         let params: any = [];
-    //         if (pageSize == 0 && pageIndex == 0) {
-    //             //都为0时默认查询所有数据
-    //             sql = 'select * from sys_org_info order by ORG_NAME';
-    //             params = [];
-    //         } else {
-    //             var index = pageSize * (pageIndex - 1);
-    //             sql = 'select * from sys_org_info limit ? offset ?';
-    //             params = [pageSize, index];
-    //         }
-    //         this.dbService.executeSql(sql, params)
-    //             .then((data) => {
-    //                 var orgInfoes: Array<OrgInfo> = this._getOrgInfosFromDBResult(data);
-    //                 resolve(orgInfoes);
-    //             }, (error) => {
-    //                 reject("数据库操作：<br>查询组织结构表失败<br>" + error.message);
-    //             })
-    //     })
-    // }
+    /**
+       * 分页查询组织机构表
+       * @param pageSize 
+       * @param pageIndex  页号，从1开始 
+       */
+    queryListFromOrgInfo(pageSize=0, pageIndex=0) {
+        return new Promise<Array<OrgInfo>>((resolve, reject) => {
+            let sql: string = "";
+            let params: any = [];
+            if (pageSize == 0 && pageIndex == 0) {
+                //都为0时默认查询所有数据
+                sql = 'select * from sys_org_info order by ORG_FULL_NAME asc,ORG_NAME asc';
+                params = [];
+            } else {
+                var index = pageSize * (pageIndex - 1);
+                sql = 'select * from sys_org_info limit ? offset ?';
+                params = [pageSize, index];
+            }
+            this.dbService.executeSql(sql, params)
+                .then((data) => {
+                    var orgInfoes: Array<OrgInfo> = this._getOrgInfosFromDBResult(data);
+                    resolve(orgInfoes);
+                }, (error) => {
+                    reject("数据库操作：<br>查询组织结构表失败<br>" + error.message);
+                })
+        })
+    }
 
     /**
       * 更新数据到组织结构表中

@@ -1,6 +1,7 @@
-page-idle {
+page-scrap {
     ion-list{
         padding-top:20px;
+        box-shadow: 2px 2px 5px #c9c5c5;
     }
 
     .item-head{
@@ -15,7 +16,9 @@ page-idle {
         padding-right: 2%;
         text-align: right;
     }
-
+    .default{
+        color: #9A9A9A;
+    }
     .input{
         border-style: none;
         background-color: #fff;
@@ -32,21 +35,6 @@ page-idle {
         background-color: #fff;
         font-size: 1.8rem;
         width: 90%;
-    }
-
-    .img-content{
-        margin-top: 15px;
-        border-radius:10px;
-        text-align: center;
-        width:100px;
-        height:100px;
-    }
-    .imgs-item{
-        text-align: center;
-        height: 100px;
-    }
-    .imgs-add {
-        margin-top: 15px;
     }
 
 }

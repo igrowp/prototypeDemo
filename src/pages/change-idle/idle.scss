@@ -1,6 +1,7 @@
-page-scrap {
+page-idle {
     ion-list{
         padding-top:20px;
+        box-shadow: 2px 2px 5px #c9c5c5;
     }
 
     .item-head{
@@ -15,9 +16,7 @@ page-scrap {
         padding-right: 2%;
         text-align: right;
     }
-    .default{
-        color: #9A9A9A;
-    }
+
     .input{
         border-style: none;
         background-color: #fff;
@@ -25,7 +24,7 @@ page-scrap {
     }
 
     .input-reason {
-        // border-style: none;
+        resize:none;
         margin-left: 5%;
         padding: 5px;
         margin-top: 15px;
@@ -34,6 +33,21 @@ page-scrap {
         background-color: #fff;
         font-size: 1.8rem;
         width: 90%;
+    }
+
+    .img-content{
+        margin-top: 15px;
+        border-radius:10px;
+        text-align: center;
+        width:100px;
+        height:100px;
+    }
+    .imgs-item{
+        text-align: center;
+        height: 100px;
+    }
+    .imgs-add {
+        margin-top: 15px;
     }
 
 }

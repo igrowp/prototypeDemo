@@ -1,13 +1,16 @@
-page-process {
+page-select-assets {
+    .full{
+        height: 100%;
+        width: 100%;
+    }
     ion-list{
         padding-top:20px;
-        box-shadow: 2px 2px 5px #c9c5c5;
     }
-    
-    .center{
-        text-align: center;
+    .sub-title{
+        font-weight: 400;
+        margin-top: 3px;
+        color:#9A9A9A;
     }
-
     .no-data{
         text-align: center;
         height:300px;
@@ -17,7 +20,7 @@ page-process {
         height: 120px;
         width:120px;
     }
-    .center-absolute{
+    .center{
         position: absolute;
         top:0px;
         bottom:0px;

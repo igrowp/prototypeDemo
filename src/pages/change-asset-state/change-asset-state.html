@@ -1,0 +1,153 @@
+<ion-header>
+    <ion-navbar color="theme">
+      <ion-title class="border-left-white">资产调拨</ion-title>
+      <ion-buttons right>
+          <button ion-button (click)="handleSubmit()" class="btn-submit" color="light">
+              提交
+          </button>
+      </ion-buttons>
+    </ion-navbar>
+  </ion-header>
+  
+  
+  <ion-content #grantingBind_content class="bg-content">
+    <ion-list class='list'>
+      <ion-item>
+        <ion-label class="item-head">申请人：</ion-label>
+        <p class="item-body default" item-end>{{userName}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请日期：</ion-label>
+        <p class="item-body default" item-end>{{currentDate}}</p>
+      </ion-item>
+      <ion-item>
+          <ion-label class="item-head">技术状况：</ion-label>
+          <ion-select class="item-body" [(ngModel)]="techStatus" placeholder="选择" interface="popover">
+              <ion-option *ngFor="let item of techStates" [value]="item.dictCode">
+                  {{item.dictCodeDesc}}
+              </ion-option>
+          </ion-select>
+      </ion-item>
+      <!-- 报废 -->
+
+      <div *ngIf="isScrap==false&&techStatus=='99'">
+          <ion-card>
+              <ion-card-content>
+                  <ion-card-title>
+                      资产报废卡片
+                  </ion-card-title>
+                  <ion-item>
+                      <ion-label class="item-head">报废类别：</ion-label>
+                      <ion-select class="item-body" [(ngModel)]="scrap.scrapCategory" placeholder="选择" interface="popover">
+                          <ion-option [value]="0">非正常</ion-option>
+                          <ion-option [value]="1">正常</ion-option>
+                      </ion-select>
+                  </ion-item>
+                  <hr>
+                  <ion-item>
+                      <ion-label class="item-head">闲置/停产日期：</ion-label>
+                      <p class="item-body default" *ngIf="scrap.unproductionTime==null||scrap.unproductionTime==''" item-end>选择日期</p>
+                      <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" min="2000-01-01" doneText="确定" cancelText="取消"
+                          [(ngModel)]="scrap.unproductionTime"></ion-datetime>
+                  </ion-item>
+                  <hr>
+                  <ion-item>
+                      <p class="item-head">存放地点：</p>
+                      <input item-end class="item-body input" type="text" [(ngModel)]="scrap.storageLocation" placeholder="存放地点">
+                  </ion-item>
+                  <hr>
+                  <ion-item>
+                      <p class="item-head">资产简况：</p>
+                      <div>
+                          <textarea class="input-reason" rows="3" [(ngModel)]="scrap.assetBrief"></textarea>
+                      </div>
+                  </ion-item>
+                  <hr>
+                  <ion-item>
+                      <p class="item-head">报废原因：</p>
+                      <div>
+                          <textarea class="input-reason" rows="3" [(ngModel)]="scrap.scrapReason"></textarea>
+                      </div>
+                  </ion-item>
+              </ion-card-content>
+
+          </ion-card>
+      </div>
+
+      <ion-item>
+          <ion-label class="item-head">使用状况：</ion-label>
+          <ion-select class="item-body" [(ngModel)]="useState" placeholder="选择" interface="popover">
+              <ion-option *ngFor="let item of useStates" [value]="item.dictCode">
+                  {{item.dictCodeDesc}}
+              </ion-option>
+          </ion-select>
+      </ion-item>
+
+      <!-- 闲置 -->
+
+      <div *ngIf="isIdle==false&&useState=='0204'">
+          <ion-card>
+              <ion-card-content>
+                  <ion-card-title>
+                      资产闲置卡片
+                  </ion-card-title>
+                  <ion-item>
+                      <ion-label class="item-head">现存放地点：</ion-label>
+                      <input item-end class="item-body input" type="text" placeholder="存放地点" [(ngModel)]="idle.installLocation">
+                  </ion-item>
+                  <hr>
+                  <ion-item>
+                      <p class="item-head">检定结果：</p>
+                      <div>
+                          <textarea class="input-reason" [(ngModel)]="idle.testResult" rows="3"></textarea>
+                      </div>
+                  </ion-item>
+                  <hr>
+                  <ion-item>
+                      <p class="item-head">停用原因及目前保护措施：</p>
+                      <div>
+                          <textarea class="input-reason" [(ngModel)]="idle.stopReason" rows="3"></textarea>
+                      </div>
+                  </ion-item>
+                  <hr>
+                  <ion-item>
+                      <p class="item-head">资产现状：</p>
+                      <div>
+                          <textarea class="input-reason" [(ngModel)]="idle.assetDesc" rows="3"></textarea>
+                      </div>
+                  </ion-item>
+              </ion-card-content>
+          </ion-card>
+      </div>
+
+      <ion-item>
+          <ion-label class="item-head">安全现状：</ion-label>
+          <ion-select class="item-body" [(ngModel)]="securityState" placeholder="选择" interface="popover">
+              <ion-option *ngFor="let item of securityStates" [value]="item.dictCode">
+                  {{item.dictCodeDesc}}
+              </ion-option>
+          </ion-select>
+      </ion-item>
+  
+      <ion-item>
+        <p class="item-head">变更说明：</p>
+        <div>
+          <textarea class="input-reason" rows="3" [(ngModel)]="changeReason"></textarea>
+        </div>
+      </ion-item>
+    </ion-list>
+  
+    <ion-list class='list'>
+      <ion-item-divider>
+        资产列表 ({{assetList.length}})
+      </ion-item-divider>
+      <ion-item *ngFor="let item of assetList;let i=index">
+        <ion-label>
+          <h2 *ngIf="item.selfNumber==''||item.selfNumber=='undefined'">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!='undefined'">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  
+  </ion-content>

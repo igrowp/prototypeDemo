@@ -1,0 +1,75 @@
+<ion-header>
+    <ion-navbar color="theme">
+      <ion-title class="border-left-white">资产调拨</ion-title>
+      <ion-buttons right>
+          <button ion-button (click)="handleSubmit()" class="btn-submit" color="light">
+              提交
+          </button>
+      </ion-buttons>
+    </ion-navbar>
+  </ion-header>
+  
+  
+  <ion-content #grantingBind_content class="bg-content">
+    <ion-list class='list'>
+      <ion-item>
+        <ion-label class="item-head">申请人：</ion-label>
+        <p class="item-body default" item-end>{{userName}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请日期：</ion-label>
+        <p class="item-body default" item-end>{{currentDate}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">原责任人：</ion-label>
+        <p class="item-body default" item-end>{{userName}}</p>
+      </ion-item>
+      <ion-item (click)='handleSelectPerson()'>
+        <ion-label class="item-head">调入单位：</ion-label>
+        <p *ngIf="newManger==''||!newManger"  class="item-body" item-end>选择</p>
+        <p class="item-body" item-end>{{newManger}}</p>
+      </ion-item>
+  
+      <ion-item>
+        <p class="item-head">调拨说明：</p>
+        <div>
+          <textarea class="input-reason" rows="3" [(ngModel)]="changeReason"></textarea>
+        </div>
+      </ion-item>
+    </ion-list>
+  
+    <ion-list class='list'>
+      <ion-item-divider>
+        资产列表 ({{assetList.length}})
+      </ion-item-divider>
+      <ion-item *ngFor="let item of assetList;let i=index">
+        <ion-label>
+          <h2 *ngIf="item.selfNumber==''||item.selfNumber=='undefined'">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!='undefined'">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  
+  </ion-content>
+  
+  
+  <ion-menu [content]="grantingBind_content" id="grantingSelectPerson" side="right">
+      <ion-header>
+          <ion-navbar color="theme">
+              <ion-toolbar>
+                  <ion-searchbar placeholder="搜索" (ionInput)="filterItems($event)"></ion-searchbar>
+              </ion-toolbar>
+          </ion-navbar>
+      </ion-header>
+      <ion-content>
+          <ion-list>
+                  <ion-item *ngFor="let item of items" (click)="close(item)">
+                      {{ item.userName}} / {{item.workerNumber}}
+                  </ion-item>
+              <ion-item *ngIf="items!=null&&items.length==0">
+                  没有搜索到该结果
+              </ion-item>
+          </ion-list>
+      </ion-content>
+  </ion-menu>

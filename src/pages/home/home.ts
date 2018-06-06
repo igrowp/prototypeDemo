@@ -77,7 +77,7 @@ export class HomePage {
 
     this.badgeValueInv = 0;
     this.fileTransfer = this.transfer.create();
-    this.checkAppVersion(false);
+    // this.checkAppVersion(false);
 
     this.platform.ready().then(() => {
       this.backButtonService.registerBackButtonAction(null);
@@ -106,6 +106,19 @@ export class HomePage {
     })
   }
 
+  /**
+   * 各种申请，改变状态
+   */
+  navToChangeState(handleType){
+    this.navCtrl.push("SelectAssetsPage",{
+      workerNumber:this.workerNumber,
+      userName:this.userName,
+      wFOAddress:this.wFOAddress,
+      handleType:handleType
+    })
+  }
+    
+
   ionViewDidEnter() {
     //每次进入页面调用此方法
 
@@ -116,19 +129,6 @@ export class HomePage {
     // if (this.workForOrg) {
     //   this.getNoticeFromServe();  //每次进入主界面，从服务器获取一次数据
     // }
-  }
-  test() {
-    this.navCtrl.push("Test2Page");
-    //this.checkAppVersion();
-    // this.invWebProvider.test().then(()=>{
-
-    // })
-    // let modal=this.modalCtrl.create("Test1Page");
-    // modal.onDidDismiss(data=>{
-    //   alert(data);
-    // })
-    // modal.present();
-
   }
 
   //初始化转产状态

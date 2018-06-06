@@ -29,14 +29,16 @@
             <!-- Pad版 -->
             <!-- <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="bindRFID(item)" />
             <img *ngIf="item.rfid!='' && item.rfid!=null" item-end src="./assets/imgs/RFID_2.png" (click)="reBind(item,i,'rfid')" /> -->
-            
-            <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" (click)="bind(item,i)"/>
-            <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" (click)="reBind(item,i,'two')"/>
-            </ion-item>
-            
-            <!-- 底部刷新  -->
-            <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="80px" style="background-color:transparent">
-                <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="数据加载中...">
+
+            <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" (click)="bind(item,i)"
+            />
+            <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" (click)="reBind(item,i,'two')"
+            />
+        </ion-item>
+
+        <!-- 底部刷新  -->
+        <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="80px" style="background-color:transparent">
+            <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="数据加载中...">
             </ion-infinite-scroll-content>
         </ion-infinite-scroll>
     </ion-list>

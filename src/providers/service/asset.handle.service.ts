@@ -41,8 +41,7 @@ export class AssetHandleService {
     })
   }
 
-
-  /**A320——WIFI
+  /**
    * 同步闲置资产到服务器端，离线状态则存储到本地
    * @param idle 
    */
