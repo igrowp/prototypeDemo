@@ -1,3 +1,4 @@
+import { AssetHandleWebProvider } from './../../providers/web/asset.handle.web.provider';
 import { Checkbox } from 'ionic-angular/components/checkbox/checkbox';
 import { AssetService } from './../../providers/service/asset.service';
 import { Component, ViewChild } from '@angular/core';
@@ -19,34 +20,57 @@ import { ModalController } from 'ionic-angular/components/modal/modal-controller
 })
 export class SelectAssetsPage {
   @ViewChild(Content) content: Content;
-  public isMultiple=false
+  public isMultiple = false
 
   public dataTable: Array<FixedAsset> = new Array<FixedAsset>();
-  private pageIndex: number;
-  private pageSize = 20;
   private workerNumber = "";
-  private selectedItems:Array<FixedAsset>=[]; //记录点击盘点的资产索引号
+  private selectedItems: Array<FixedAsset> = []; //记录点击盘点的资产索引号
 
-  private handleType='';
+  private handleType = '';
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private noticeService: NoticeService,
     private barcodeScanner: BarcodeScanner,
+    private assetHandleWebProvider: AssetHandleWebProvider,
     private loadingCtrl: LoadingController,
     private assetService: AssetService,
     private modalCtrl: ModalController) {
-    this.pageIndex = 1;
-    this.workerNumber = this.navParams.get("workerNumber");
-    this.handleType=this.navParams.get("handleType")
-
     this.dataTable = new Array<FixedAsset>();
-    this.assetService.queryAssetsFormFixedByPage(this.pageSize, this.pageIndex, this.workerNumber).then((data) => {
-      for (var i = 0; i < data.length; i++) {
-        this.dataTable.push(data[i]);
+    this.workerNumber = this.navParams.get("workerNumber");
+    this.handleType = this.navParams.get("handleType")
+    this.assetService.queryAssetsFromFixed(this.workerNumber).then((data) => {
+      if (this.handleType == '资产调拨') {
+        this.assetHandleWebProvider.getAlloingListFromServe(this.workerNumber).subscribe((alloing) => {
+          if (alloing.length > 0) {
+            for (let i = 0; i < data.length; i++) {
+              let isHave = false;
+              for (let j = 0; j < alloing.length; j++) {
+                if (data[i].assetId == alloing[j].assetId) {
+                  isHave = true;
+                  break
+                }
+              }
+              if (isHave != true) {
+                this.dataTable.push(data[i])
+              }
+            }
+          }
+        })
+      }else if(this.handleType == '资产责任人'){
+        for (let i = 0; i < data.length; i++) {
+          this.dataTable.push(data[i])
+        }
+
+      }else if(this.handleType == '资产属性状态'){
+        for (let i = 0; i < data.length; i++) {
+          this.dataTable.push(data[i])
+        }
+
       }
-      this.pageIndex++;
     })
+
+
   }
 
   ionViewDidLoad() {
@@ -55,27 +79,29 @@ export class SelectAssetsPage {
 
 
 
+
+
   //当切换右上角单选和多选按钮
-  handleChangeIsMultiple(){
-    this.isMultiple=!this.isMultiple;
-    this.selectedItems=[];
+  handleChangeIsMultiple() {
+    this.isMultiple = !this.isMultiple;
+    this.selectedItems = [];
 
   }
 
   //提交按钮
-  handleSubmit(){
-    if(this.selectedItems.length>0){
+  handleSubmit() {
+    if (this.selectedItems.length > 0) {
       this.navTo()
-    }else{
+    } else {
       this.noticeService.showIonicAlert("请选择资产")
     }
 
   }
 
-  handleItemClick(item){
-    if(!this.isMultiple){
+  handleItemClick(item) {
+    if (!this.isMultiple) {
       //单选情况，直接跳转页面
-      this.selectedItems=[]
+      this.selectedItems = []
       this.selectedItems.push(item)
       this.navTo()
     }
@@ -84,26 +110,29 @@ export class SelectAssetsPage {
   /**
    * 跳转到相应页面
    */
-  navTo(){
-    switch(this.handleType){
+  navTo() {
+    switch (this.handleType) {
       case '资产调拨':
-        this.navCtrl.push('AlloPage',{
-          assets:this.selectedItems,
-          userName:this.navParams.get("userName"),
-          wFOAddress:this.navParams.get("wFOAddress")
+        this.navCtrl.push('AlloPage', {
+          assets: this.selectedItems,
+          workerNumber: this.workerNumber,
+          userName: this.navParams.get("userName"),
+          wFOAddress: this.navParams.get("wFOAddress"),
+          workForOrg: this.navParams.get("workForOrg")
         })
         break;
       case '资产责任人':
-        this.navCtrl.push('ChangeManagerPage',{
-          assets:this.selectedItems,
-          userName:this.navParams.get("userName"),
+        this.navCtrl.push('ChangeCustodianPage', {
+          assets: this.selectedItems,
+          workerNumber: this.workerNumber,
+          userName: this.navParams.get("userName"),
         })
         break;
       case '资产属性状态':
-        this.navCtrl.push('ChangeAssetStatePage',{
-          assets:this.selectedItems,
-          userName:this.navParams.get("userName"),
-          workerNumber:this.workerNumber
+        this.navCtrl.push('ChangeAssetStatePage', {
+          assets: this.selectedItems,
+          userName: this.navParams.get("userName"),
+          workerNumber: this.workerNumber
         })
 
         break;
@@ -118,33 +147,13 @@ export class SelectAssetsPage {
    * @param asset 
    * @param check 
    */
-  handleCheckBox(asset,check:Checkbox){
-    if(check.checked==true){
+  handleCheckBox(asset, check: Checkbox) {
+    if (check.checked == true) {
       this.selectedItems.push(asset)
-    }else{
-      this.selectedItems.splice(this.selectedItems.indexOf(asset),1)
+    } else {
+      this.selectedItems.splice(this.selectedItems.indexOf(asset), 1)
     }
   }
-
-
-  //  上拉加载向服务获取数据
-  doInfinite(infiniteScroll: InfiniteScroll) {
-    setTimeout(() => {
-      this.assetService.queryAssetsFormFixedByPage(this.pageSize, this.pageIndex, this.workerNumber).then((newData) => {
-        for (var i = 0; i < newData.length; i++) {
-          this.dataTable.push(newData[i]);
-        }
-        this.pageIndex++;
-        infiniteScroll.complete();
-
-        if (newData == null || newData.length < this.pageSize) {
-          infiniteScroll.enable(false);
-        }
-      })
-    }, 500);
-  }
-
-
 
   ////////////////搜索////////////////
   isHiddenSearch = true;

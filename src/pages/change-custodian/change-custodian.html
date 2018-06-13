@@ -25,13 +25,13 @@
         <p class="item-body default" item-end>{{userName}}</p>
       </ion-item>
       <ion-item (click)='handleSelectPerson()'>
-        <ion-label class="item-head">调入单位：</ion-label>
+        <ion-label class="item-head">现责任人：</ion-label>
         <p *ngIf="newManger==''||!newManger"  class="item-body" item-end>选择</p>
         <p class="item-body" item-end>{{newManger}}</p>
       </ion-item>
   
       <ion-item>
-        <p class="item-head">调拨说明：</p>
+        <p class="item-head">变更说明：</p>
         <div>
           <textarea class="input-reason" rows="3" [(ngModel)]="changeReason"></textarea>
         </div>

@@ -41,6 +41,7 @@ import { PubWebProvider } from '../providers/web/pub.web.provider';
 import { FileService } from '../providers/service/file.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { AttachmentService } from '../providers/service/attachment.service';
+import { ChangeWebProvider } from '../providers/web/change.web.provider';
 @NgModule({
   declarations: [
     MyApp,
@@ -92,6 +93,7 @@ import { AttachmentService } from '../providers/service/attachment.service';
     InvDBProvider,
     CvtDBProvider,
     PubWebProvider,
+    ChangeWebProvider,
 
     LoginWebProvider,
     InvWebProvider,

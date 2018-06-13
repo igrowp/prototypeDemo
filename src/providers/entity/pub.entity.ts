@@ -144,7 +144,7 @@ export class AllocateBill{
     allocateType; //申请单类型（气矿内部调拨、作业区内部调动、分公司调入气矿、气矿调入分公司）
     appNo;     //申请单号
     appOrg;    //申请单位
-    userId;   //申请人userId
+    agent;    //申请人员工编号
     appDate;   //申请日期
     appOutOrg; //调出单位
     appInOrg;  //调入单位
@@ -200,6 +200,42 @@ export class AttachmentBase64{
     attachmentType; //图片类型
     base64;  //图片base64格式
 }
+
+
+
+
+/**
+ * 资产责任人变更申请表
+ */
+export class ChangeCustodianBill{
+    applyId; //申请单Id
+    workerNumber; //申请人员工编号
+    applyDate;   //申请日期
+    oldCustodian; //原责任人
+    newCustodian; //原责任人
+    remark;  //说明
+    applyState; //申请状态
+    oldCustodianName;  //原责任人名称
+    newCustodianName;  //现责任人名称
+    applyPerson; //申请人姓名
+}
+/**
+ * 资产属性变更申请表
+ */
+export class ChangeAssetStateBill{
+    applyId; //申请单Id
+    workerNumber; //申请人员工编号
+    applyDate;   //申请日期
+    techStatus;  //技术状况
+    useState;    //使用状况
+    securityState;  //安全现状
+    remark;  //说明
+    applyState; //申请状态
+    applyPerson; //申请人姓名
+}
+
+
+
 
 
 

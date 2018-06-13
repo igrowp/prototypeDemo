@@ -1,3 +1,5 @@
+import { AssetHandleWebProvider } from './../../providers/web/asset.handle.web.provider';
+import { AllocateBill } from './../../providers/entity/pub.entity';
 import { PubDBProvider } from './../../providers/storage/pub.db.provider';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { Component } from '@angular/core';
@@ -24,6 +26,9 @@ export class AlloPage {
   wFOAddress = ''
   scrapReason = ''
   assetList = []  //资产列表
+  alloType=''
+  private workForOrg=''
+  private workerNumber=''
 
   alloInOrgName = '' //调入单位名称
   private alloInOrgCode = '' //调入单位编码
@@ -32,10 +37,13 @@ export class AlloPage {
     public navParams: NavParams,
     public noticeService:NoticeService,
     public pubDbProvider: PubDBProvider,
+    private assetHandleWebProvider:AssetHandleWebProvider,
     public menuCtrl: MenuController, ) {
     this.userName = this.navParams.get('userName')
     this.wFOAddress = this.navParams.get('wFOAddress')
     this.assetList=this.navParams.get("assets")
+    this.workForOrg=this.navParams.get('workForOrg')
+    this.workerNumber=this.navParams.get('workerNumber')
   }
 
   ionViewDidLoad() {
@@ -46,8 +54,27 @@ export class AlloPage {
   handleSubmit(){
     if(this.alloInOrgCode==''){
       this.noticeService.showIonicAlert("请选择调入单位")
+      return;
     }
-    this.noticeService.showIonicAlert("提交")
+    let allocateBill=new AllocateBill()
+    allocateBill.appDate=this.currentDate
+    allocateBill.allocateType=this.alloType
+    allocateBill.appInOrg=this.alloInOrgCode
+    allocateBill.appOutOrg=this.workForOrg
+    allocateBill.appOrg=this.workForOrg
+    allocateBill.agent=this.workerNumber
+    let list=new Array()
+    for(let i=0;i<this.assetList.length;i++){
+      list.push({
+        'assetId':this.assetList[i].assetId
+      })
+    }
+    this.assetHandleWebProvider.submitAllocateToServe(allocateBill,list).subscribe(()=>{
+      this.noticeService.showIonicAlert("提交")
+      this.navCtrl.popToRoot()
+    },(error)=>{
+      this.noticeService.showIonicAlert('提交失败')
+    })
   }
 
 
@@ -91,13 +118,42 @@ export class AlloPage {
 
   /**
    * 点击某一项后关闭并退出
-   * @param item 
+   * @param inOrg 
    */
-  close(item) {
-    this.alloInOrgName = item.orgFullName.replace("作业区", "");
-    this.alloInOrgCode = item.orgCode;
+  close(inOrg:OrgInfo) {
     this.menuCtrl.close();
+    if(inOrg.orgCode==this.workForOrg){
+      this.noticeService.showIonicAlert('调入单位和调出单位不能相同')
+      return
+    }
+    let a=new OrgInfo()
+    a.parentOrgId
+    this.alloInOrgName = inOrg.orgFullName.replace("作业区", "");
+    this.alloInOrgCode = inOrg.orgCode;
 
+    //自动识别调拨类型
+    this.pubDbProvider.queryFromOrgInfoByOrgCode(this.workForOrg).then((outOrg)=>{
+      if(inOrg.parentOrgId&&outOrg.parentOrgId){
+        if(inOrg.parentOrgId==outOrg.parentOrgId){
+          console.log(inOrg.parentOrgId.length)
+          if(inOrg.parentOrgId.length==9){
+            this.alloType='70001'
+          }else if(inOrg.parentOrgId.length==13){
+            this.alloType='70002'
+          }
+        }else{
+          this.alloType='70001'
+        }
+      }else{
+        if(!outOrg.parentOrgId&&outOrg.orgName!="重庆气矿"){
+          this.alloType='70004'
+        }else if(!inOrg.parentOrgId&&inOrg.orgName!="重庆气矿"){
+          this.alloType='70003'
+        }else{
+          this.alloType='70001'
+        }
+      }
+    })
   }
   //////////////////////////////////筛选保管人和使用单位的方法END/////////////////
 

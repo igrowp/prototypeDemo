@@ -110,10 +110,14 @@ export class HomePage {
    * 各种申请，改变状态
    */
   navToChangeState(handleType){
+    setTimeout(()=>{
+      this.menuCtrl.close();
+    },400);
     this.navCtrl.push("SelectAssetsPage",{
       workerNumber:this.workerNumber,
       userName:this.userName,
       wFOAddress:this.wFOAddress,
+      workForOrg:this.workForOrg,
       handleType:handleType
     })
   }

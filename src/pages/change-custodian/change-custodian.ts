@@ -1,3 +1,4 @@
+import { ChangeCustodianBill } from './../../providers/entity/pub.entity';
 import { UserSimple, FixedAsset } from './../../providers/entity/entity.provider';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { Component } from '@angular/core';
@@ -5,9 +6,10 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CvtService } from '../../providers/service/cvt.service';
 import { dateUtil } from '../../providers/utils/dateUtil';
 import { NoticeService } from '../../providers/service/notice.service';
+import { ChangeWebProvider } from '../../providers/web/change.web.provider';
 
 /**
- * Generated class for the ChangeManagerPage page.
+ * Generated class for the ChangeCustodianPage page.
  *
  * See http://ionicframework.com/docs/components/#navigation for more info
  * on Ionic pages and navigation.
@@ -15,10 +17,10 @@ import { NoticeService } from '../../providers/service/notice.service';
 
 @IonicPage()
 @Component({
-  selector: 'page-change-manager',
-  templateUrl: 'change-manager.html',
+  selector: 'page-change-custodian',
+  templateUrl: 'change-custodian.html',
 })
-export class ChangeManagerPage {
+export class ChangeCustodianPage {
   public newManger='' // 现责任人
   public assetList:Array<FixedAsset>=[]
   public userName=''
@@ -27,13 +29,16 @@ export class ChangeManagerPage {
 
 
   private newMangerWorkerNumber='' //现责任人员工编号
+  private workerNumber='' //原责任人员工编号
 
   constructor(private navCtrl: NavController,
            private navParams: NavParams,
            private cvtService:CvtService,
+           private changeWebProvider:ChangeWebProvider,
            private noticeService:NoticeService,
            private menuCtrl:MenuController,) {
     this.userName = this.navParams.get('userName')
+    this.workerNumber=this.navParams.get('workerNumber')
     this.assetList=this.navParams.get("assets")
   }
 
@@ -46,8 +51,29 @@ export class ChangeManagerPage {
   handleSubmit(){
     if(this.newMangerWorkerNumber==''){
       this.noticeService.showIonicAlert("请选择现责任人")
+      return
     }
-    this.noticeService.showIonicAlert("提交")
+
+    let bill=new ChangeCustodianBill()
+    bill.applyDate=this.currentDate
+    bill.applyPerson=this.workerNumber
+    bill.newCustodian=this.newMangerWorkerNumber
+    bill.oldCustodian=this.workerNumber
+    bill.remark=this.changeReason
+    
+    let list=new Array()
+    for(let i=0;i<this.assetList.length;i++){
+      list.push({
+        'assetId':this.assetList[i].assetId
+      })
+    }
+    this.changeWebProvider.submitChangeCustodianToServe(bill,list).subscribe((data)=>{
+      this.noticeService.showIonicAlert("提交")
+      this.navCtrl.popToRoot()
+    },(error)=>{
+      this.noticeService.showIonicAlert('提交失败'+error)
+    })
+
   }
 
 

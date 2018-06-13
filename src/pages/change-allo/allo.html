@@ -24,11 +24,22 @@
       <ion-label class="item-head">调出单位：</ion-label>
       <p class="item-body default" item-end>{{wFOAddress}}</p>
     </ion-item>
+    
     <ion-item (click)='handleSelectAlloInOrg()'>
       <ion-label class="item-head">调入单位：</ion-label>
       <p *ngIf="alloInOrgName==''||!alloInOrgName"  class="item-body" item-end>选择</p>
       <p class="item-body" item-end>{{alloInOrgName}}</p>
     </ion-item>
+    <ion-item *ngIf="alloType!=''" >
+      <ion-label class="item-head">调拨类型：</ion-label>
+      <ion-select class="item-body" [(ngModel)]="alloType" placeholder="选择" interface="popover">
+          <ion-option value="70001">气矿内部调拨</ion-option>
+          <ion-option value="70002">作业区内部调动</ion-option>
+          <ion-option value="70003">气矿调入分公司</ion-option>
+          <ion-option value="70004">分公司调入气矿</ion-option>
+      </ion-select>
+  </ion-item>
+    
 
     <ion-item>
       <p class="item-head">调拨说明：</p>

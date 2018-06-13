@@ -34,12 +34,6 @@
               <h4 class="sub-title">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</h4>
           </ion-label>
       </ion-item>
-
-      <!-- 底部刷新  -->
-      <ion-infinite-scroll (ionInfinite)="doInfinite($event)" threshold="80px" style="background-color:transparent">
-          <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="数据加载中...">
-          </ion-infinite-scroll-content>
-      </ion-infinite-scroll>
   </ion-list>
   <div class="no-data center" *ngIf="dataTable.length==null||dataTable.length==0">
       <img class="no-data-img" src="./assets/imgs/cry.png">

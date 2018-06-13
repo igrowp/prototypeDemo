@@ -237,11 +237,35 @@ export class AssetHandleWebProvider {
     return this.http.get(this.getAlloUrl() + '/asset/list' + params)
         .map(res => res.json());
   }
+  /**
+   * 从服务器获取该员工下正在申请调拨的资产列表
+   * @param workerNumber 
+   */
+  getAlloingListFromServe(workerNumber:String):Observable<Array<Asset>>{
+    let params = "?agent=" + workerNumber;
+    return this.http.get(this.getAlloUrl() + '/asset/list/alloing' + params)
+        .map(res => res.json());
+  }
+
+  /**
+   * 将报废申请提交到服务器
+   * @
+   */
+  submitAllocateToServe(allocate: AllocateBill,assetList:Array<string>):Observable<PostRequestResult> {
+    let options = HttpUtils.getRequestOptions();
+    var json = JSON.stringify(allocate);
+    let obj: any = {
+      allocate: json,
+      assetList:JSON.stringify(assetList)
+    }
+    return this.http.post(this.getAlloUrl() + "/synchro", HttpUtils.toQueryString(obj), options)
+          .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
+  }
   //调拨方法END
 
   //闲置处置方法
   /**
-   * 从服务器获取调拨申请单
+   * 从服务器获取闲置处置申请单
    * @param applyId 
    */
   getHandleIdleBillFromServe(applyId:String):Observable<HandleBill>{
@@ -251,7 +275,7 @@ export class AssetHandleWebProvider {
   }
 
   /**
-   * 从服务器获取调拨资产列表
+   * 从服务器获取闲置处置资产列表
    * @param applyId 
    */
   getHandleIdleAssetListFromServe(applyId:String):Observable<Array<Asset>>{
@@ -263,7 +287,7 @@ export class AssetHandleWebProvider {
 
   //报废处置方法
   /**
-   * 从服务器获取调拨申请单
+   * 从服务器获取报废处置申请单
    * @param allocateId 
    */
   getHandleScrapBillFromServe(applyId:String):Observable<HandleBill>{
@@ -273,7 +297,7 @@ export class AssetHandleWebProvider {
   }
 
   /**
-   * 从服务器获取调拨资产列表
+   * 从服务器获取报废处置资产列表
    * @param applyId 
    */
   getHandleScrapAssetListFromServe(applyId:String):Observable<Array<Asset>>{

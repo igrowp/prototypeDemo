@@ -1,7 +1,7 @@
 import { AssetHandleService } from './../../providers/service/asset.handle.service';
 import { ConvertUtil } from './../../providers/utils/convertUtil';
 import { PubConstant } from './../../providers/entity/constant.provider';
-import { DictDetail, Scrap, Idle } from './../../providers/entity/pub.entity';
+import { DictDetail, Scrap, Idle, ChangeAssetStateBill } from './../../providers/entity/pub.entity';
 import { FixedAsset } from './../../providers/entity/entity.provider';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -9,6 +9,7 @@ import { dateUtil } from '../../providers/utils/dateUtil';
 import { NoticeService } from '../../providers/service/notice.service';
 import { AssetService } from '../../providers/service/asset.service';
 import { DataBaseUtil } from '../../providers/utils/dataBaseUtil';
+import { ChangeWebProvider } from '../../providers/web/change.web.provider';
 
 /**
  * Generated class for the ChangeAssetStatePage page.
@@ -45,6 +46,7 @@ export class ChangeAssetStatePage {
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private assetHandleService: AssetHandleService,
+    private changeWebProvider:ChangeWebProvider,
     private assetService: AssetService,
     private noticeService: NoticeService,
   ) {
@@ -138,9 +140,9 @@ export class ChangeAssetStatePage {
 
 
   handleSubmit() {
-    // if(this.newMangerWorkerNumber==''){
-    //   this.noticeService.showIonicAlert("请选择现责任人")
-    // }
+    if(this.techStatus==''||this.useState==''||this.securityState==''){
+      this.noticeService.showIonicAlert("请选择资产状态")
+    }
 
     if(this.isIdle == false && this.useState == PubConstant.DICT_SUB_TYPE_IDLE){
       //同步闲置资产数据
@@ -150,10 +152,26 @@ export class ChangeAssetStatePage {
       //同步报废资产数据
       this.assetHandleService.synchroScrapListToServe(this.workerNumber);
     }
-    if(this.techStatus==''||this.useState==''||this.securityState==''){
-      this.noticeService.showIonicAlert("请选择设备状态")
+    
+    let bill=new ChangeAssetStateBill()
+    bill.applyDate=this.currentDate
+    bill.remark=this.changeReason
+    bill.securityState=this.securityState
+    bill.techStatus=this.techStatus
+    bill.useState=this.useState
+    bill.workerNumber=this.workerNumber
+    let list=new Array()
+    for(let i=0;i<this.assetList.length;i++){
+      list.push({
+        'assetId':this.assetList[i].assetId
+      })
     }
-    this.noticeService.showIonicAlert("提交")
+    this.changeWebProvider.submitChangeAssetStateToServe(bill,list).subscribe((data)=>{
+      this.noticeService.showIonicAlert("提交")
+      this.navCtrl.popToRoot()
+    },(error)=>{
+      this.noticeService.showIonicAlert('提交失败'+error)
+    })
   }
 
 }
