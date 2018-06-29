@@ -9,6 +9,18 @@ page-home {
         background-size: cover;
         box-shadow: 2px 0px 8px #6484fb;
     }
+    .icon-main{
+        font-size:40px;
+    }
+    .icon-main-large{
+        font-size:50px;
+    }
+    .theme{
+        color:$theme-color;
+    }
+    .margin-top-10{
+        margin-top:10px;
+    }
     
     
     .badge{
@@ -22,9 +34,6 @@ page-home {
 
     .center{
         text-align: center;
-    }
-    .center img{
-        max-width: 128px;
     }
 
     //ios端侧边栏专用

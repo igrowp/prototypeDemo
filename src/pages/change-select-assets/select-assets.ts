@@ -1,3 +1,4 @@
+import { ChangeWebProvider } from './../../providers/web/change.web.provider';
 import { AssetHandleWebProvider } from './../../providers/web/asset.handle.web.provider';
 import { Checkbox } from 'ionic-angular/components/checkbox/checkbox';
 import { AssetService } from './../../providers/service/asset.service';
@@ -34,38 +35,75 @@ export class SelectAssetsPage {
     private barcodeScanner: BarcodeScanner,
     private assetHandleWebProvider: AssetHandleWebProvider,
     private loadingCtrl: LoadingController,
+    private changeWebProvider:ChangeWebProvider,
     private assetService: AssetService,
     private modalCtrl: ModalController) {
     this.dataTable = new Array<FixedAsset>();
     this.workerNumber = this.navParams.get("workerNumber");
     this.handleType = this.navParams.get("handleType")
     this.assetService.queryAssetsFromFixed(this.workerNumber).then((data) => {
+
       if (this.handleType == '资产调拨') {
         this.assetHandleWebProvider.getAlloingListFromServe(this.workerNumber).subscribe((alloing) => {
-          if (alloing.length > 0) {
-            for (let i = 0; i < data.length; i++) {
-              let isHave = false;
+          for (let i = 0; i < data.length; i++) {
+            let isHave = false;
+            if (alloing.length > 0) {
               for (let j = 0; j < alloing.length; j++) {
                 if (data[i].assetId == alloing[j].assetId) {
                   isHave = true;
                   break
                 }
               }
-              if (isHave != true) {
-                this.dataTable.push(data[i])
+            }
+            if (isHave == true) {
+              data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
+            }
+            this.dataTable.push(data[i])
+          }
+        },error=>{
+          this.noticeService.showToast("网络连接异常")
+        })
+      } else if (this.handleType == '资产责任人') {
+        this.changeWebProvider.getCCApplyingListFromServe(this.workerNumber).subscribe((applying) => {
+          for (let i = 0; i < data.length; i++) {
+            let isHave = false;
+            if (applying.length > 0) {
+              for (let j = 0; j < applying.length; j++) {
+                if (data[i].assetId == applying[j].assetId) {
+                  isHave = true;
+                  break
+                }
               }
             }
+            if (isHave == true) {
+              data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
+            }
+            this.dataTable.push(data[i])
           }
+        },error=>{
+          this.noticeService.showToast("网络连接异常")
         })
-      }else if(this.handleType == '资产责任人'){
-        for (let i = 0; i < data.length; i++) {
-          this.dataTable.push(data[i])
-        }
 
       }else if(this.handleType == '资产属性状态'){
-        for (let i = 0; i < data.length; i++) {
-          this.dataTable.push(data[i])
-        }
+        this.changeWebProvider.getCSApplyingListFromServe(this.workerNumber).subscribe((applying) => {
+          for (let i = 0; i < data.length; i++) {
+            let isHave = false;
+            if (applying.length > 0) {
+              for (let j = 0; j < applying.length; j++) {
+                if (data[i].assetId == applying[j].assetId) {
+                  isHave = true;
+                  break
+                }
+              }
+            }
+            if (isHave == true) {
+              data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
+            }
+            this.dataTable.push(data[i])
+          }
+        },error=>{
+          this.noticeService.showToast("网络连接异常")
+        })
 
       }
     })
@@ -99,6 +137,10 @@ export class SelectAssetsPage {
   }
 
   handleItemClick(item) {
+    if(item.remark=='applying'){
+      this.noticeService.showToast("该资产正在申请中")
+      return
+    }
     if (!this.isMultiple) {
       //单选情况，直接跳转页面
       this.selectedItems = []
@@ -111,6 +153,7 @@ export class SelectAssetsPage {
    * 跳转到相应页面
    */
   navTo() {
+    
     switch (this.handleType) {
       case '资产调拨':
         this.navCtrl.push('AlloPage', {

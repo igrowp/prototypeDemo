@@ -144,6 +144,9 @@ export class ChangeAssetStatePage {
       this.noticeService.showIonicAlert("请选择资产状态")
     }
 
+    let loading =this.noticeService.showIonicLoading('正在提交...')
+    loading.present()
+
     if(this.isIdle == false && this.useState == PubConstant.DICT_SUB_TYPE_IDLE){
       //同步闲置资产数据
       this.assetHandleService.synchroIdleListToServe(this.workerNumber);
@@ -167,9 +170,11 @@ export class ChangeAssetStatePage {
       })
     }
     this.changeWebProvider.submitChangeAssetStateToServe(bill,list).subscribe((data)=>{
-      this.noticeService.showIonicAlert("提交")
+      loading.dismiss()
+      this.noticeService.showIonicAlert("提交成功")
       this.navCtrl.popToRoot()
     },(error)=>{
+      loading.dismiss()
       this.noticeService.showIonicAlert('提交失败'+error)
     })
   }

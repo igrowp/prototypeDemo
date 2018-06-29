@@ -42,14 +42,14 @@ export class ChangeWebProvider {
 //         .map(res => res.json());
 //   }
   /**
-   * 从服务器获取该员工下正在申请调拨的资产列表
+   * 从服务器获取该员工下正在资产责任人变更的资产
    * @param workerNumber 
    */
-//   getAlloingListFromServe(workerNumber:String):Observable<Array<Asset>>{
-//     let params = "?agent=" + workerNumber;
-//     return this.http.get(this.getChangeCustodianUrl() + '/asset/list/alloing' + params)
-//         .map(res => res.json());
-//   }
+  getCCApplyingListFromServe(workerNumber:String):Observable<Array<Asset>>{
+    let params = "?workerNumber=" + workerNumber;
+    return this.http.get(this.getChangeCustodianUrl() + '/asset/list/applying' + params)
+        .map(res => res.json());
+  }
 
   /**
    * 将责任人变更申请提交到服务器
@@ -88,17 +88,17 @@ export class ChangeWebProvider {
 //         .map(res => res.json());
 //   }
   /**
-   * 从服务器获取该员工下正在申请调拨的资产列表
+   * 从服务器获取该员工下正在资产状态属性变更的资产
    * @param workerNumber 
    */
-//   getAlloingListFromServe(workerNumber:String):Observable<Array<Asset>>{
-//     let params = "?agent=" + workerNumber;
-//     return this.http.get(this.getChangeCustodianUrl() + '/asset/list/alloing' + params)
-//         .map(res => res.json());
-//   }
+  getCSApplyingListFromServe(workerNumber:String):Observable<Array<Asset>>{
+    let params = "?workerNumber=" + workerNumber;
+    return this.http.get(this.getChangeAssetStateUrl() + '/asset/list/applying' + params)
+        .map(res => res.json());
+  }
 
   /**
-   * 将责任人变更申请提交到服务器
+   * 将资产属性状态变更申请提交到服务器
    */
   submitChangeAssetStateToServe(bill: ChangeAssetStateBill,assetList:Array<string>):Observable<PostRequestResult> {
     let options = HttpUtils.getRequestOptions();

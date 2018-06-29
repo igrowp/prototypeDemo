@@ -53,10 +53,12 @@ export class ChangeCustodianPage {
       this.noticeService.showIonicAlert("请选择现责任人")
       return
     }
+    let loading =this.noticeService.showIonicLoading('正在提交...')
+    loading.present()
 
     let bill=new ChangeCustodianBill()
     bill.applyDate=this.currentDate
-    bill.applyPerson=this.workerNumber
+    bill.workerNumber=this.workerNumber
     bill.newCustodian=this.newMangerWorkerNumber
     bill.oldCustodian=this.workerNumber
     bill.remark=this.changeReason
@@ -68,9 +70,11 @@ export class ChangeCustodianPage {
       })
     }
     this.changeWebProvider.submitChangeCustodianToServe(bill,list).subscribe((data)=>{
-      this.noticeService.showIonicAlert("提交")
+      loading.dismiss()
+      this.noticeService.showIonicAlert("提交成功")
       this.navCtrl.popToRoot()
     },(error)=>{
+      loading.dismiss()
       this.noticeService.showIonicAlert('提交失败'+error)
     })
 

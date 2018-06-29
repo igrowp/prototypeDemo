@@ -121,33 +121,35 @@
 </ion-header>
 
 <ion-content class="bg-content" #content>
+
     <ion-card>
         <ion-card-content>
             <ion-row>
                 <ion-col col-3 class="center" (click)="navToMyAsset()">
-                    <img src="./assets/imgs/myAsset.png"/>
-                    <h2 style="margin-top:10px;">我的资产</h2>
+                    <i class="icon-main theme iconfont icon-peoplelist"></i>
+                    <h2 class="margin-top-10 ">我的资产</h2>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToProcess()">
-                    <img src="./assets/imgs/process.png" />
-                    <h2 style="margin-top:10px;">流程审批
+                    <i class="icon-main theme iconfont icon-941caidan_hetongshenpi"></i>
+                    <h2 class="margin-top-10 ">流程审批
                     </h2>
                     <ion-badge color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToCvt()">
-                    <img src="./assets/imgs/cvt.png" />
-                    <h2 style="margin-top:10px;">资产领用
+                    <i class="icon-main theme iconfont icon-lingqukehu"></i>
+                    <h2 class="margin-top-10 ">资产领用
                     </h2>
                     <ion-badge color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToInv()">
-                    <img src="./assets/imgs/inv.png" />
-                    <h2 style="margin-top:10px;">资产盘点</h2>
+                    <i class="icon-main theme iconfont icon-navicon-pdd"></i>
+                    <h2 class="margin-top-10 ">资产盘点</h2>
                     <ion-badge class="badge" color="danger" *ngIf="badgeValueInv!=null&&badgeValueInv!=0">{{badgeValueInv}}</ion-badge>
                 </ion-col>
             </ion-row>
         </ion-card-content>
     </ion-card>
+
 
     <div *ngIf="listGranting!=null&&listGranting.length!=0">
         <ion-card (click)="navTo(item)" *ngFor="let item of listGranting" >
@@ -156,9 +158,7 @@
                     待完成项
                 </ion-card-title>
                 <ion-item>
-                    <ion-thumbnail item-start>
-                        <img src="./assets/imgs/cvt.png">
-                    </ion-thumbnail>
+                    <i item-start class="icon-main-large theme iconfont icon-lingqukehu"></i>
                     <h1 style="padding:3px;">资产发放</h1>
                     <h2 style="padding:3px;">发料单号：{{item.workOrderNumber}}</h2>
                 </ion-item>
@@ -172,9 +172,7 @@
                     待完成项
                 </ion-card-title>
                 <ion-item>
-                    <ion-thumbnail item-start>
-                        <img src="./assets/imgs/cvt.png">
-                    </ion-thumbnail>
+                    <i item-start class="icon-main-large theme iconfont icon-lingqukehu"></i>
                     <h1 style="padding:3px;">资产领用</h1>
                     <h2 style="padding:3px;">发料单号：{{item.workOrderNumber}}</h2>
                 </ion-item>
@@ -189,11 +187,8 @@
                 待完成项
             </ion-card-title>
             <ion-item>
-                <ion-thumbnail item-start>
-                    <img src="./assets/imgs/inv.png">
-                </ion-thumbnail>
-                <h1 style="padding:3px;">资产盘点
-                </h1>
+                <i item-start class="icon-main-large theme iconfont icon-navicon-pdd"></i>
+                <h1 style="padding:3px;">资产盘点</h1>
                 <h2 style="padding:3px;">截止时间：{{finishTime}}</h2>
             </ion-item>
         </ion-card-content>
@@ -239,11 +234,14 @@
             <label (click)="navToChangeState('资产属性状态')">资产属性状态变更</label>
         </ion-item>
 
-
         <ion-item-divider></ion-item-divider>
         <ion-item>
             <ion-icon name="settings" item-start></ion-icon>
             <h2 (click)="setting()">设置服务器地址</h2>
+        </ion-item>
+        <ion-item>
+            <ion-icon name="trash" item-start></ion-icon>
+            <h2 (click)="cleanCache()">清除缓存</h2>
         </ion-item>
         <!-- <ion-item>
             <ion-icon name="paper-plane" item-start></ion-icon>

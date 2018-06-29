@@ -7,15 +7,15 @@ page-my-asset-message {
         padding-top:20px;
         // box-shadow: 2px 2px 5px #c9c5c5;
     }
+
     .item-head{
-        font-size: 2rem;
+        font-size: $font-size-item-head;
         color: #9A9A9A;
-        font-weight: 600;
+        font-weight:bold;
     }
     
     .item-body{
-        font-size: 2rem;
-        font-weight: 600;
+        font-size: $font-size-item-body;
         color:#000;
         padding-right: 2%;
         text-align: right;
@@ -23,6 +23,8 @@ page-my-asset-message {
     .default{
         color: #9A9A9A;
     }
+    
+    
     .input{
         border-style: none;
         background-color: #fff;

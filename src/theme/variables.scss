@@ -33,6 +33,13 @@ $app-direction: ltr;
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
 
+$theme-color:#348FF4;
+// $theme-color:#444545;
+
+//列表样式
+$font-size-item-head:16px;
+$font-size-item-body:16px;
+
 $colors: (
   primary:    #488aff,
   secondary:  #32db64,
@@ -42,9 +49,9 @@ $colors: (
   //�Զ���
   ruixinHead: (
   base:#5288C6,contrast:#ffffff),
-  theme1:(
-    base:#444545,contrast:#ffffff
-  ),
+  // theme:(
+  //   base:#444545,contrast:#ffffff
+  // ),
 
   theme:(
     base:#348FF4,contrast:#ffffff

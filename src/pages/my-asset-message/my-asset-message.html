@@ -17,7 +17,7 @@
     <ion-list *ngIf="handleType=='提交'">
         <ion-item>
             <ion-label class="item-head">资产名称：</ion-label>
-            <p class="item-body" item-end>{{fixedAsset.assetName}}</p>
+            <p item-end class="item-body" >{{fixedAsset.assetName}}</p>
         </ion-item>
         <ion-item>
             <ion-label class="item-head">车牌井号：</ion-label>
@@ -31,6 +31,7 @@
             <ion-label class="item-head">出厂编号：</ion-label>
             <input item-end class="item-body input" type="text" [(ngModel)]="fixedAsset.serialNumber" placeholder="请输入">
         </ion-item>
+
 
         <ion-item>
             <ion-label class="item-head">出厂日期：</ion-label>

@@ -56,6 +56,9 @@ export class AlloPage {
       this.noticeService.showIonicAlert("请选择调入单位")
       return;
     }
+    let loading =this.noticeService.showIonicLoading('正在提交...')
+    loading.present()
+
     let allocateBill=new AllocateBill()
     allocateBill.appDate=this.currentDate
     allocateBill.allocateType=this.alloType
@@ -70,9 +73,11 @@ export class AlloPage {
       })
     }
     this.assetHandleWebProvider.submitAllocateToServe(allocateBill,list).subscribe(()=>{
-      this.noticeService.showIonicAlert("提交")
+      loading.dismiss()
+      this.noticeService.showIonicAlert("提交成功")
       this.navCtrl.popToRoot()
     },(error)=>{
+      loading.dismiss()
       this.noticeService.showIonicAlert('提交失败')
     })
   }

@@ -148,6 +148,21 @@ export class PubDBProvider {
     }
 
     /**
+     * 删除台账表数据
+     */
+    deleteAllFromFixed(workerNumber:string) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('delete from asset_account_fixed where WORKER_NUMBER =?', [workerNumber])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>删除台账表失败<br>" + error.message);
+                })
+        })
+    }
+
+    /**
      * 更新固定资产台账信息表
      * @param asset 
      */
@@ -263,6 +278,22 @@ export class PubDBProvider {
                 })
         })
     }
+
+    /**
+     * 删除组织机构数据
+     */
+    deleteAllOrgInfo() {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('delete from sys_org_info', [])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>删除组织机构表失败<br>" + error.message);
+                })
+        })
+    }
+    
     //////////////组织机构表END////////////
 
 
@@ -605,6 +636,20 @@ export class PubDBProvider {
                 })
         })
     }
+    /**
+     * 删除字典表
+     */
+    deleteAllFromDictDetail() {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('delete from sys_attachments', [])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>删除字典表失败<br>" + error.message);
+                })
+        })
+    }
     //////////   数据字典明细END   //////////////////
 
 
@@ -689,6 +734,21 @@ export class PubDBProvider {
                     resolve(data);
                 }, (error) => {
                     reject("数据库操作：<br>插入日志表失败<br>" + error.message);
+                })
+        })
+    }
+
+    /**
+     * 删除附件表
+     */
+    deleteAllFromChangeRecord(workerNumber) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('delete from sys_attachments where WORKER_NUMBER=?', [workerNumber])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>删除附件表失败<br>" + error.message);
                 })
         })
     }

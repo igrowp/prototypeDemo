@@ -85,8 +85,7 @@ export class ProcessDetailPage {
         this.eventType = "资产调拨";
         this.allocateBill = this.navParams.get("allocateBill");
         this.assetList = this.navParams.get("assetList");
-        this.title = this.todoEvent.eventType;
-        // this.title = this.allocateBill.allocateType;
+        this.title = this.todoEvent.eventType.replace("资产调拨-","")
         break;
       case "资产闲置认定":
         this.assetList = new Array<Idle>();
@@ -109,7 +108,7 @@ export class ProcessDetailPage {
       case "闲置资产处置-对外出售":
       case "报废资产处置":
         this.eventType = "资产处置";
-        this.title = this.todoEvent.eventType;
+        this.title = this.todoEvent.eventType.replace("闲置资产处置-","");
         this.handleBill = this.navParams.get("handleBill");
         this.assetList = this.navParams.get("assetList");
         break;

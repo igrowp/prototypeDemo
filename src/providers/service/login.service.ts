@@ -567,5 +567,22 @@ export class LoginService {
   updateSynchroTimeToUserInfo(workerNumber:string,synchroTime:string){
     return this.loginDBProvider.updateSynchroTimeToUserInfo(workerNumber,synchroTime);
   }
+
+
+  //清楚数据库
+  cleanDateBase(workerNumber){
+    if(workerNumber){
+      //删除该账号下的台账数据
+      this.pubDBProvider.deleteAllFromFixed(workerNumber)
+      //删除组织机构
+      this.pubDBProvider.deleteAllOrgInfo()
+      //删除日志
+      this.pubDBProvider.deleteAllFromChangeRecord(workerNumber)
+      //删除字典表
+      this.pubDBProvider.deleteAllFromDictDetail()
+      this.RemoveFromStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME)
+    }
+
+  }
 }
  

@@ -12,7 +12,7 @@ import { LoginService } from './../../providers/service/login.service';
 import { InvNotice } from './../../providers/entity/entity.provider';
 import { AssetService } from './../../providers/service/asset.service';
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { AssetHandleService } from '../../providers/service/asset.handle.service';
 
@@ -21,7 +21,6 @@ import { AppVersion } from '@ionic-native/app-version';
 import { FileOpener } from '@ionic-native/file-opener';
 import { PubWebProvider } from '../../providers/web/pub.web.provider';
 import { ConvertUtil } from '../../providers/utils/convertUtil';
-import { ScreenOrientation } from '@ionic-native/screen-orientation';
 declare let ReadRFID: any;
 
 /**
@@ -52,7 +51,6 @@ export class HomePage {
   private fileTransfer: TransferObject;
 
   constructor(public navCtrl: NavController,
-    private loadingCtrl: LoadingController,
     private menuCtrl:MenuController,
     public loginService: LoginService,
     public assetService: AssetService,
@@ -70,10 +68,7 @@ export class HomePage {
     private appVersion: AppVersion,
     private fileOpener: FileOpener,
     private pubWebProvider:PubWebProvider,
-    private screenOrientation:ScreenOrientation,
     private transfer: Transfer) {
-      //控制屏幕方向（当前为强制横屏）
-    //this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
 
     this.badgeValueInv = 0;
     this.fileTransfer = this.transfer.create();
@@ -223,10 +218,7 @@ export class HomePage {
         })
       }
       //从服务器中查询是否存在通知
-      let loading = this.loadingCtrl.create({
-        content: '正在从服务器获取数据',
-        duration: 30000
-      });
+      let loading=this.noticeService.showIonicLoading('正在从服务器获取数据')
       loading.present();
       this.invService.getInvNoticeByLeadingOrgFromServe(this.workForOrg,this.workerNumber).then((invNotice) => {
         if (invNotice != null) {
@@ -389,7 +381,6 @@ export class HomePage {
         this.noticeService.showIonicAlert(error);
       })
     })
-
   }
 
   //用户信息
@@ -397,15 +388,34 @@ export class HomePage {
     this.noticeService.showIonicAlert("当前用户：" + this.userName);
   }
 
+  cleanCache(){
+    let loading=this.noticeService.showIonicLoading('正在从服务器获取数据')
+    loading.present();
+    this.loginService.cleanDateBase(this.workerNumber)
+    setTimeout(()=>{
+      this.noticeService.showToast("清除缓存成功")
+      loading.dismiss()
+    },1000)
+  }
+
   /**
    * 下载数据
    */
   download() {
-    let loading = this.loadingCtrl.create({
-      spinner: 'bubbles',
-      duration:20000,
-      content: '正在从服务器获取数据',
-    });
+    this.getSynchroCount().then((count) => {
+      if(count==0){
+        this._download()
+      }else{
+        this._synchroData().then(()=>{
+          this._download()
+        })
+      }
+    })
+  }
+
+  //下载方法
+  private _download(){
+    let loading=this.noticeService.showIonicLoading('正在从服务器获取数据')
     loading.present();
     this.loginService.downloadBasicData().then(() => {
       loading.setContent("正在从服务器获取通知单信息");
@@ -426,6 +436,7 @@ export class HomePage {
       this.noticeService.showIonicAlert(error);
       loading.dismiss();
     });
+
   }
   /**
    * 从服务器获取通知
@@ -564,42 +575,46 @@ export class HomePage {
    * 同步盘点数据
    */
   private _synchroData() {
-    let loading = this.loadingCtrl.create({
-      spinner: 'bubbles',
-      content: '正在同步资产盘点数据...',
-      duration: 30000
-    });
-    loading.present();
-    this.assetService.synchroInvData(this.workerNumber).then(() => {
-      loading.setContent("正在同步资产转产数据...");
-      this.cvtService.synchroCvtData(this.cvtNoticeList).then(() => {
-        loading.setContent("正在同步闲置资产数据...");
-        this.assetHandleService.synchroIdleListToServe(this.workerNumber).then(() => {
-          loading.setContent("正在同步报废资产数据...");
-          this.assetHandleService.synchroScrapListToServe(this.workerNumber).then(() => {
-            loading.setContent("正在同步附件表...")
-            this.attachmentService.synchroAttachmentToServe().then(()=>{
-              loading.dismiss();
-              this.noticeService.showToast("同步成功");
+    return new Promise((resolve,reject)=>{
+      let loading=this.noticeService.showIonicLoading('正在同步资产盘点数据...')
+      loading.present();
+      this.assetService.synchroInvData(this.workerNumber).then(() => {
+        loading.setContent("正在同步资产转产数据...");
+        this.cvtService.synchroCvtData(this.cvtNoticeList).then(() => {
+          loading.setContent("正在同步闲置资产数据...");
+          this.assetHandleService.synchroIdleListToServe(this.workerNumber).then(() => {
+            loading.setContent("正在同步报废资产数据...");
+            this.assetHandleService.synchroScrapListToServe(this.workerNumber).then(() => {
+              loading.setContent("正在同步附件表...")
+              this.attachmentService.synchroAttachmentToServe().then(()=>{
+                loading.dismiss();
+                this.noticeService.showToast("同步成功");
+                resolve();
+              }, error => {
+                loading.dismiss();
+                reject(error);
+                this.noticeService.showIonicAlert(error);
+              })
             }, error => {
               loading.dismiss();
+              reject(error);
               this.noticeService.showIonicAlert(error);
             })
           }, error => {
             loading.dismiss();
+            reject(error);
             this.noticeService.showIonicAlert(error);
           })
         }, error => {
           loading.dismiss();
+          reject(error);
           this.noticeService.showIonicAlert(error);
         })
       }, error => {
         loading.dismiss();
+        reject(error);
         this.noticeService.showIonicAlert(error);
       })
-    }, error => {
-      loading.dismiss();
-      this.noticeService.showIonicAlert(error);
     })
   }
 
@@ -660,11 +675,7 @@ export class HomePage {
 
   // 下载app
   private loadAPP(){
-    let loading = this.loadingCtrl.create({
-        spinner: 'bubbles',
-        content: '安装包正在下载...',
-        dismissOnPageChange: false
-    });
+    let loading=this.noticeService.showIonicLoading('安装包正在下载...')
     loading.present();
     // 下载 
     this.fileTransfer.download(HttpUtils.getApkDownloadURLFromProperties(), "file:///storage/sdcard0/Download/qdg.apk").then((entry) => {

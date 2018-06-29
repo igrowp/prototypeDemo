@@ -27,12 +27,14 @@
   </ion-toolbar>
   <ion-list *ngIf="dataTable.length!=null&&dataTable.length>0">
       <ion-item *ngFor="let item of dataTable;let i=index">
-          <ion-checkbox *ngIf="isMultiple" #check [(ngModel)]="item.isChecked" (ionChange)="handleCheckBox(item,check)"></ion-checkbox>
+          <ion-checkbox *ngIf="isMultiple&&item.remark=='applying'" disabled="true"></ion-checkbox>
+          <ion-checkbox *ngIf="isMultiple&&item.remark!='applying'" #check [(ngModel)]="item.isChecked" (ionChange)="handleCheckBox(item,check)"></ion-checkbox>
           <ion-label  (click)="handleItemClick(item)">
               <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
               <h2 *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
               <h4 class="sub-title">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</h4>
           </ion-label>
+          <p *ngIf="item.remark=='applying'" item-end style="color:red">正在申请...</p>
       </ion-item>
   </ion-list>
   <div class="no-data center" *ngIf="dataTable.length==null||dataTable.length==0">
@@ -42,7 +44,7 @@
 </ion-content>
 
 
-<ion-footer *ngIf="isMultiple">
+<ion-footer *ngIf="isMultiple" style="background-color:white">
     <ion-buttons start>
         <ion-row>
                 <ion-col>
