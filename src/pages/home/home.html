@@ -88,7 +88,7 @@
                     <div class="light-blue cover opacity" (click)="setting()">
                         <img class="icon-size-petty center" src="./assets/imgs/home-user.png">
                         <h6 class="item-title-petty">设置</h6>
-            
+
                     </div>
                 </ion-col>
                 <ion-col class="cover" col-2>
@@ -126,50 +126,70 @@
         <ion-card-content>
             <ion-row>
                 <ion-col col-3 class="center" (click)="navToMyAsset()">
-                    <i class="icon-main theme iconfont icon-peoplelist"></i>
-                    <h2 class="margin-top-10 ">我的资产</h2>
+                    <i class="icon-main theme-1 iconfont icon-peoplelist"></i>
+
+                    <p class="margin-top-10 item-title">我的资产</p>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToProcess()">
-                    <i class="icon-main theme iconfont icon-941caidan_hetongshenpi"></i>
-                    <h2 class="margin-top-10 ">流程审批
-                    </h2>
+                    <i class="icon-main theme-2 iconfont icon-941caidan_hetongshenpi"></i>
+                    <p class="margin-top-10 item-title">流程审批
+                    </p>
                     <ion-badge color="danger" *ngIf="badgeValuePro!=null&&badgeValuePro!=0">{{badgeValuePro}}</ion-badge>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToCvt()">
-                    <i class="icon-main theme iconfont icon-lingqukehu"></i>
-                    <h2 class="margin-top-10 ">资产领用
-                    </h2>
+                    <i class="icon-main theme-3 iconfont icon-lingqukehu"></i>
+                    <p class="margin-top-10 item-title">资产领用
+                    </p>
                     <ion-badge color="danger" *ngIf="listConvert!=null&&listGranting!=null&&(listConvert.length+listGranting.length)>0">{{listConvert.length+listGranting.length}}</ion-badge>
                 </ion-col>
                 <ion-col col-3 class="center" (click)="navToInv()">
-                    <i class="icon-main theme iconfont icon-navicon-pdd"></i>
-                    <h2 class="margin-top-10 ">资产盘点</h2>
+                    <i class="icon-main theme-4 iconfont icon-navicon-pdd"></i>
+                    <p class="margin-top-10 item-title">资产盘点</p>
                     <ion-badge class="badge" color="danger" *ngIf="badgeValueInv!=null&&badgeValueInv!=0">{{badgeValueInv}}</ion-badge>
                 </ion-col>
             </ion-row>
         </ion-card-content>
     </ion-card>
 
+    <div class="empty" *ngIf="(listGranting==null||listGranting.length==0)&&(listConvert==null||listConvert.length==0)&&(badgeValueInv== undefined||badgeValueInv==0)">
+        <img src="./assets/imgs/empty.png">
+        <p>暂无待处理信息</p>
+    </div>
 
-    <div *ngIf="listGranting!=null&&listGranting.length!=0">
-        <ion-card (click)="navTo(item)" *ngFor="let item of listGranting" >
+  <div *ngIf="badgeValueInv==1">
+    <ion-card class="fadeInDown"  (click)="navToInv()">
             <ion-card-content>
                 <ion-card-title>
-                    待完成项
+                    <i class="iconfont icon-star"></i>待完成项
                 </ion-card-title>
                 <ion-item>
-                    <i item-start class="icon-main-large theme iconfont icon-lingqukehu"></i>
-                    <h1 style="padding:3px;">资产发放</h1>
-                    <h2 style="padding:3px;">发料单号：{{item.workOrderNumber}}</h2>
+                    <i item-start class="icon-main-large theme iconfont icon-navicon-pdd"></i>
+                    <h1 style="padding:3px;">资产盘点</h1>
+                    <h2 style="padding:3px;">截止时间：{{finishTime}}</h2>
                 </ion-item>
             </ion-card-content>
         </ion-card>
-    </div>
-    <div *ngIf="listConvert!=null&&listConvert.length!=0">
-        <ion-card (click)="navTo(item)" *ngFor="let item of listConvert" >
+  </div>
+  <div class="fadeInDown" *ngIf="listGranting!=null&&listGranting.length!=0">
+    <ion-card   (click)="navTo(item)" *ngFor="let item of listGranting" >
+      <ion-card-content>
+        <ion-card-title>
+          <i class="iconfont icon-star"></i>待完成项
+        </ion-card-title>
+        <ion-item>
+          <i item-start class="icon-main-large theme iconfont icon-lingqukehu"></i>
+          <h1 style="padding:3px;">资产发放</h1>
+          <h2 style="padding:3px;">发料单号：{{item.workOrderNumber}}</h2>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+    <div  class="fadeInDown " *ngIf="listConvert!=null&&listConvert.length!=0">
+        <ion-card  (click)="navTo(item)" *ngFor="let item of listConvert" >
             <ion-card-content>
                 <ion-card-title>
-                    待完成项
+                    <i class="iconfont icon-star"></i>待完成项
                 </ion-card-title>
                 <ion-item>
                     <i item-start class="icon-main-large theme iconfont icon-lingqukehu"></i>
@@ -178,21 +198,14 @@
                 </ion-item>
             </ion-card-content>
         </ion-card>
-       
+
+      <!--<div class="fadeIn" style="background-color:#f00">-->
+        <!--动画效果-->
+      <!--</div>-->
+
     </div>
 
-    <ion-card *ngIf="badgeValueInv==1" (click)="navToInv()">
-        <ion-card-content>
-            <ion-card-title>
-                待完成项
-            </ion-card-title>
-            <ion-item>
-                <i item-start class="icon-main-large theme iconfont icon-navicon-pdd"></i>
-                <h1 style="padding:3px;">资产盘点</h1>
-                <h2 style="padding:3px;">截止时间：{{finishTime}}</h2>
-            </ion-item>
-        </ion-card-content>
-    </ion-card>
+
 </ion-content>
 
 

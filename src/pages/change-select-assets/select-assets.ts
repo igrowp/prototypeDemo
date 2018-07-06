@@ -44,7 +44,7 @@ export class SelectAssetsPage {
     this.assetService.queryAssetsFromFixed(this.workerNumber).then((data) => {
 
       if (this.handleType == '资产调拨') {
-        this.assetHandleWebProvider.getAlloingListFromServe(this.workerNumber).subscribe((alloing) => {
+        this.assetHandleWebProvider.getAlloingListFromServe(this.workerNumber).then((alloing) => {
           for (let i = 0; i < data.length; i++) {
             let isHave = false;
             if (alloing.length > 0) {
@@ -60,11 +60,11 @@ export class SelectAssetsPage {
             }
             this.dataTable.push(data[i])
           }
-        },error=>{
+        }).catch(error=>{
           this.noticeService.showToast("网络连接异常")
         })
       } else if (this.handleType == '资产责任人') {
-        this.changeWebProvider.getCCApplyingListFromServe(this.workerNumber).subscribe((applying) => {
+        this.changeWebProvider.getCCApplyingListFromServe(this.workerNumber).then((applying) => {
           for (let i = 0; i < data.length; i++) {
             let isHave = false;
             if (applying.length > 0) {
@@ -80,12 +80,12 @@ export class SelectAssetsPage {
             }
             this.dataTable.push(data[i])
           }
-        },error=>{
+        }).catch(error=>{
           this.noticeService.showToast("网络连接异常")
         })
 
       }else if(this.handleType == '资产属性状态'){
-        this.changeWebProvider.getCSApplyingListFromServe(this.workerNumber).subscribe((applying) => {
+        this.changeWebProvider.getCSApplyingListFromServe(this.workerNumber).then((applying) => {
           for (let i = 0; i < data.length; i++) {
             let isHave = false;
             if (applying.length > 0) {
@@ -101,7 +101,7 @@ export class SelectAssetsPage {
             }
             this.dataTable.push(data[i])
           }
-        },error=>{
+        }).catch(error=>{
           this.noticeService.showToast("网络连接异常")
         })
 

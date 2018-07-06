@@ -1,3 +1,4 @@
+import { CvtDBProvider } from './../storage/cvt.db.provider';
 import { HttpUtils } from './../utils/httpUtils';
 import { PubConstant } from './../entity/constant.provider';
 import { DBService } from './../storage/db.service';
@@ -23,6 +24,7 @@ export class LoginService {
     private alertCtrl:AlertController,
     private noticeService:NoticeService,
     private loadingCtrl:LoadingController,
+    private cvtDbProvider:CvtDBProvider,
   ) {
     
   }
@@ -251,8 +253,8 @@ export class LoginService {
    * 从服务器获取当前时间
    */
   getAndSaveCurrentTimeFromServe(){
-    this.assetWebProvider.getCurrentTimeFromServe().then((currentTime)=>{
-      this.setInStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME,currentTime);
+    this.assetWebProvider.getCurrentTimeFromServe().then((data)=>{
+      this.setInStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME,data.currentTime);
     })
 
   }
@@ -581,6 +583,15 @@ export class LoginService {
       //删除字典表
       this.pubDBProvider.deleteAllFromDictDetail()
       this.RemoveFromStorage(PubConstant.LOCAL_STORAGE_KEY_LAST_REQUEST_TIME)
+      this.cvtDbProvider.queryFromCvtNonNoticeByWorkerNumber(workerNumber).then((list)=>{
+        if(list.length>0){
+          for(let i=0;i<list.length;i++){
+            this.cvtDbProvider.deleteFromCvtNonNoticeSubByNoticeId(list[i].noticeId)
+            this.cvtDbProvider.deleteFromCvtNonReceiveByNoticeId(list[i].noticeId)
+          }
+        }
+      })
+      this.cvtDbProvider.deleteFromCvtNonNoticeByWorkerNumber(workerNumber);
     }
 
   }

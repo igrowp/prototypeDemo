@@ -7,6 +7,7 @@ page-inventory {
         font-weight: 400;
         margin-top: 3px;
         color:#9A9A9A;
+        margin-left:10px;
     }
     .card-th{
         text-align: right;
@@ -30,14 +31,13 @@ page-inventory {
         margin:auto;
     }
     
-    .fab-two {
-        background-image: url(./../assets/imgs/scan.png);
+    .qk-icon{
+        font-size: 30px;
+        color:$theme-color;
     }
     .fab-rfid {
-        background-image: url(./../assets/imgs/RFID_2.png);
-    }
-    .fab-signature {
-        background-image: url(./../assets/imgs/signature.png);
+        font-size:16px;
+        color:$theme-color;
     }
     .fab-control{
         background-size: 80%;

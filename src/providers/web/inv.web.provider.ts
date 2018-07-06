@@ -5,39 +5,30 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { HttpUtils } from '../utils/httpUtils';
 import { AttachmentWebProvider } from './attachment.web.provider';
+import { HttpService } from '../utils/http/http.service';
 
 /**
  * 与资产盘点有关的服务器数据请求
  */
 @Injectable()
 export class InvWebProvider {
-  constructor(public http: Http,
+  constructor(private http: Http,
+    private httpService: HttpService,
     private attaWebProvider: AttachmentWebProvider, ) {
   }
   private getUrl() {
     return HttpUtils.getUrlFromProperties() + "/inv";
   }
+  private baseUrl="/inv"
 
   /**
    * 根据单位获得盘点通知单
    * @param leadingOrg 
    */
-  getInvNoticeByOrg(leadingOrg: string) {
-    let params = "?leadingOrg=" + leadingOrg;
-    return new Promise<InvNotice>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/notice' + params)
-        .map(res => res.json())
-        .subscribe((data) => {
-          if (JSON.stringify(data) == "{}") {
-            resolve(null);
-          } else {
-            resolve(data);
-          }
-        }, err => {
-          reject(err);
-        })
+  getInvNoticeByOrg(leadingOrg: string): Promise<InvNotice> {
+    return this.httpService.get(this.baseUrl + "/notice", {
+      leadingOrg
     })
-
   }
 
   /**

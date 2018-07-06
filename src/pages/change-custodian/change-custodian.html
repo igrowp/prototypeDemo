@@ -44,9 +44,10 @@
       </ion-item-divider>
       <ion-item *ngFor="let item of assetList;let i=index">
         <ion-label>
-          <h2 *ngIf="item.selfNumber==''||item.selfNumber=='undefined'">{{item.assetName}} </h2>
-          <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!='undefined'">{{item.assetName}} [{{item.selfNumber}}] </h2>
-          <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+          <h2 *ngIf="item.selfNumber==''||item.selfNumber==undefined">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+        <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
         </ion-label>
       </ion-item>
     </ion-list>

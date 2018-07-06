@@ -72,11 +72,11 @@ export class AlloPage {
         'assetId':this.assetList[i].assetId
       })
     }
-    this.assetHandleWebProvider.submitAllocateToServe(allocateBill,list).subscribe(()=>{
+    this.assetHandleWebProvider.submitAllocateToServe(allocateBill,list).then(()=>{
       loading.dismiss()
       this.noticeService.showIonicAlert("提交成功")
       this.navCtrl.popToRoot()
-    },(error)=>{
+    }).catch((error)=>{
       loading.dismiss()
       this.noticeService.showIonicAlert('提交失败')
     })

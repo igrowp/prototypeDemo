@@ -1,47 +1,42 @@
-import { HttpUtils } from './../utils/httpUtils';
 import { TodoEvent, WorkflowBean, PostRequestResult, NextStepInfo} from './../entity/pub.entity';
-import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
+import { HttpService } from '../utils/http/http.service';
 /**
  * 与流程审批有关的服务器数据请求
  */
 @Injectable()
 export class WorkflowWebProvider {
-  constructor(public http: Http) {
+  constructor(private httpService:HttpService) {
   }
-  private getUrl() {
-    return HttpUtils.getUrlFromProperties() + "/workflow";
-  }
+  private baseUrl="/workflow"
 
   /**
    * 从服务器获取工作流任务列表
    * @param workerNumber 
    */
-  getTaskListFromServe(workerNumber:string):Observable<Array<TodoEvent>>{
-    let params = "?workerNumber=" + workerNumber;
-    return this.http.get(this.getUrl() + '/task/list' + params)
-        .map(res => res.json());
+  getTaskListFromServe(workerNumber:string):Promise<Array<TodoEvent>>{
+    return this.httpService.get(this.baseUrl + "/task/list", {
+      workerNumber
+    })
   }
 
   /**
    * 从服务器获取下一步审批信息
    * @param workerNumber 
    */
-  getNextStepFromServe(taskId:string):Observable<Array<NextStepInfo>>{
-    let params = "?taskId=" + taskId;
-    return this.http.get(this.getUrl() + '/task/info' + params)
-        .map(res => res.json());
+  getNextStepFromServe(taskId:string):Promise<Array<NextStepInfo>>{
+    return this.httpService.get(this.baseUrl + "/task/info", {
+      taskId
+    })
   }
   
   /**
    * 提交审批到服务器
    * @param taskId 
    */
-  submitToServe(workflowBean:WorkflowBean):Observable<PostRequestResult>{
+  submitToServe(workflowBean:WorkflowBean):Promise<PostRequestResult>{
 
-    let options = HttpUtils.getRequestOptions();
     let obj: any = {
       taskId: workflowBean.taskId,
       comment: workflowBean.comment,
@@ -51,8 +46,7 @@ export class WorkflowWebProvider {
       approveType: workflowBean.approveType,
       nextStepApprovers: workflowBean.nextStepApprovers,
     }
-    return this.http.post(this.getUrl() + "/submit", HttpUtils.toQueryString(obj), options)
-          .map(res => res.json());
+    return this.httpService.post(this.baseUrl+"/submit",obj)
   }
 
 }

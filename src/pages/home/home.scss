@@ -10,10 +10,46 @@ page-home {
         box-shadow: 2px 0px 8px #6484fb;
     }
     .icon-main{
-        font-size:40px;
+        font-size:30px;
+        padding:10px;
+        color:#fff;
+        border-radius: 50%;
+    }
+    .theme-1{
+        background-color:#835FC1;
+    }
+    .theme-2{
+        background-color:#258AE2;
+    }
+    .theme-3{
+        background-color:#F2532C;
+    }
+    .theme-4{
+        background-color:#FD9826;
     }
     .icon-main-large{
         font-size:50px;
+    }
+    .item-title{
+        padding-bottom:0px;
+        margin-bottom:0px;
+        color:#727272;
+    }
+    .empty{
+        position: absolute;
+        top: 50%;
+        left:50%;
+        width:120px;
+        transform: translate(-60px,-80px);
+        text-align: center;
+        img{
+            width:80%;
+        }
+        p{
+            color:#afb2bd;
+            padding:0;
+            margin:0;
+        }
     }
     .theme{
         color:$theme-color;
@@ -21,8 +57,15 @@ page-home {
     .margin-top-10{
         margin-top:10px;
     }
-    
-    
+    ion-card-title{
+        color:#635050;
+    }
+    .icon-star{
+        color:#F2532C;
+        font-size:24px;
+        padding-right:5px;
+    }
+
     .badge{
         margin:0px;
         padding-left:0.4rem;
@@ -40,6 +83,7 @@ page-home {
     .padding-top{
         padding-top:50px;
     }
+
 
      //pad版样式
     //  .background{

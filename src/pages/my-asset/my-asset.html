@@ -18,10 +18,12 @@
     <ion-list *ngIf="dataTable.length!=null&&dataTable.length>0">
         <ion-item *ngFor="let item of dataTable;let i=index">
             <ion-label (click)="navToAssetMessage(item)">
-                <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
-                <h2 *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
-                <h4 class="sub-title">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</h4>
+                <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
+                <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
+                <h4 class="sub-title">规格型号：{{item.specModel}}</h4>
+                <h4 class="sub-title">资产编码：{{item.assetCode}}</h4>
             </ion-label>
+
 
             <!-- 手机版 -->
             <img *ngIf="item.rfid==''||item.rfid==null" item-end src="./assets/imgs/RFID_1.png" (click)="scanRFID()" />
@@ -44,7 +46,7 @@
     </ion-list>
     <div class="no-data center" *ngIf="dataTable.length==null||dataTable.length==0">
         <img class="no-data-img" src="./assets/imgs/cry.png">
-        <h2>没有资产数据</h2>
+        <h4 style="color:#afb2bd">没有资产数据</h4>
     </div>
 
     <ion-fab bottom right #fab>
@@ -52,9 +54,9 @@
             <ion-icon name="add"></ion-icon>
         </button>
         <ion-fab-list side="top">
-            <button ion-fab Large class="fab-control fab-two" (click)="scanTwoDimensionCode(fab)"></button>
+            <button ion-fab Large class="fab-control fab-two" (click)="scanTwoDimensionCode(fab)"><i class="iconfont icon-scan"></i></button>
             <!-- 手机版 -->
-            <button ion-fab Large class="fab-control fab-rfid" (click)="scanRFID(fab)"></button>
+            <button ion-fab Large class="fab-control fab-rfid" (click)="scanRFID(fab)">RFID</button>
         </ion-fab-list>
     </ion-fab>
 </ion-content>

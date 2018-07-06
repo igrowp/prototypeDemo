@@ -12,6 +12,10 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+@import "../assets/animate/animate.scss";
+.fadeInDown{
+  @include fadeInDown();
+}
 
 //弹出框样式
 .alert-conform{
@@ -115,7 +119,8 @@
 }
 
 .bg-content{
-    background-color:#F7F6F6;
+    // background-color:#F7F6F6;
+    background-color:#EEEFF4;
 }
 
 

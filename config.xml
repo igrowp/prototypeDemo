@@ -22,7 +22,7 @@
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="8000" />
-    <preference name="StatusBarBackgroundColor" value="#184BA6" />
+    <preference name="StatusBarBackgroundColor" value="#1D89E4" />
     <preference name="StatusBarStyle" value="lightcontent" />
     <preference name="StatusBarDefaultScrollToTop" value="false" />
     <platform name="android">

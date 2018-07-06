@@ -42,12 +42,12 @@
                 <ion-col col-7>
                     <h2>{{item.price}}</h2>
                 </ion-col>
-                <ion-col col-4 offset-1>
+                <!-- <ion-col col-4 offset-1>
                     <h2 class="slide-head">金额：</h2>
                 </ion-col>
                 <ion-col col-7>
                     <h2>{{item.amount}}</h2>
-                </ion-col>
+                </ion-col> -->
             </ion-row>
         </ion-card-content>
     </ion-card>
@@ -55,9 +55,10 @@
 
     <ion-list>
         <ion-item *ngFor="let item of fixedAssets">
-            <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
-            <h2 *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}]</h2>
-            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+                <h2 *ngIf="item.selfNumber==''||item.selfNumber==undefined">{{item.assetName}} </h2>
+                <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
+                <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+                <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
             <button ion-button item-end (click)="handleDetail(item)"  color="theme">详情</button>
         </ion-item>
     </ion-list>

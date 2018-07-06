@@ -1,20 +1,16 @@
 import { PubConstant } from './../entity/constant.provider';
-import { HttpUtils } from './../utils/httpUtils';
 import { UserAccount, User } from './../entity/entity.provider';
-import { Http } from '@angular/http';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
+import { HttpService } from '../utils/http/http.service';
 /**
  * 与登录有关的服务器数据请求
  */
 
 @Injectable()
 export class LoginWebProvider{
-    constructor(public http: Http) {
+    constructor(private httpService:HttpService) {
   }
-  private getUrl(){
-    return HttpUtils.getUrlFromProperties()+"/login";
-  }
+  private baseUrl="/login"
 
     
   /**
@@ -22,43 +18,20 @@ export class LoginWebProvider{
    * @param account 
    * @param password 
    */
-  getUserAccountByNameAndPWD(account: string, password: string) {
-    let params = "?loginName=" + account + "&loginPWD=" + password;
-    return new Promise<UserAccount>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/account' + params)
-        .map(res => res.json())
-        .timeout(PubConstant.HTTP_TIME_OUT_LONG)
-        .subscribe((data) => {
-          if (JSON.stringify(data) == "{}") {
-            resolve(null);
-          } else {
-            resolve(data);
-          }
-        }, err => {
-          //查询不到数据会进入这个方法
-          reject(err);
-        })
-    })
+  getUserAccountByNameAndPWD(account: string, password: string):Promise<UserAccount> {
+    return this.httpService.get(this.baseUrl+"/account",{
+      loginName:account,
+      loginPWD:password
+    },PubConstant.HTTP_TIME_OUT_LONG)
   }
 
   /**
    * 根据用户ID获取员工信息
    * @param userId 
    */
-  getUserMessage(userId: string) {
-    let params = "?userId=" + userId;
-    return new Promise<User>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/user' + params)
-        .map(res => res.json())
-        .subscribe((data) => {
-          if (JSON.stringify(data) == "{}") {
-            resolve(null);
-          } else {
-            resolve(data);
-          }
-        }, err => {
-          reject(err);
-        })
+  getUserMessage(userId: string):Promise<User> {
+    return this.httpService.get(this.baseUrl+"/user",{
+      userId
     })
   }
 
@@ -66,16 +39,9 @@ export class LoginWebProvider{
    * 根据员工编号获取员工信息
    * @param workerNumber 
    */
-  getUserMessageByWorkerNumber(workerNumber: string) {
-    let params = "?workerNumber=" + workerNumber;
-    return new Promise<User>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/user' + params)
-        .map(res => res.json())
-        .subscribe((data) => {
-          resolve(data);
-        }, err => {
-          reject(err);
-        })
+  getUserMessageByWorkerNumber(workerNumber: string):Promise<User> {
+    return this.httpService.get(this.baseUrl+"/user",{
+      workerNumber
     })
   }
 
@@ -84,20 +50,9 @@ export class LoginWebProvider{
    * 根据邮箱获取员工信息
    * @param email 
    */
-  getUserMessageBySSO(email: string) {
-    let params = "?email=" + email;
-    return new Promise<User>((resolve, reject) => {
-      this.http.get(this.getUrl() + '/user' + params)
-        .map(res => res.json())
-        .timeout(PubConstant.HTTP_TIME_OUT_SHORT)
-        .subscribe((data) => {
-          resolve(data);
-        }, err => {
-          reject(err);
-        })
-    })
-  }
-
-
-  
+  getUserMessageBySSO(email: string):Promise<User> {
+    return this.httpService.get(this.baseUrl+"/user",{
+      email
+    },PubConstant.HTTP_TIME_OUT_SHORT)
+  }  
 }

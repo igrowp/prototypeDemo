@@ -125,7 +125,7 @@ export class ProcessDetailPage {
    * 跳转到审批页面
    */
   handleApprove() {
-    this.workflowWebProvider.getNextStepFromServe(this.todoEvent.taskId).subscribe((nextStepInfos) => {
+    this.workflowWebProvider.getNextStepFromServe(this.todoEvent.taskId).then((nextStepInfos) => {
       if (nextStepInfos.length >= 0) {
         this.navCtrl.push("ProcessApprovePage", {
           workerNumber: this.navParams.get("workerNumber"),

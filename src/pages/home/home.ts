@@ -389,13 +389,15 @@ export class HomePage {
   }
 
   cleanCache(){
-    let loading=this.noticeService.showIonicLoading('正在从服务器获取数据')
-    loading.present();
-    this.loginService.cleanDateBase(this.workerNumber)
-    setTimeout(()=>{
-      this.noticeService.showToast("清除缓存成功")
-      loading.dismiss()
-    },1000)
+    this.noticeService.showIoincAlertConform("是否要清除数据？",()=>{
+      let loading=this.noticeService.showIonicLoading('正在从服务器获取数据')
+      loading.present();
+      this.loginService.cleanDateBase(this.workerNumber)
+      setTimeout(()=>{
+        this.noticeService.showToast("清除缓存成功")
+        loading.dismiss()
+      },1000)
+    })
   }
 
   /**
@@ -466,12 +468,12 @@ export class HomePage {
   getTaskListFromServe() {
     return new Promise((resolve, reject) => {
       //获取流程审批数据
-      this.workflowWebProvider.getTaskListFromServe(this.workerNumber).subscribe((taskList)=>{
+      this.workflowWebProvider.getTaskListFromServe(this.workerNumber).then((taskList)=>{
         resolve();
         if(taskList!=null&&taskList.length>=0){
           this.badgeValuePro=taskList.length;
         }
-      }, error => {
+      }).catch(error => {
         reject(error);
       })
     })
@@ -531,9 +533,6 @@ export class HomePage {
             if (notice != null && notice.noticeState == "ISSUED") {
               //需要领用的情况
               this.listConvert.push(notice);
-              if(notice.noticeId==lastNoticeId){ 
-                resolve();
-              }
             } else if (notice != null && notice.noticeState == "RECEIVED") {
               //判断通知单状态，判断是否需要获取资产数据，为了满足领用后换设备情况，
               this.cvtService.saveCvtAssetsFromServe(this.workerNumber, notice.noticeId).then((receives) => {
@@ -544,9 +543,6 @@ export class HomePage {
                     notice.noticeState = "GRANTING";
                     this.cvtService.updateStateToCvtNotice(notice).then(() => {
                       this.listGranting.push(notice);
-                      if(notice.noticeId==lastNoticeId){ 
-                        resolve();
-                      }
                     }, (error) => this.noticeService.showIonicAlert("修改转产通知单状态失败："+error))
                   }, (error) => this.noticeService.showIonicAlert("获取转产数据失败："+error))
                 } else {
@@ -555,15 +551,11 @@ export class HomePage {
               }, (error) => this.noticeService.showIonicAlert("获取转产数据失败："+error))
             } else if (notice != null && notice.noticeState == "GRANTING") {
               this.listGranting.push(notice);
-              if(notice.noticeId==lastNoticeId){ 
-                resolve();
-              }
             } else {//notice==null   此时是责任人去领料人那里领资产
-              if(notice.noticeId==lastNoticeId){ 
-                resolve();
-              }
+              
             }
           }
+          resolve()
         }
       }, (error) => {
         reject(error);
@@ -629,7 +621,7 @@ export class HomePage {
       var loading=this.noticeService.showIonicLoading("正在获取数据...");
       loading.present();
     }
-    this.pubWebProvider.getRecentAppVersion().subscribe((appInfo)=>{
+    this.pubWebProvider.getRecentAppVersion().then((appInfo)=>{
       this.appVersion.getVersionNumber().then((version)=>{
         if(showResult){
           loading.dismiss();
@@ -664,7 +656,7 @@ export class HomePage {
         }
       })
       
-    },(error)=>{
+    }).catch((error)=>{
       if(showResult){
         loading.dismiss();
         this.noticeService.showIonicAlert("网络连接超时");

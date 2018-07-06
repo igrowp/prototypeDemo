@@ -21,7 +21,7 @@ export class AssetHandleService {
   getIdleDeviceFromServe(assetId: string) {
     return new Promise<Idle>((resolve, reject) => {
       this.assetHandelWebProvider.getIdleDeviceFromServe(assetId)
-        .subscribe((idle) => {
+        .then((idle) => {
           if (idle.idleId) {
             this.addOrUpdateToIdle(idle);
             resolve(idle);
@@ -31,7 +31,7 @@ export class AssetHandleService {
               resolve(data);
             }, (error) => reject(error))
           }
-        }, (error) => {
+        }).catch((error) => {
           //失败了，可能是服务器出错了，也可能是断网
           //在本地查找
           this.assetHandleDbProvider.selectIdleByAssetId(assetId).then((data) => {
@@ -47,7 +47,7 @@ export class AssetHandleService {
    */
   synchroIdleDeviceToServe(idle:Idle){
     return new Promise<string>((resolve,reject)=>{
-      this.assetHandelWebProvider.synchroIdleDeviceToServe(idle).subscribe((data)=>{
+      this.assetHandelWebProvider.synchroIdleDeviceToServe(idle).then((data)=>{
         if(data.result==true){
             //没有数据，上传成功
             //删除本地的资产闲置记录
@@ -57,7 +57,7 @@ export class AssetHandleService {
           //请求失败，出现异常
           reject("资产闲置上传失败");
         }
-      },(error)=>{
+      }).catch((error)=>{
         //网络不通的情况，先保存到本地
         this.assetHandleDbProvider.selectIdleByAssetId(idle.assetId).then((data)=>{
           if(data==null){
@@ -85,7 +85,7 @@ export class AssetHandleService {
           let lastIdleId = idleList[idleList.length - 1].idleId;
           for (let i = 0; i < idleList.length; i++) {
             let idle = idleList[i];
-            this.assetHandelWebProvider.synchroIdleDeviceToServe(idle).subscribe((result) => {
+            this.assetHandelWebProvider.synchroIdleDeviceToServe(idle).then((result) => {
               if (result.result == true) {
                 //没有数据，上传成功
                 //删除本地的资产闲置记录
@@ -97,7 +97,7 @@ export class AssetHandleService {
                 //请求失败，出现异常
                 reject("资产闲置上传失败");
               }
-            }, (error) => {
+            }).catch((error) => {
               reject("网络连接超时");
             })
           }
@@ -140,7 +140,7 @@ export class AssetHandleService {
   getScrapFixFromServe(assetId: string) {
     return new Promise<Scrap>((resolve, reject) => {
       this.assetHandelWebProvider.getScrapFixFromServe(assetId)
-        .subscribe((scrap) => {
+        .then((scrap) => {
           if (scrap.scrapId) {
             this.addOrUpdateToScrap(scrap);
             resolve(scrap);
@@ -167,7 +167,7 @@ export class AssetHandleService {
    */
   synchroScrapFixToServe(scrap:Scrap){
     return new Promise<string>((resolve,reject)=>{
-      this.assetHandelWebProvider.synchroScrapFixToServe(scrap).subscribe((data)=>{
+      this.assetHandelWebProvider.synchroScrapFixToServe(scrap).then((data)=>{
         if(data.result==true){
             //没有数据，上传成功
             //删除本地的资产闲置记录
@@ -177,7 +177,7 @@ export class AssetHandleService {
           //请求失败，出现异常
           reject("资产报废上传失败");
         }
-      },(error)=>{
+      }).catch((error)=>{
         //网络不通的情况，先保存到本地
         this.assetHandleDbProvider.selectScrapByAssetId(scrap.assetId).then((data)=>{
           if(data==null){
@@ -206,7 +206,7 @@ export class AssetHandleService {
           let lastScrapId = scrapList[scrapList.length - 1].scrapId;
           for (let i = 0; i < scrapList.length; i++) {
             let scrap = scrapList[i];
-            this.assetHandelWebProvider.synchroScrapFixToServe(scrap).subscribe((result) => {
+            this.assetHandelWebProvider.synchroScrapFixToServe(scrap).then((result) => {
               if (result.result == true) {
                 //没有数据，上传成功
                 //删除本地的资产报废记录
@@ -218,7 +218,7 @@ export class AssetHandleService {
                 //请求失败，出现异常
                 reject("资产报废上传失败");
               }
-            }, (error) => {
+            }).catch((error) => {
               reject("网络连接超时");
             })
           }

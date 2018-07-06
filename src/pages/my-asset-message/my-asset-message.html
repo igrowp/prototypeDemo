@@ -33,11 +33,11 @@
         </ion-item>
 
 
-        <ion-item>
+        <!-- <ion-item>
             <ion-label class="item-head">出厂日期：</ion-label>
             <p class="item-body default" *ngIf="fixedAsset.manufactureDate=='NaN-NaN-NaN'" item-end>选择日期</p>
             <ion-datetime class="item-body" displayFormat="YYYY-MM-DD" max="{{dateNow}}" doneText="确定" cancelText="取消" [(ngModel)]="fixedAsset.manufactureDate"></ion-datetime>
-        </ion-item>
+        </ion-item> -->
         <ion-item>
             <ion-label class="item-head">安装地点：</ion-label>
             <input item-end class="item-body input" type="text" [(ngModel)]="fixedAsset.installLocation" placeholder="请输入">

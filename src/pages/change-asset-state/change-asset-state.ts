@@ -169,11 +169,12 @@ export class ChangeAssetStatePage {
         'assetId':this.assetList[i].assetId
       })
     }
-    this.changeWebProvider.submitChangeAssetStateToServe(bill,list).subscribe((data)=>{
+    this.changeWebProvider.submitChangeAssetStateToServe(bill,list).then((data)=>{
       loading.dismiss()
       this.noticeService.showIonicAlert("提交成功")
       this.navCtrl.popToRoot()
-    },(error)=>{
+    })
+    .catch((error)=>{
       loading.dismiss()
       this.noticeService.showIonicAlert('提交失败'+error)
     })

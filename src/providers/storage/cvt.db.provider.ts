@@ -79,6 +79,20 @@ export class CvtDBProvider {
                 })
         })
     }
+    /**
+     * 删除非安设备转产通知单
+     */
+    deleteFromCvtNonNoticeByWorkerNumber(workerNumber: string) {
+        return new Promise((resolve, reject) => {
+            this.dbService.executeSql('delete from cvt_noninstall_notice where RECIPIENT=?', [workerNumber])
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("数据库操作：<br>删除非安设备转产通知单失败<br>" + error.message);
+                })
+        })
+    }
 
     /**
      * 在非安资产领用通知表中插入数据

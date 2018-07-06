@@ -69,11 +69,11 @@ export class ChangeCustodianPage {
         'assetId':this.assetList[i].assetId
       })
     }
-    this.changeWebProvider.submitChangeCustodianToServe(bill,list).subscribe((data)=>{
+    this.changeWebProvider.submitChangeCustodianToServe(bill,list).then((data)=>{
       loading.dismiss()
       this.noticeService.showIonicAlert("提交成功")
       this.navCtrl.popToRoot()
-    },(error)=>{
+    }).catch((error)=>{
       loading.dismiss()
       this.noticeService.showIonicAlert('提交失败'+error)
     })

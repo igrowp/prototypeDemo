@@ -56,14 +56,18 @@
 
         <ion-item *ngFor="let item of dataTable;let i = index">
             <ion-label>
-                <h2 *ngIf="item.selfNumber==''">{{item.assetName}} </h2>
-                <h2 *ngIf="item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
-                <h4 class="sub-title">资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</h4>
+                    <h2 *ngIf="item.selfNumber==''||item.selfNumber==undefined">{{item.assetName}} </h2>
+                    <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
+                <h4 class="sub-title">规格型号：{{item.specModel}}</h4>
+                <h4 class="sub-title">资产编码：{{item.assetCode}}</h4>
             </ion-label>
-            <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" style="height:20px;"
+
+            <i *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" style="color:rgb(231, 238, 238);font-size:30px;" item-end class="iconfont icon-erweima"></i>
+            <i *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" style="color:rgb(65, 126, 240);font-size:30px;" item-end class="iconfont icon-erweima"></i>
+            <!-- <img *ngIf="item.twoDimensionCode==''||item.twoDimensionCode==null" item-end src="./assets/imgs/two_1.png" style="height:20px;"
             />
             <img *ngIf="item.twoDimensionCode!='' && item.twoDimensionCode!=null" item-end src="./assets/imgs/two_blue.png" style="height:20px;"
-            />
+            /> -->
             <button ion-button item-end (click)="scan(item,i)" *ngIf="item.isChecked==null||item.isChecked==0||item.isChecked==''" color="danger">盘点</button>
             <button ion-button item-end (click)="scan(item,i)" *ngIf="item.isChecked==1">待签字</button>
             <ion-icon (click)="reScan(item,i)" *ngIf="item.isChecked==2" item-end name="checkmark"></ion-icon>
@@ -78,7 +82,7 @@
     </ion-list>
     <div class="no-data center" *ngIf="dataTable.length==null||dataTable.length==0">
         <img class="no-data-img" src="./assets/imgs/cry.png">
-        <h2>没有资产数据</h2>
+        <h4 style="color:#afb2bd">没有资产数据</h4>
     </div>
     <!-- <ion-refresher (ionRefresh)="doRefresh($event)" threshold="80px">
         <ion-refresher-content pullingText="下拉刷新" refreshingSpinner="bubbles" refreshingText="玩儿命加载中...">
@@ -91,9 +95,9 @@
             <ion-icon name="add"></ion-icon>
         </button>
         <ion-fab-list side="top">
-            <button ion-fab Large class="fab-control fab-signature" (click)="signature(fab)"></button>
-            <button ion-fab Large class="fab-control fab-two" (click)="scanTwoDimensionCode(fab)"></button>
-            <button ion-fab Large class="fab-control fab-rfid" (click)="scanRFID(fab)"></button>
+            <button ion-fab Large class="fab-control" (click)="signature(fab)"><i class="qk-icon iconfont icon-dianziqianmingx"></i></button>
+            <button ion-fab Large class="fab-control" (click)="scanTwoDimensionCode(fab)"><i class="qk-icon iconfont icon-scan"></i></button>
+            <button ion-fab Large class="fab-control fab-rfid" (click)="scanRFID(fab)">RFID</button>
         </ion-fab-list>
     </ion-fab>
 </ion-content>

@@ -89,7 +89,7 @@ export class ProcessApprovePage {
     
     let process=this.noticeService.showIonicLoading("正在提交",10000);
     process.present();
-    this.workflowWebProvider.submitToServe(this.workflowBean).subscribe((result) => {
+    this.workflowWebProvider.submitToServe(this.workflowBean).then((result) => {
       if(result.result){
         process.dismiss();
         this.noticeService.showIonicAlert("提交成功");
@@ -99,7 +99,7 @@ export class ProcessApprovePage {
         process.dismiss();
       }
       
-    },error=>{
+    }).catch(error=>{
       process.dismiss();
       this.noticeService.showIonicAlert("提交失败，网络连接异常"+error);
     })

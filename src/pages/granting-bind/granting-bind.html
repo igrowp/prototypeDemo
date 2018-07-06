@@ -13,18 +13,19 @@
             <p>规格型号：{{asset.specModel}}</p>
         </ion-card-content>
     </ion-card> -->
-    <ion-list>
-        <ion-list-header>
+
+    <ion-list style="background-color:white;box-shadow: 2px 2px 5px #c9c5c5;">
+        <ion-list-header style="border-bottom:1px solid rgb(226, 221, 221)">
             <h2 class="bold">领用人信息</h2>
         </ion-list-header>
         <ion-item>
             <h2> 领用人：{{receivePerson}}</h2>
-            <img item-end src="./assets/imgs/hand.png" (click)="handleBindInput()"/>
-            <img item-end src="./assets/imgs/scan.png" (click)="handleBindScan()"/>
+            <i item-end (click)="handleBindInput()" class="qk-icon iconfont icon-list3"></i>
+            <i item-end (click)="handleBindScan()" class="qk-icon iconfont icon-scan"></i>
         </ion-item>
     </ion-list>
-    <ion-list  style="margin-top:10%;">
-        <ion-list-header>
+    <ion-list  style="background-color:white;margin-top:10%;box-shadow: 2px 2px 5px #c9c5c5;">
+        <ion-list-header  style="border-bottom:1px solid rgb(226, 221, 221)">
             <h2 class="bold">已选资产</h2>
         </ion-list-header>
             <ion-item *ngFor="let asset of cvtNonReceives">

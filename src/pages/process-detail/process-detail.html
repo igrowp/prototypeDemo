@@ -42,7 +42,7 @@
     </ion-list>
     <ion-list>
       <ion-item-divider>
-        资产信息列表  ({{cvtNonNoticeSubList.length}})
+        资产信息列表 ({{cvtNonNoticeSubList.length}})
       </ion-item-divider>
       <ion-item *ngFor="let item of cvtNonNoticeSubList;let i=index">
         <ion-label>
@@ -107,15 +107,15 @@
         <ion-label class="item-head">出厂编号：</ion-label>
         <p class="item-body" item-end>{{cvtNonCheck.serialNumber}}</p>
       </ion-item>
-      <ion-item>
+      <!-- <ion-item>
         <ion-label class="item-head">出厂日期：</ion-label>
         <p class="item-body" item-end>{{cvtNonCheck.manufactureDate}}</p>
-      </ion-item>
+      </ion-item> -->
       <ion-item>
         <ion-label class="item-head">是否达到预定使用状态：</ion-label>
-        <p class="item-body" *ngIf="cvtNonCheck.isReadyForUse=='true'||cvtNonCheck.isReadyForUse=='TRUE'"  item-end>是</p>
-        <p class="item-body" *ngIf="cvtNonCheck.isReadyForUse=='false'||cvtNonCheck.isReadyForUse=='FALSE'"  item-end>否</p>
-        <p class="item-body" *ngIf="cvtNonCheck.isReadyForUse==''"  item-end>未填写</p>
+        <p class="item-body" *ngIf="cvtNonCheck.isReadyForUse=='true'||cvtNonCheck.isReadyForUse=='TRUE'" item-end>是</p>
+        <p class="item-body" *ngIf="cvtNonCheck.isReadyForUse=='false'||cvtNonCheck.isReadyForUse=='FALSE'" item-end>否</p>
+        <p class="item-body" *ngIf="cvtNonCheck.isReadyForUse==''" item-end>未填写</p>
       </ion-item>
       <ion-item>
         <ion-label class="item-head">验收日期：</ion-label>
@@ -160,13 +160,14 @@
     </ion-list>
     <ion-list>
       <ion-item-divider>
-        资产信息列表  ({{assetList.length}})
+        资产信息列表 ({{assetList.length}})
       </ion-item-divider>
       <ion-item *ngFor="let item of assetList;let i=index">
         <ion-label>
-          <h2 *ngIf="item.selfNumber==''||item.selfNumber=='undefined'">{{item.assetName}} </h2>
-            <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!='undefined'">{{item.assetName}} [{{item.selfNumber}}] </h2>
-          <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
+          <h2 *ngIf="item.selfNumber==''||item.selfNumber==undefined">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+          <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
         </ion-label>
         <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
       </ion-item>
@@ -174,168 +175,173 @@
   </div>
 
   <div *ngIf="eventType=='资产闲置认定'">
-      <ion-list>
-        <ion-item-divider>
-          当前步骤：
-        </ion-item-divider>
-        <ion-item>
-          <ion-label class="item-head">申请标题：</ion-label>
-          <p class="item-body" item-end>{{idleBill.appTitle}}</p>
-        </ion-item>
-        <ion-item>
-          <ion-label class="item-head">申请单号：</ion-label>
-          <p class="item-body" item-end>{{idleBill.appNo}}</p>
-        </ion-item>
-  
-        <ion-item>
-          <ion-label class="item-head">申请人：</ion-label>
-          <p class="item-body" item-end>{{idleBill.appPerson}}</p>
-        </ion-item>
+    <ion-list>
+      <ion-item-divider>
+        当前步骤：
+      </ion-item-divider>
+      <ion-item>
+        <ion-label class="item-head">申请标题：</ion-label>
+        <p class="item-body" item-end>{{idleBill.appTitle}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请单号：</ion-label>
+        <p class="item-body" item-end>{{idleBill.appNo}}</p>
+      </ion-item>
 
-        <ion-item>
-            <ion-label class="item-head">申请单位：</ion-label>
-            <p class="item-body" item-end>{{idleBill.appOrg}}</p>
-          </ion-item>
-  
-        <ion-item>
-          <ion-label class="item-head">申请日期：</ion-label>
-          <p class="item-body" item-end>{{idleBill.appDate}}</p>
-        </ion-item>
-      </ion-list>
-      <ion-list>
-        <ion-item-divider>
-          设备类资产  ({{deviceList.length}})
-        </ion-item-divider>
-        <ion-item *ngFor="let item of deviceList;let i=index">
-          <ion-label>
-            <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
-            <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
-            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
-          </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
-        </ion-item>
-      </ion-list>
+      <ion-item>
+        <ion-label class="item-head">申请人：</ion-label>
+        <p class="item-body" item-end>{{idleBill.appPerson}}</p>
+      </ion-item>
 
-      <ion-list>
-        <ion-item-divider>
-          非设备类资产  ({{unDeviceList.length}})
-        </ion-item-divider>
-        <ion-item *ngFor="let item of unDeviceList;let i=index">
-          <ion-label>
-            <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
-            <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
-            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
-          </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
-        </ion-item>
-      </ion-list>
-    </div>
+      <ion-item>
+        <ion-label class="item-head">申请单位：</ion-label>
+        <p class="item-body" item-end>{{idleBill.appOrg}}</p>
+      </ion-item>
 
-    <div *ngIf="eventType=='资产报废申请'">
-      <ion-list>
-        <ion-item-divider>
-          当前步骤：
-        </ion-item-divider>
-        <ion-item>
-          <ion-label class="item-head">申请标题：</ion-label>
-          <p class="item-body" item-end>{{scrapBill.appTitle}}</p>
-        </ion-item>
-        <ion-item>
-          <ion-label class="item-head">申请单号：</ion-label>
-          <p class="item-body" item-end>{{scrapBill.appNo}}</p>
-        </ion-item>
-  
-        <ion-item>
-          <ion-label class="item-head">申请人：</ion-label>
-          <p class="item-body" item-end>{{scrapBill.appPerson}}</p>
-        </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请日期：</ion-label>
+        <p class="item-body" item-end>{{idleBill.appDate}}</p>
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-item-divider>
+        设备类资产 ({{deviceList.length}})
+      </ion-item-divider>
+      <ion-item *ngFor="let item of deviceList;let i=index">
+        <ion-label>
+          <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+          <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
+        </ion-label>
+        <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
+      </ion-item>
+    </ion-list>
 
-        <ion-item>
-            <ion-label class="item-head">申请单位：</ion-label>
-            <p class="item-body" item-end>{{scrapBill.appOrg}}</p>
-          </ion-item>
-        <ion-item>
-          <ion-label class="item-head">申请日期：</ion-label>
-          <p class="item-body" item-end>{{scrapBill.appDate}}</p>
-        </ion-item>
-      </ion-list>
-      <ion-list>
-        <ion-item-divider>
-          固定资产报废列表  ({{scrapFixList.length}})
-        </ion-item-divider>
-        <ion-item *ngFor="let item of scrapFixList;let i=index">
-          <ion-label>
-            <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
-            <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
-            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
-          </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
-        </ion-item>
-      </ion-list>
+    <ion-list>
+      <ion-item-divider>
+        非设备类资产 ({{unDeviceList.length}})
+      </ion-item-divider>
+      <ion-item *ngFor="let item of unDeviceList;let i=index">
+        <ion-label>
+          <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+          <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
+        </ion-label>
+        <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
+      </ion-item>
+    </ion-list>
+  </div>
 
-      <ion-list>
-        <ion-item-divider>
-          油气水井报废列表  ({{scrapWellList.length}})
-        </ion-item-divider>
-        <ion-item *ngFor="let item of scrapWellList;let i=index">
-          <ion-label>
-            <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
-            <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
-            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
-          </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)"  color="theme">详情</button>
-        </ion-item>
-      </ion-list>
-    </div>
+  <div *ngIf="eventType=='资产报废申请'">
+    <ion-list>
+      <ion-item-divider>
+        当前步骤：
+      </ion-item-divider>
+      <ion-item>
+        <ion-label class="item-head">申请标题：</ion-label>
+        <p class="item-body" item-end>{{scrapBill.appTitle}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请单号：</ion-label>
+        <p class="item-body" item-end>{{scrapBill.appNo}}</p>
+      </ion-item>
 
-    <div *ngIf="eventType=='资产处置'">
-      <ion-list>
-        <ion-item-divider>
-          当前步骤：
-        </ion-item-divider>
-        <ion-item>
-          <ion-label class="item-head">申请标题：</ion-label>
-          <p class="item-body" item-end>{{handleBill.appTitle}}</p>
-        </ion-item>
-        <ion-item>
-          <ion-label class="item-head">申请单号：</ion-label>
-          <p class="item-body" item-end>{{handleBill.appNo}}</p>
-        </ion-item>
-        <ion-item>
-          <ion-label class="item-head">申请单位：</ion-label>
-          <p class="item-body" item-end>{{handleBill.appOrg}}</p>
-        </ion-item>
-  
-        <ion-item>
-          <ion-label class="item-head">申请人：</ion-label>
-          <p class="item-body" item-end>{{handleBill.appPerson}}</p>
-        </ion-item>
-  
-        <ion-item>
-          <ion-label class="item-head">申请日期：</ion-label>
-          <p class="item-body" item-end>{{handleBill.appDate}}</p>
-        </ion-item>
-  
-        <ion-item>
-          <ion-label class="item-head">处置方式：</ion-label>
-          <p class="item-body" item-end>{{handleBill.handleCategory}}</p>
-        </ion-item>
-      </ion-list>
+      <ion-item>
+        <ion-label class="item-head">申请人：</ion-label>
+        <p class="item-body" item-end>{{scrapBill.appPerson}}</p>
+      </ion-item>
 
-      <ion-list>
-        <ion-item-divider>
-          资产信息列表  ({{assetList.length}})
-        </ion-item-divider>
-        <ion-item *ngFor="let item of assetList;let i=index">
-          <ion-label>
-            <h2 *ngIf="item.selfNumber==''||item.selfNumber==undefined">{{item.assetName}} </h2>
-            <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
-            <p>资产编码：{{item.assetCode}} / 规格型号:{{item.specModel}}</p>
-          </ion-label>
-          <button ion-button item-end (click)="handleDetail(item)"  color="theme">详情</button>
-        </ion-item>
-      </ion-list>
-    </div>
-    
+      <ion-item>
+        <ion-label class="item-head">申请单位：</ion-label>
+        <p class="item-body" item-end>{{scrapBill.appOrg}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请日期：</ion-label>
+        <p class="item-body" item-end>{{scrapBill.appDate}}</p>
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-item-divider>
+        固定资产报废列表 ({{scrapFixList.length}})
+      </ion-item-divider>
+      <ion-item *ngFor="let item of scrapFixList;let i=index">
+        <ion-label>
+          <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+          <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
+        </ion-label>
+        <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-item-divider>
+        油气水井报废列表 ({{scrapWellList.length}})
+      </ion-item-divider>
+      <ion-item *ngFor="let item of scrapWellList;let i=index">
+        <ion-label>
+          <h2 *ngIf="item.selfNumber==undefined||item.selfNumber==''">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=undefined&&item.selfNumber!=''">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+          <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
+        </ion-label>
+        <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div *ngIf="eventType=='资产处置'">
+    <ion-list>
+      <ion-item-divider>
+        当前步骤：
+      </ion-item-divider>
+      <ion-item>
+        <ion-label class="item-head">申请标题：</ion-label>
+        <p class="item-body" item-end>{{handleBill.appTitle}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请单号：</ion-label>
+        <p class="item-body" item-end>{{handleBill.appNo}}</p>
+      </ion-item>
+      <ion-item>
+        <ion-label class="item-head">申请单位：</ion-label>
+        <p class="item-body" item-end>{{handleBill.appOrg}}</p>
+      </ion-item>
+
+      <ion-item>
+        <ion-label class="item-head">申请人：</ion-label>
+        <p class="item-body" item-end>{{handleBill.appPerson}}</p>
+      </ion-item>
+
+      <ion-item>
+        <ion-label class="item-head">申请日期：</ion-label>
+        <p class="item-body" item-end>{{handleBill.appDate}}</p>
+      </ion-item>
+
+      <ion-item>
+        <ion-label class="item-head">处置方式：</ion-label>
+        <p class="item-body" item-end>{{handleBill.handleCategory}}</p>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-item-divider>
+        资产信息列表 ({{assetList.length}})
+      </ion-item-divider>
+      <ion-item *ngFor="let item of assetList;let i=index">
+        <ion-label>
+          <h2 *ngIf="item.selfNumber==''||item.selfNumber==undefined">{{item.assetName}} </h2>
+          <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
+          <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
+          <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
+        </ion-label>
+        <button ion-button item-end (click)="handleDetail(item)" color="theme">详情</button>
+      </ion-item>
+    </ion-list>
+  </div>
+
 
 </ion-content>

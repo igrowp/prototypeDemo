@@ -43,7 +43,7 @@ export class ProcessPage {
   init() {
     let loading = this.noticeService.showIonicLoading("正在获取数据", 10000);
     loading.present();
-    this.workflowWebProvider.getTaskListFromServe(this.workerNumber).subscribe((taskList) => {
+    this.workflowWebProvider.getTaskListFromServe(this.workerNumber).then((taskList) => {
       if (taskList != null && taskList.length != 0) {
 
         this.todoEventList = taskList;
@@ -88,11 +88,11 @@ export class ProcessPage {
         }
         loading.dismiss();
       } else {
-        this.errorMessage = "没有待办流程";
+        this.errorMessage = "暂无待办流程";
         this.hasData = false;
         loading.dismiss();
       }
-    }, (error) => {
+    }).catch((error) => {
       this.hasData = false;
       this.errorMessage = "网络连接异常";
       loading.dismiss();
@@ -155,9 +155,9 @@ export class ProcessPage {
       case "资产调拨-作业区内部调动":
       case "资产调拨-气矿调入分公司":
       case "资产调拨-分公司调入气矿":
-        this.assetHandleService.getAlloBillFromServe(item.eventId).subscribe((allocateBill) => {
+        this.assetHandleService.getAlloBillFromServe(item.eventId).then((allocateBill) => {
           if (allocateBill.allocateId != undefined) {
-            this.assetHandleService.getAlloAssetListFromServe(item.eventId).subscribe((assetList) => {
+            this.assetHandleService.getAlloAssetListFromServe(item.eventId).then((assetList) => {
               loading.dismiss();
               this.navCtrl.push("ProcessDetailPage", {
                 workerNumber: this.workerNumber,
@@ -165,7 +165,7 @@ export class ProcessPage {
                 assetList: assetList,
                 todoEvent: item
               });
-            }, (error) => {
+            }).catch((error) => {
               this.noticeService.showIonicAlert("数据获取失败");
               loading.dismiss();
             })
@@ -174,16 +174,16 @@ export class ProcessPage {
             this.noticeService.showIonicAlert("获取通知单失败");
             return;
           }
-        }, (error) => {
+        }).catch((error) => {
           loading.dismiss();
           this.noticeService.showIonicAlert("网络连接失败，请确认当前网络");
         })
         break;
       case "资产闲置认定":
-        this.assetHandleService.getIdleBillFromServe(item.eventId).subscribe((idleBill) => {
+        this.assetHandleService.getIdleBillFromServe(item.eventId).then((idleBill) => {
           if (idleBill.appPerson != undefined) {
-            this.assetHandleService.getIdleDeviceAssetListFromServe(item.eventId).subscribe((deviceList) => {
-              this.assetHandleService.getIdleUnDeviceAssetListFromServe(item.eventId).subscribe((unDeviceList)=>{
+            this.assetHandleService.getIdleDeviceAssetListFromServe(item.eventId).then((deviceList) => {
+              this.assetHandleService.getIdleUnDeviceAssetListFromServe(item.eventId).then((unDeviceList)=>{
                 loading.dismiss();
                 this.navCtrl.push("ProcessDetailPage", {
                   workerNumber: this.workerNumber,
@@ -192,11 +192,11 @@ export class ProcessPage {
                   unDeviceList,
                   todoEvent: item
                 });
-              }, (error) => {
+              }).catch((error) => {
                 loading.dismiss();
                 this.noticeService.showIonicAlert("非设备类资产数据获取失败");
               })
-            }, (error) => {
+            }).catch((error) => {
               loading.dismiss();
               this.noticeService.showIonicAlert("设备类资产数据获取失败");
             })
@@ -205,16 +205,16 @@ export class ProcessPage {
             this.noticeService.showIonicAlert("获取通知单失败");
             return;
           }
-        }, (error) => {
+        }).catch((error) => {
           loading.dismiss();
           this.noticeService.showIonicAlert("网络连接失败，请确认当前网络");
         })
         break;
       case "资产报废申请":
-        this.assetHandleService.getScrapBillFromServe(item.eventId).subscribe((scrapBill) => {
+        this.assetHandleService.getScrapBillFromServe(item.eventId).then((scrapBill) => {
           if (scrapBill.applyId != undefined) {
-            this.assetHandleService.getScrapFixAssetListFromServe(item.eventId).subscribe((scrapFixList) => {
-              this.assetHandleService.getScrapWellAssetListFromServe(item.eventId).subscribe((scrapWellList)=>{
+            this.assetHandleService.getScrapFixAssetListFromServe(item.eventId).then((scrapFixList) => {
+              this.assetHandleService.getScrapWellAssetListFromServe(item.eventId).then((scrapWellList)=>{
                 loading.dismiss();
                 this.navCtrl.push("ProcessDetailPage", {
                   workerNumber: this.workerNumber,
@@ -223,11 +223,11 @@ export class ProcessPage {
                   scrapWellList:scrapWellList,
                   todoEvent: item
                 })
-              }, (error) => {
+              }).catch((error) => {
                 loading.dismiss();
                 this.noticeService.showIonicAlert("油气水井资产数据获取失败");
               })
-            }, (error) => {
+            }).catch((error) => {
               loading.dismiss();
               this.noticeService.showIonicAlert("固定资产数据获取失败");
             })
@@ -236,7 +236,7 @@ export class ProcessPage {
             this.noticeService.showIonicAlert("获取通知单失败");
             return;
           }
-        }, (error) => {
+        }).catch((error) => {
           loading.dismiss();
           this.noticeService.showIonicAlert("网络连接失败，请确认当前网络");
         })
@@ -244,9 +244,9 @@ export class ProcessPage {
       case "闲置资产处置-内部再利用":
       case "闲置资产处置-分公司调用":
       case "闲置资产处置-对外出售":
-        this.assetHandleService.getHandleIdleBillFromServe(item.eventId).subscribe((handleBill) => {
+        this.assetHandleService.getHandleIdleBillFromServe(item.eventId).then((handleBill) => {
           if (handleBill.applyId != undefined) {
-            this.assetHandleService.getHandleIdleAssetListFromServe(item.eventId).subscribe((assetList) => {
+            this.assetHandleService.getHandleIdleAssetListFromServe(item.eventId).then((assetList) => {
               loading.dismiss();
               this.navCtrl.push("ProcessDetailPage", {
                 workerNumber: this.workerNumber,
@@ -254,7 +254,7 @@ export class ProcessPage {
                 assetList: assetList,
                 todoEvent: item
               })
-            }, (error) => {
+            }).catch((error) => {
               loading.dismiss();
               this.noticeService.showIonicAlert("数据获取失败");
             })
@@ -263,16 +263,16 @@ export class ProcessPage {
             this.noticeService.showIonicAlert("获取通知单失败");
             return;
           }
-        }, (error) => {
+        }).catch((error) => {
           loading.dismiss();
           this.noticeService.showIonicAlert("网络连接失败，请确认当前网络");
         })
         break;
 
       case "报废资产处置":
-        this.assetHandleService.getHandleScrapBillFromServe(item.eventId).subscribe((handleBill) => {
+        this.assetHandleService.getHandleScrapBillFromServe(item.eventId).then((handleBill) => {
           if (handleBill.applyId != undefined) {
-            this.assetHandleService.getHandleScrapAssetListFromServe(item.eventId).subscribe((assetList) => {
+            this.assetHandleService.getHandleScrapAssetListFromServe(item.eventId).then((assetList) => {
               loading.dismiss();
               this.navCtrl.push("ProcessDetailPage", {
                 workerNumber: this.workerNumber,
@@ -280,7 +280,7 @@ export class ProcessPage {
                 assetList: assetList,
                 todoEvent: item
               })
-            }, (error) => {
+            }).catch((error) => {
               loading.dismiss();
               this.noticeService.showIonicAlert("数据获取失败");
             })
@@ -289,7 +289,7 @@ export class ProcessPage {
             this.noticeService.showIonicAlert("获取通知单失败");
             return;
           }
-        }, (error) => {
+        }).catch((error) => {
           loading.dismiss();
           this.noticeService.showIonicAlert("网络连接失败，请确认当前网络");
         })

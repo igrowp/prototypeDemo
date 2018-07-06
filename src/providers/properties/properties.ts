@@ -11,11 +11,11 @@ export class Properties {
 
   static webConfig={
     //本地
-    //address:"http://10.88.133.45",
+    // address:"http://10.88.123.11",
     //测试环境
-    // address:"http://11.10.97.76",
+    address:"http://11.10.97.76",
     //正式环境
-    address:"http://10.89.128.4",
+    // address:"http://10.89.128.4",
     port:8080+"",
     project:"eaam-app",
 
@@ -28,11 +28,11 @@ export class Properties {
 
   static webConfigDefault={
     //本地
-    //address:"http://10.88.133.45",
+    // address:"http://10.88.123.11",
     //测试环境
-    // address:"http://11.10.97.76",
+    address:"http://11.10.97.76",
     //正式环境
-    address:"http://10.89.128.4",
+    // address:"http://10.89.128.4",
     port:8080+"",
     project:"eaam-app",
 

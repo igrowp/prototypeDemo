@@ -42,7 +42,7 @@ export class CvtService {
                 resolve();
               }
             }, (error) => {
-              reject("同步失败" + error);
+              reject("同步失败：网络连接超时");
             })
           }, (error) => {
             reject("获取领用表失败");

@@ -1,24 +1,17 @@
+import { HttpService } from './../utils/http/http.service';
 import { PubConstant } from './../entity/constant.provider';
 import { PostRequestResult, ChangeAssetStateBill } from './../entity/pub.entity';
-import { Observable } from 'rxjs/Observable';
-
-import { Http, Headers, RequestOptions } from '@angular/http';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
 import { FixedAsset, OrgInfo, UserSimple } from '../entity/entity.provider';
-import { HttpUtils } from '../utils/httpUtils';
 import { Asset, ChangeCustodianBill } from '../entity/pub.entity';
 
 @Injectable()
 export class ChangeWebProvider {
-  constructor(public http: Http) {
+  constructor(public httpService:HttpService) {
   }
-  private getChangeCustodianUrl() {
-    return HttpUtils.getUrlFromProperties() + "/change/custodian";
-  }
-  private getChangeAssetStateUrl() {
-    return HttpUtils.getUrlFromProperties() + "/change/state";
-  }
+
+  private baseUrl_ChangeCustodian="/change/owner"
+  private baseUrl_ChangeAssetState="/change/property"
 
 
   //资产责任人变更方法
@@ -45,24 +38,22 @@ export class ChangeWebProvider {
    * 从服务器获取该员工下正在资产责任人变更的资产
    * @param workerNumber 
    */
-  getCCApplyingListFromServe(workerNumber:String):Observable<Array<Asset>>{
-    let params = "?workerNumber=" + workerNumber;
-    return this.http.get(this.getChangeCustodianUrl() + '/asset/list/applying' + params)
-        .map(res => res.json());
+  getCCApplyingListFromServe(workerNumber:String):Promise<Array<Asset>>{
+    return this.httpService.get(this.baseUrl_ChangeCustodian+"/asset/list/applying",{
+      workerNumber
+    })
   }
 
   /**
    * 将责任人变更申请提交到服务器
    */
-  submitChangeCustodianToServe(bill: ChangeCustodianBill,assetList:Array<string>):Observable<PostRequestResult> {
-    let options = HttpUtils.getRequestOptions();
+  submitChangeCustodianToServe(bill: ChangeCustodianBill,assetList:Array<string>):Promise<PostRequestResult> {
     var json = JSON.stringify(bill);
     let obj: any = {
-        bill: json,
-        assetList:JSON.stringify(assetList)
+      bill: json,
+      assetList:JSON.stringify(assetList)
     }
-    return this.http.post(this.getChangeCustodianUrl() + "/upload", HttpUtils.toQueryString(obj), options)
-          .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
+    return this.httpService.post(this.baseUrl_ChangeCustodian+"/upload",obj,PubConstant.HTTP_TIME_OUT_LONG)
   }
   //资产责任人变更方法END
 
@@ -91,24 +82,22 @@ export class ChangeWebProvider {
    * 从服务器获取该员工下正在资产状态属性变更的资产
    * @param workerNumber 
    */
-  getCSApplyingListFromServe(workerNumber:String):Observable<Array<Asset>>{
-    let params = "?workerNumber=" + workerNumber;
-    return this.http.get(this.getChangeAssetStateUrl() + '/asset/list/applying' + params)
-        .map(res => res.json());
+  getCSApplyingListFromServe(workerNumber:String):Promise<Array<Asset>>{
+    return this.httpService.get(this.baseUrl_ChangeAssetState+"/asset/list/applying",{
+      workerNumber
+    })
   }
 
   /**
    * 将资产属性状态变更申请提交到服务器
    */
-  submitChangeAssetStateToServe(bill: ChangeAssetStateBill,assetList:Array<string>):Observable<PostRequestResult> {
-    let options = HttpUtils.getRequestOptions();
+  submitChangeAssetStateToServe(bill: ChangeAssetStateBill,assetList:Array<string>):Promise<PostRequestResult> {
     var json = JSON.stringify(bill);
     let obj: any = {
-        bill: json,
-        assetList:JSON.stringify(assetList)
+      bill: json,
+      assetList:JSON.stringify(assetList)
     }
-    return this.http.post(this.getChangeAssetStateUrl() + "/upload", HttpUtils.toQueryString(obj), options)
-          .map(res => res.json()).timeout(PubConstant.HTTP_TIME_OUT_LONG);
+    return this.httpService.post(this.baseUrl_ChangeAssetState+"/upload",obj,PubConstant.HTTP_TIME_OUT_LONG)
   }
   //资产属性状态变更方法END
 

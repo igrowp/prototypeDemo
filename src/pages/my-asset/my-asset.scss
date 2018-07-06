@@ -10,6 +10,7 @@ page-my-asset {
         font-weight: 400;
         margin-top: 3px;
         color:#9A9A9A;
+        margin-left:10px;
     }
     .no-data{
         text-align: center;
@@ -30,10 +31,16 @@ page-my-asset {
     }
 
     .fab-two {
-        background-image: url(./../assets/imgs/scan.png);
+        // background-image: url(./../assets/imgs/scan.png);
+        i{
+            font-size: 30px;
+            color:$theme-color;
+        }
     }
     .fab-rfid {
-        background-image: url(./../assets/imgs/RFID_2.png);
+        // background-image: url(./../assets/imgs/RFID_2.png);
+        font-size:16px;
+        color:$theme-color;
     }
     .fab-control{
         background-size: 80%;

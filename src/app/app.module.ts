@@ -1,3 +1,4 @@
+import { HttpService } from './../providers/utils/http/http.service';
 import { Camera } from '@ionic-native/camera';
 import { AssetWebProvider } from './../providers/web/asset.web.provider';
 import { TabsPage } from './../pages/tabs/tabs';
@@ -94,6 +95,8 @@ import { ChangeWebProvider } from '../providers/web/change.web.provider';
     CvtDBProvider,
     PubWebProvider,
     ChangeWebProvider,
+
+    HttpService,
 
     LoginWebProvider,
     InvWebProvider,
