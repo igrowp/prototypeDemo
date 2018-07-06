@@ -8,11 +8,7 @@ import { CvtNonNotice, CvtNonNoticeSub, CvtNonReceive } from '../entity/cvt.enti
 */
 @Injectable()
 export class CvtDBProvider {
-    private dataBase: SQLiteObject = null;
     constructor(private dbService: DBService) {
-        this.dbService.getSqliteObject().then((db) => {
-            this.dataBase = db;
-        })
     }
 
     /////////非安转产通知单//////////

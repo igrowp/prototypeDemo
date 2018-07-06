@@ -8,16 +8,7 @@ import { UserAccount, User } from '../entity/entity.provider';
 */
 @Injectable()
 export class LoginDBProvider {
-  private dataBase: SQLiteObject = null;
-  constructor(private dbService:DBService,
-  ) {
-    this.dbService.getSqliteObject().then((db)=>{
-      this.dataBase=db;
-    })
-  }
-
-  getDb(){
-      return this.dbService;
+  constructor(private dbService:DBService) {
   }
 
 

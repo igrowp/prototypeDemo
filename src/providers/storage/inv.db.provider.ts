@@ -9,11 +9,7 @@ import { InvNotice } from '../entity/entity.provider';
 */
 @Injectable()
 export class InvDBProvider {
-    private dataBase: SQLiteObject = null;
     constructor(private dbService: DBService) {
-        this.dbService.getSqliteObject().then((db) => {
-            this.dataBase = db;
-        })
     }
 
 

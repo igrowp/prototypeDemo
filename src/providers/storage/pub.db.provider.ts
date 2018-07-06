@@ -10,12 +10,7 @@ import { OrgInfo, ChangeRecord, FixedAsset } from '../entity/entity.provider';
 */
 @Injectable()
 export class PubDBProvider {
-    private dataBase: SQLiteObject = null;
-    constructor(private dbService: DBService
-    ) {
-        this.dbService.getSqliteObject().then((db) => {
-            this.dataBase = db;
-        })
+    constructor(private dbService: DBService) {
     }
 
 

@@ -85,7 +85,7 @@ export class DBService {
 
   //查询数据库
   executeSql(sql:string,params:any){
-    return new Promise((resovle,reject)=>{
+    return new Promise<any>((resovle,reject)=>{
       if(this.database){
         this.database.executeSql(sql,params).then((data)=>{
           resovle(data)
@@ -128,20 +128,6 @@ export class DBService {
 
 
   /////////数据库操作方法//////////////
-  getSqliteObject(){
-    return new Promise<SQLiteObject>((resolve,reject)=>{
-      if(this.database){
-        resolve(this.database)
-      }else{
-        //alert("打开数据库");
-        this.openDB().then((db)=>{
-          this.database=db;
-          resolve(this.database);
-        })
-      }
-    })
-    
-  }
   /**
      * 打开数据库
      */
