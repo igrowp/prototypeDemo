@@ -1,9 +1,9 @@
 import { HttpService } from './../utils/http/http.service';
 import { PubConstant } from './../entity/constant.provider';
-import { PostRequestResult, ChangeAssetStateBill } from './../entity/pub.entity';
+import { PostRequestResult, AssetChgPropertyBill } from './../entity/pub.entity';
 import { Injectable } from '@angular/core';
 import { FixedAsset, OrgInfo, UserSimple } from '../entity/entity.provider';
-import { Asset, ChangeCustodianBill } from '../entity/pub.entity';
+import { Asset, AssetChgOwnerBill } from '../entity/pub.entity';
 
 @Injectable()
 export class ChangeWebProvider {
@@ -47,7 +47,7 @@ export class ChangeWebProvider {
   /**
    * 将责任人变更申请提交到服务器
    */
-  submitChangeCustodianToServe(bill: ChangeCustodianBill,assetList:Array<string>):Promise<PostRequestResult> {
+  submitChangeCustodianToServe(bill: AssetChgOwnerBill,assetList:Array<string>):Promise<PostRequestResult> {
     var json = JSON.stringify(bill);
     let obj: any = {
       bill: json,
@@ -91,7 +91,7 @@ export class ChangeWebProvider {
   /**
    * 将资产属性状态变更申请提交到服务器
    */
-  submitChangeAssetStateToServe(bill: ChangeAssetStateBill,assetList:Array<string>):Promise<PostRequestResult> {
+  submitChangeAssetStateToServe(bill: AssetChgPropertyBill,assetList:Array<string>):Promise<PostRequestResult> {
     var json = JSON.stringify(bill);
     let obj: any = {
       bill: json,

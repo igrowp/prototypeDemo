@@ -207,31 +207,38 @@ export class AttachmentBase64{
 /**
  * 资产责任人变更申请表
  */
-export class ChangeCustodianBill{
-    applyId; //申请单Id
-    workerNumber; //申请人员工编号
-    applyDate;   //申请日期
-    oldCustodian; //原责任人
-    newCustodian; //原责任人
-    remark;  //说明
-    applyState; //申请状态
-    oldCustodianName;  //原责任人名称
-    newCustodianName;  //现责任人名称
-    applyPerson; //申请人姓名
+export class AssetChgOwnerBill{
+    chgId;          //申请单Id
+    applicant;      //申请人员工编号
+    applyReason;    //申请原因
+    applyTime;      //申请日期
+    originalOwner;  //原责任人
+    auditor;        //第一级审批人
+    auditorOpinion; //第一级审批人意见
+    auditorTime;    //第一级审批人时间
+    finalAuditor;        //第一级审批人
+    finalAuditorOpinion; //第一级审批人意见
+    finalAuditorTime;    //第一级审批人时间
+    chgState;       //申请状态
 }
 /**
  * 资产属性变更申请表
  */
-export class ChangeAssetStateBill{
-    applyId; //申请单Id
-    workerNumber; //申请人员工编号
-    applyDate;   //申请日期
-    techStatus;  //技术状况
-    useState;    //使用状况
-    securityState;  //安全现状
-    remark;  //说明
-    applyState; //申请状态
-    applyPerson; //申请人姓名
+export class AssetChgPropertyBill{
+    chgId;          //申请单Id
+    applicant;      //申请人员工编号
+    applyReason;    //申请原因
+    applyTime;      //申请日期
+    auditor;        //第一级审批人
+    auditorOpinion; //第一级审批人意见
+    auditorTime;    //第一级审批人时间
+    finalAuditor;        //第一级审批人
+    finalAuditorOpinion; //第一级审批人意见
+    finalAuditorTime;    //第一级审批人时间
+    chgState;       //申请状态
+    useState;       //使用状况
+    techStatus;     //技术状况
+    securityState;  //油气水井安全现状
 }
 
 

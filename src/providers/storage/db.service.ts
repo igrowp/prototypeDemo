@@ -85,7 +85,18 @@ export class DBService {
 
   //查询数据库
   executeSql(sql:string,params:any){
-    return this.database.executeSql(sql, params);
+    return new Promise((resovle,reject)=>{
+      if(this.database){
+        this.database.executeSql(sql,params).then((data)=>{
+          resovle(data)
+        }).catch((error)=>{
+          reject("执行"+sql+"出错")
+        })
+      }else{
+        reject("数据库未打开")
+        this.openDB()
+      }
+    })
   }
 
 

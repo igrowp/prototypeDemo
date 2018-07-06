@@ -1,4 +1,4 @@
-import { ChangeCustodianBill } from './../../providers/entity/pub.entity';
+import { AssetChgOwnerBill } from './../../providers/entity/pub.entity';
 import { UserSimple, FixedAsset } from './../../providers/entity/entity.provider';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { Component } from '@angular/core';
@@ -56,12 +56,12 @@ export class ChangeCustodianPage {
     let loading =this.noticeService.showIonicLoading('正在提交...')
     loading.present()
 
-    let bill=new ChangeCustodianBill()
-    bill.applyDate=this.currentDate
-    bill.workerNumber=this.workerNumber
-    bill.newCustodian=this.newMangerWorkerNumber
-    bill.oldCustodian=this.workerNumber
-    bill.remark=this.changeReason
+    let bill=new AssetChgOwnerBill()
+    bill.applyTime=this.currentDate
+    bill.applicant=this.workerNumber
+    bill.applyReason=this.changeReason
+
+    bill.auditor=this.newMangerWorkerNumber
     
     let list=new Array()
     for(let i=0;i<this.assetList.length;i++){

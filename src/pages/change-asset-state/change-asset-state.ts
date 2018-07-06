@@ -1,7 +1,7 @@
 import { AssetHandleService } from './../../providers/service/asset.handle.service';
 import { ConvertUtil } from './../../providers/utils/convertUtil';
 import { PubConstant } from './../../providers/entity/constant.provider';
-import { DictDetail, Scrap, Idle, ChangeAssetStateBill } from './../../providers/entity/pub.entity';
+import { DictDetail, Scrap, Idle, AssetChgPropertyBill } from './../../providers/entity/pub.entity';
 import { FixedAsset } from './../../providers/entity/entity.provider';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
@@ -156,13 +156,13 @@ export class ChangeAssetStatePage {
       this.assetHandleService.synchroScrapListToServe(this.workerNumber);
     }
     
-    let bill=new ChangeAssetStateBill()
-    bill.applyDate=this.currentDate
-    bill.remark=this.changeReason
+    let bill=new AssetChgPropertyBill()
+    bill.applyTime=this.currentDate
+    bill.applyReason=this.changeReason
     bill.securityState=this.securityState
     bill.techStatus=this.techStatus
     bill.useState=this.useState
-    bill.workerNumber=this.workerNumber
+    bill.applicant=this.workerNumber
     let list=new Array()
     for(let i=0;i<this.assetList.length;i++){
       list.push({

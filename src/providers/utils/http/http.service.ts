@@ -18,7 +18,9 @@ export class HttpService {
             private noticeService:NoticeService) {
   }
 
-  private baseUrl=HttpUtils.getUrlFromProperties()
+  private baseUrl(){
+    return HttpUtils.getUrlFromProperties()
+  }
   
 
 
@@ -27,7 +29,7 @@ export class HttpService {
         url='/'+url
       }
       return new Promise((resolve,reject)=>{
-        this.http.get(this.baseUrl+url,{params:params})
+        this.http.get(this.baseUrl()+url,{params:params})
         .timeout(timeout)
         .map(res => res.json())
         .toPromise()
@@ -109,15 +111,14 @@ export class HttpService {
     let msg = '请求失败';
     if(error.status==0){
       msg='访问被拒绝';
-    }
-    if (error.status == 400) {
+    }else if (error.status == 400) {
       msg='请求参数正确';
-    }
-    if (error.status == 404) {
+    }else if (error.status == 404) {
       msg='请检查路径是否正确404';
-    }
-    if (error.status == 500) {
+    }else if (error.status == 500) {
       msg='请求的服务器错误500';
+    }else{
+      
     }
     this.noticeService.showToast(msg)
     return msg
