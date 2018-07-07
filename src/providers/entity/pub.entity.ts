@@ -210,16 +210,21 @@ export class AttachmentBase64{
 export class AssetChgOwnerBill{
     chgId;          //申请单Id
     applicant;      //申请人员工编号
+    applicantName;      //申请人姓名
     applyReason;    //申请原因
     applyTime;      //申请日期
     originalOwner;  //原责任人
+    originalOwnerName;  //原责任人姓名
     auditor;        //第一级审批人
+    auditorName;    //第一级审批人姓名
     auditorOpinion; //第一级审批人意见
-    auditorTime;    //第一级审批人时间
-    finalAuditor;        //第一级审批人
-    finalAuditorOpinion; //第一级审批人意见
-    finalAuditorTime;    //第一级审批人时间
+    auditTime;    //第一级审批人时间
+    finalAuditor;        //第二级审批人
+    finalAuditorName;    //第二级审批人姓名
+    finalAuditOpinion; //第二级审批人意见
+    finalAuditTime;    //第二级审批人时间
     chgState;       //申请状态
+    recordFlag;
 }
 /**
  * 资产属性变更申请表
@@ -227,18 +232,25 @@ export class AssetChgOwnerBill{
 export class AssetChgPropertyBill{
     chgId;          //申请单Id
     applicant;      //申请人员工编号
+    applicantName;      //申请人姓名
     applyReason;    //申请原因
     applyTime;      //申请日期
     auditor;        //第一级审批人
+    auditorName;    //第一级审批人姓名
     auditorOpinion; //第一级审批人意见
-    auditorTime;    //第一级审批人时间
-    finalAuditor;        //第一级审批人
-    finalAuditorOpinion; //第一级审批人意见
-    finalAuditorTime;    //第一级审批人时间
+    auditTime;    //第一级审批人时间
+    finalAuditor;        //第二级审批人
+    finalAuditorName;    //第二级审批人姓名
+    finalAuditOpinion; //第二级审批人意见
+    finalAuditTime;    //第二级审批人时间
     chgState;       //申请状态
     useState;       //使用状况
     techStatus;     //技术状况
     securityState;  //油气水井安全现状
+    useStateDesc;       //使用状况
+    techStatusDesc;     //技术状况
+    securityStateDesc;  //油气水井安全现状
+    recordFlag;
 }
 
 

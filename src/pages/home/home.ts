@@ -1,3 +1,4 @@
+import { ChangeWebProvider } from './../../providers/web/change.web.provider';
 import { AttachmentService } from './../../providers/service/attachment.service';
 import { HttpUtils } from './../../providers/utils/httpUtils';
 import { WorkflowWebProvider } from './../../providers/web/workflow.web.provider';
@@ -63,6 +64,7 @@ export class HomePage {
     private assetHandleService:AssetHandleService,
     private cvtService: CvtService,
     private noticeService: NoticeService,
+    private changeWebProvider:ChangeWebProvider,
     private attachmentService:AttachmentService,
     private backButtonService: BackButtonService,
     private appVersion: AppVersion,
@@ -469,10 +471,18 @@ export class HomePage {
     return new Promise((resolve, reject) => {
       //获取流程审批数据
       this.workflowWebProvider.getTaskListFromServe(this.workerNumber).then((taskList)=>{
+        this.changeWebProvider.getCCBillListFromServe(this.workerNumber).then((ownerBills) => {
+          this.changeWebProvider.getCSBillListFromServe(this.workerNumber).then((propertyBills) => {
         resolve();
         if(taskList!=null&&taskList.length>=0){
-          this.badgeValuePro=taskList.length;
+          this.badgeValuePro=taskList.length+ownerBills.length+propertyBills.length;
         }
+      }).catch(error => {
+        reject(error);
+      })
+    }).catch(error => {
+      reject(error);
+    })
       }).catch(error => {
         reject(error);
       })

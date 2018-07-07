@@ -14,15 +14,20 @@
     <ion-list class='list'>
       <ion-item>
         <ion-label class="item-head">申请人：</ion-label>
-        <p class="item-body default" item-end>{{userName}}</p>
+        <p class="item-body default" item-end>{{bill.applicantName}}</p>
       </ion-item>
       <ion-item>
         <ion-label class="item-head">申请日期：</ion-label>
-        <p class="item-body default" item-end>{{currentDate}}</p>
+        <p class="item-body default" item-end>{{bill.applyTime}}</p>
+      </ion-item>
+      <ion-item (click)='handleSelectPerson()'>
+        <ion-label class="item-head">下一步审批人：</ion-label>
+        <p *ngIf="auditorName==''||!auditorName"  class="item-body default" item-end>选择</p>
+        <p *ngIf="auditorName!=''&&auditorName" class="item-body" item-end>{{auditorName}}</p>
       </ion-item>
       <ion-item>
           <ion-label class="item-head">技术状况：</ion-label>
-          <ion-select class="item-body" [(ngModel)]="techStatus" placeholder="选择" interface="popover">
+          <ion-select class="item-body" [(ngModel)]="bill.techStatus" placeholder="选择" interface="popover">
               <ion-option *ngFor="let item of techStates" [value]="item.dictCode">
                   {{item.dictCodeDesc}}
               </ion-option>
@@ -30,7 +35,7 @@
       </ion-item>
       <!-- 报废 -->
 
-      <div *ngIf="isScrap==false&&techStatus=='99'">
+      <div *ngIf="isScrap==false&&bill.techStatus=='99'">
           <ion-card>
               <ion-card-content>
                   <ion-card-title>
@@ -76,7 +81,7 @@
 
       <ion-item>
           <ion-label class="item-head">使用状况：</ion-label>
-          <ion-select class="item-body" [(ngModel)]="useState" placeholder="选择" interface="popover">
+          <ion-select class="item-body" [(ngModel)]="bill.useState" placeholder="选择" interface="popover">
               <ion-option *ngFor="let item of useStates" [value]="item.dictCode">
                   {{item.dictCodeDesc}}
               </ion-option>
@@ -85,7 +90,7 @@
 
       <!-- 闲置 -->
 
-      <div *ngIf="isIdle==false&&useState=='0204'">
+      <div *ngIf="isIdle==false&&bill.useState=='0204'">
           <ion-card>
               <ion-card-content>
                   <ion-card-title>
@@ -122,7 +127,7 @@
 
       <ion-item>
           <ion-label class="item-head">安全现状：</ion-label>
-          <ion-select class="item-body" [(ngModel)]="securityState" placeholder="选择" interface="popover">
+          <ion-select class="item-body" [(ngModel)]="bill.securityState" placeholder="选择" interface="popover">
               <ion-option *ngFor="let item of securityStates" [value]="item.dictCode">
                   {{item.dictCodeDesc}}
               </ion-option>
@@ -132,7 +137,7 @@
       <ion-item>
         <p class="item-head">变更说明：</p>
         <div>
-          <textarea class="input-reason" rows="3" [(ngModel)]="changeReason"></textarea>
+          <textarea class="input-reason" rows="3" [(ngModel)]="bill.applyReason"></textarea>
         </div>
       </ion-item>
     </ion-list>
@@ -148,7 +153,36 @@
           <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
             <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
         </ion-label>
+        <ion-icon item-end name="md-close" (click)="handleRemove(item)"></ion-icon>
       </ion-item>
     </ion-list>
   
   </ion-content>
+
+  <ion-footer *ngIf="isReedit" >
+    <ion-buttons start>
+      <button ion-button block (click)="handleCancelSubmit()" color="theme">
+        取消申请
+      </button>
+    </ion-buttons>
+  </ion-footer>
+
+  <ion-menu [content]="grantingBind_content" id="grantingSelectPerson" side="right">
+    <ion-header>
+        <ion-navbar color="theme">
+            <ion-toolbar>
+                <ion-searchbar placeholder="请输入姓名" (ionInput)="filterItems($event)"></ion-searchbar>
+            </ion-toolbar>
+        </ion-navbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+                <ion-item *ngFor="let item of items" (click)="close(item)">
+                    {{ item.userName}} / {{item.workerNumber}}
+                </ion-item>
+            <ion-item *ngIf="items!=null&&items.length==0">
+                没有搜索到该结果
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-menu>

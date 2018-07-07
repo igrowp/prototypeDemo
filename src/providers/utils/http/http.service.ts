@@ -70,7 +70,7 @@ export class HttpService {
     })
     
     return new Promise((resolve,reject)=>{
-      this.http.post(this.baseUrl+url, HttpUtils.toQueryString(params),options)
+      this.http.post(this.baseUrl()+url, HttpUtils.toQueryString(params),options)
       .timeout(timeout)
       .map(res => res.json())
       .toPromise()

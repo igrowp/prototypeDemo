@@ -21,7 +21,7 @@ import { ModalController } from 'ionic-angular/components/modal/modal-controller
 })
 export class SelectAssetsPage {
   @ViewChild(Content) content: Content;
-  public isMultiple = false
+  // public isMultiple = false
 
   public dataTable: Array<FixedAsset> = new Array<FixedAsset>();
   private workerNumber = "";
@@ -119,12 +119,11 @@ export class SelectAssetsPage {
 
 
 
-  //当切换右上角单选和多选按钮
-  handleChangeIsMultiple() {
-    this.isMultiple = !this.isMultiple;
-    this.selectedItems = [];
-
-  }
+  // //当切换右上角单选和多选按钮
+  // handleChangeIsMultiple() {
+  //   this.isMultiple = !this.isMultiple;
+  //   this.selectedItems = [];
+  // }
 
   //提交按钮
   handleSubmit() {
@@ -141,12 +140,12 @@ export class SelectAssetsPage {
       this.noticeService.showToast("该资产正在申请中")
       return
     }
-    if (!this.isMultiple) {
-      //单选情况，直接跳转页面
-      this.selectedItems = []
-      this.selectedItems.push(item)
-      this.navTo()
-    }
+    // if (!this.isMultiple) {
+    //   //单选情况，直接跳转页面
+    //   this.selectedItems = []
+    //   this.selectedItems.push(item)
+    //   this.navTo()
+    // }
   }
 
   /**

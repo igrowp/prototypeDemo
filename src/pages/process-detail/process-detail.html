@@ -107,10 +107,10 @@
         <ion-label class="item-head">出厂编号：</ion-label>
         <p class="item-body" item-end>{{cvtNonCheck.serialNumber}}</p>
       </ion-item>
-      <!-- <ion-item>
+      <ion-item>
         <ion-label class="item-head">出厂日期：</ion-label>
         <p class="item-body" item-end>{{cvtNonCheck.manufactureDate}}</p>
-      </ion-item> -->
+      </ion-item>
       <ion-item>
         <ion-label class="item-head">是否达到预定使用状态：</ion-label>
         <p class="item-body" *ngIf="cvtNonCheck.isReadyForUse=='true'||cvtNonCheck.isReadyForUse=='TRUE'" item-end>是</p>

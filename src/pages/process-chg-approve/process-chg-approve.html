@@ -1,0 +1,85 @@
+<!--
+  Generated template for the ProcessChgApprovePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="theme">
+    <ion-title class="border-left-white">流程办理</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content #grantingBind_content class="bg-content">
+  <ion-list>
+    <ion-item>
+      <ion-label class="item-head">审核结果：</ion-label>
+      <ion-select class="item-body" [(ngModel)]="outcome" placeholder="选择" interface="popover">
+        <ion-option value="同意">同意</ion-option>
+        <ion-option value="驳回">驳回</ion-option>
+      </ion-select>
+    </ion-item>
+    <div *ngIf="!isHaveNextAuditor">
+      <ion-item>
+        <ion-label class="item-head">上一步审批人：</ion-label>
+        <p class="item-body default" item-end>{{bill.auditorName}}</p>
+      </ion-item>
+      <ion-item>
+        <p class="item-head">上一步审核意见：</p>
+        <div>
+          <textarea class="input-reason default" rows="3" [(ngModel)]="bill.auditorOpinion" readonly></textarea>
+        </div>
+      </ion-item>
+    </div>
+    <div *ngIf="outcome=='同意'&&isHaveNextAuditor">
+      <ion-item (click)='handleSelectPerson()'>
+        <ion-label class="item-head">下一步审批人：</ion-label>
+        <p *ngIf="nextAuditorName==''||!nextAuditorName" class="item-body default" item-end>选择</p>
+        <p *ngIf="nextAuditorName!=''&&nextAuditorName" class="item-body" item-end>{{nextAuditorName}}</p>
+      </ion-item>
+    </div>
+    <div *ngIf="outcome=='同意'&&!isHaveNextAuditor">
+      <ion-item>
+        <ion-label class="item-head">下一步骤：</ion-label>
+        <p class="item-body default" item-end>流程结束</p>
+      </ion-item>
+    </div>
+    <ion-item>
+      <p class="item-head">审核意见：</p>
+      <div>
+        <textarea class="input-reason" rows="3" [(ngModel)]="opinion"></textarea>
+      </div>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+
+
+<ion-footer>
+  <ion-buttons start>
+    <button ion-button block (click)="handleSubmit()" color="theme">
+      提交
+    </button>
+  </ion-buttons>
+</ion-footer>
+
+
+<ion-menu [content]="grantingBind_content" id="grantingSelectPerson" side="right">
+  <ion-header>
+    <ion-navbar color="theme">
+      <ion-toolbar>
+        <ion-searchbar placeholder="请输入姓名" (ionInput)="filterItems($event)"></ion-searchbar>
+      </ion-toolbar>
+    </ion-navbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item *ngFor="let item of items" (click)="close(item)">
+        {{ item.userName}} / {{item.workerNumber}}
+      </ion-item>
+      <ion-item *ngIf="items!=null&&items.length==0">
+        没有搜索到该结果
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>

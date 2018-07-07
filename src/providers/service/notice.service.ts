@@ -92,8 +92,8 @@ export class NoticeService {
               },
               {
                 text:'确定',
-                handler:()=>{
-                    callback();
+                handler:(data)=>{
+                    callback(data);
                 }
               }
             ]

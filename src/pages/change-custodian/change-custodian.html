@@ -14,26 +14,26 @@
     <ion-list class='list'>
       <ion-item>
         <ion-label class="item-head">申请人：</ion-label>
-        <p class="item-body default" item-end>{{userName}}</p>
+        <p class="item-body default" item-end>{{bill.applicantName}}</p>
       </ion-item>
       <ion-item>
         <ion-label class="item-head">申请日期：</ion-label>
-        <p class="item-body default" item-end>{{currentDate}}</p>
+        <p class="item-body default" item-end>{{bill.applyTime}}</p>
       </ion-item>
       <ion-item>
         <ion-label class="item-head">原责任人：</ion-label>
-        <p class="item-body default" item-end>{{userName}}</p>
+        <p class="item-body default" item-end>{{bill.originalOwnerName}}</p>
       </ion-item>
       <ion-item (click)='handleSelectPerson()'>
         <ion-label class="item-head">现责任人：</ion-label>
-        <p *ngIf="newManger==''||!newManger"  class="item-body" item-end>选择</p>
-        <p class="item-body" item-end>{{newManger}}</p>
+        <p *ngIf="newMangerName==''||!newMangerName"  class="item-body default" item-end>选择</p>
+        <p *ngIf="newMangerName!=''&&newMangerName" class="item-body" item-end>{{newMangerName}}</p>
       </ion-item>
   
       <ion-item>
         <p class="item-head">变更说明：</p>
         <div>
-          <textarea class="input-reason" rows="3" [(ngModel)]="changeReason"></textarea>
+          <textarea class="input-reason" rows="3" [(ngModel)]="bill.applyReason"></textarea>
         </div>
       </ion-item>
     </ion-list>
@@ -47,19 +47,28 @@
           <h2 *ngIf="item.selfNumber==''||item.selfNumber==undefined">{{item.assetName}} </h2>
           <h2 *ngIf="item.selfNumber!=''&&item.selfNumber!=undefined">{{item.assetName}} [{{item.selfNumber}}] </h2>
           <p style="padding-left:10px;">规格型号：{{item.specModel}}</p>
-        <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
+          <p style="padding-left:10px;">资产编码：{{item.assetCode}}</p>
         </ion-label>
+        <ion-icon item-end name="md-close" (click)="handleRemove(item)"></ion-icon>
       </ion-item>
     </ion-list>
   
   </ion-content>
+
+  <ion-footer *ngIf="isReedit" >
+    <ion-buttons start>
+      <button ion-button block (click)="handleCancelSubmit()" color="theme">
+        取消申请
+      </button>
+    </ion-buttons>
+  </ion-footer>
   
   
   <ion-menu [content]="grantingBind_content" id="grantingSelectPerson" side="right">
       <ion-header>
           <ion-navbar color="theme">
               <ion-toolbar>
-                  <ion-searchbar placeholder="搜索" (ionInput)="filterItems($event)"></ion-searchbar>
+                  <ion-searchbar placeholder="请输入姓名" (ionInput)="filterItems($event)"></ion-searchbar>
               </ion-toolbar>
           </ion-navbar>
       </ion-header>

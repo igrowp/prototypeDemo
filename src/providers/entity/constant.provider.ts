@@ -138,7 +138,27 @@ export class PubConstant{
 	 */
 	static ATTACHMENT_TYPE_IMG_ASSET="IMG_ASSET";
 	
-
+	//更改责任人/资产状态审批状态
+	/**
+	 * 已申请
+	 */
+	static CHG_STATE_INAPPROVAL = "INAPPROVAL";
+	/**
+	 * 初次审核通过
+	 */
+	static CHG_STATE_FIRSTPASS = "FIRSTPASS";
+	/**
+	 * 初次审核驳回
+	 */
+	static CHG_STATE_FIRSTREJECT = "FIRSTREJECT";
+	/**
+	 * 最终审核通过
+	 */
+	static CHG_STATE_LASTPASS = "LASTPASS";
+	/**
+	 * 最终审核驳回
+	 */
+	static CHG_STATE_LASTREJECT = "LASTREJECT";
 
 
 	//非安转产通知单状态

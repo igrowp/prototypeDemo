@@ -1,10 +1,12 @@
+import { PubConstant } from './../../providers/entity/constant.provider';
+import { DataBaseUtil } from './../../providers/utils/dataBaseUtil';
+import { dateUtil } from './../../providers/utils/dateUtil';
 import { AssetChgOwnerBill } from './../../providers/entity/pub.entity';
 import { UserSimple, FixedAsset } from './../../providers/entity/entity.provider';
 import { MenuController } from 'ionic-angular/components/app/menu-controller';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CvtService } from '../../providers/service/cvt.service';
-import { dateUtil } from '../../providers/utils/dateUtil';
 import { NoticeService } from '../../providers/service/notice.service';
 import { ChangeWebProvider } from '../../providers/web/change.web.provider';
 
@@ -21,15 +23,12 @@ import { ChangeWebProvider } from '../../providers/web/change.web.provider';
   templateUrl: 'change-custodian.html',
 })
 export class ChangeCustodianPage {
-  public newManger='' // 现责任人
+  public newMangerName='' // 现责任人
+  private newManger='' //现责任人员工编号
   public assetList:Array<FixedAsset>=[]
-  public userName=''
-  public currentDate=dateUtil.getCurrentDate()
-  public changeReason=''  //变更说明
+  public bill:AssetChgOwnerBill=new AssetChgOwnerBill()
 
-
-  private newMangerWorkerNumber='' //现责任人员工编号
-  private workerNumber='' //原责任人员工编号
+  public isReedit=false;   //是否是再次编辑
 
   constructor(private navCtrl: NavController,
            private navParams: NavParams,
@@ -37,9 +36,21 @@ export class ChangeCustodianPage {
            private changeWebProvider:ChangeWebProvider,
            private noticeService:NoticeService,
            private menuCtrl:MenuController,) {
-    this.userName = this.navParams.get('userName')
-    this.workerNumber=this.navParams.get('workerNumber')
     this.assetList=this.navParams.get("assets")
+
+    if(this.navParams.get("originalBill")){
+      this.bill=this.navParams.get("originalBill")
+      this.newManger=this.bill.auditor
+      this.newMangerName=this.bill.auditorName
+      this.isReedit=true
+    }else{
+      this.bill.chgId=DataBaseUtil.generateUUID()
+      this.bill.applicant=this.navParams.get('workerNumber')
+      this.bill.applicantName=this.navParams.get('userName')
+      this.bill.originalOwner=this.navParams.get('workerNumber')
+      this.bill.originalOwnerName=this.navParams.get('userName')
+      this.bill.applyTime=dateUtil.getCurrentDate()
+    }
   }
 
   ionViewDidLoad() {
@@ -49,19 +60,15 @@ export class ChangeCustodianPage {
 
 
   handleSubmit(){
-    if(this.newMangerWorkerNumber==''){
+    if(this.newManger==''){
       this.noticeService.showIonicAlert("请选择现责任人")
       return
     }
     let loading =this.noticeService.showIonicLoading('正在提交...')
     loading.present()
-
-    let bill=new AssetChgOwnerBill()
-    bill.applyTime=this.currentDate
-    bill.applicant=this.workerNumber
-    bill.applyReason=this.changeReason
-
-    bill.auditor=this.newMangerWorkerNumber
+    
+    this.bill.chgState=PubConstant.CHG_STATE_INAPPROVAL
+    this.bill.auditor=this.newManger
     
     let list=new Array()
     for(let i=0;i<this.assetList.length;i++){
@@ -69,15 +76,53 @@ export class ChangeCustodianPage {
         'assetId':this.assetList[i].assetId
       })
     }
-    this.changeWebProvider.submitChangeCustodianToServe(bill,list).then((data)=>{
+    this.changeWebProvider.submitChangeCustodianToServe(this.bill,list).then((data)=>{
       loading.dismiss()
-      this.noticeService.showIonicAlert("提交成功")
-      this.navCtrl.popToRoot()
+      if(data=="success"){
+        this.noticeService.showIonicAlert("提交成功")
+        this.navCtrl.popToRoot()
+      }else{
+        this.noticeService.showIonicAlert("提交失败")
+      }
     }).catch((error)=>{
       loading.dismiss()
-      this.noticeService.showIonicAlert('提交失败'+error)
+      this.noticeService.showIonicAlert('网络异常')
     })
 
+  }
+
+  /**
+   * 删除其中的一项
+   * @param asset 
+   */
+  handleRemove(asset){
+    this.noticeService.showIoincAlertConform("是否要删除该资产？",(data)=>{
+      this.assetList=this.assetList.filter((data)=>{
+        return data.assetId!=asset.assetId;
+      })
+    })
+  }
+
+
+  /**
+   * 取消申请
+   */
+  handleCancelSubmit(){
+    let loading =this.noticeService.showIonicLoading('正在提交...')
+    loading.present()
+    this.bill.recordFlag=1
+    this.changeWebProvider.submitCCBillToServe(this.bill).then((result)=>{
+      loading.dismiss()
+      if(result=="success"){
+        this.noticeService.showIonicAlert("取消申请成功")
+        this.navCtrl.popToRoot()
+      }else{
+        this.noticeService.showIonicAlert("取消申请失败")
+      }
+    }).catch((error)=>{
+      loading.dismiss()
+      this.noticeService.showIonicAlert('网络异常')
+    })
   }
 
 
@@ -119,8 +164,8 @@ export class ChangeCustodianPage {
    * @param item 
    */
   close(item) {
-    this.newManger = item.userName;
-    this.newMangerWorkerNumber = item.workerNumber;
+    this.newMangerName = item.userName;
+    this.newManger = item.workerNumber;
     this.menuCtrl.close();
   }
 //////////////////////////////////筛选保管人和使用单位的方法END/////////////////
