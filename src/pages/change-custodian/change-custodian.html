@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar color="theme">
-      <ion-title class="border-left-white">资产调拨</ion-title>
+      <ion-title class="border-left-white">资产责任人变更</ion-title>
       <ion-buttons right>
           <button ion-button (click)="handleSubmit()" class="btn-submit" color="light">
               提交
@@ -26,7 +26,7 @@
       </ion-item>
       <ion-item (click)='handleSelectPerson()'>
         <ion-label class="item-head">现责任人：</ion-label>
-        <p *ngIf="newMangerName==''||!newMangerName"  class="item-body default" item-end>选择</p>
+        <p *ngIf="newMangerName==''||!newMangerName"  class="item-body" item-end>选择</p>
         <p *ngIf="newMangerName!=''&&newMangerName" class="item-body" item-end>{{newMangerName}}</p>
       </ion-item>
   

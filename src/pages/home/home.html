@@ -104,7 +104,6 @@
 </ion-content> -->
 
 
-
 <!-- 手机端 -->
 <ion-header>
     <ion-navbar color="theme">
@@ -198,11 +197,22 @@
                 </ion-item>
             </ion-card-content>
         </ion-card>
+    </div>
 
-      <!--<div class="fadeIn" style="background-color:#f00">-->
-        <!--动画效果-->
-      <!--</div>-->
-
+    <div class="fadeInDown" *ngIf="unTreatedAssets!=null">
+        <ion-card  *ngFor="let item of unTreatedAssets" >
+          <ion-card-content>
+            <ion-card-title>
+              <i class="iconfont icon-star"></i>{{item.title}}
+            </ion-card-title>
+            <h2>{{item.content}}</h2>
+            <!-- <ion-item> -->
+              <!-- <i item-start class="icon-main-large theme iconfont icon-lingqukehu"></i>
+              <h1 style="padding:3px;">资产发放</h1> -->
+              <!-- <div class="alert-content" style="padding:3px;">{{item.content}}</div>
+            </ion-item> -->
+          </ion-card-content>
+        </ion-card>
     </div>
 
 

@@ -26,7 +26,7 @@ export class ProcessChgApprovePage {
   public nextAuditor = ""      //下一个审批人
   public nextAuditorName = ""  //下一个审批人姓名
   public isHaveNextAuditor = false;  //是否还有下一步审批人
-  private eventType = ""
+  public eventType = ""
   public bill;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,

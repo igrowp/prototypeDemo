@@ -15,6 +15,12 @@ page-home {
         color:#fff;
         border-radius: 50%;
     }
+    .alert-content{
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+    }
     .theme-1{
         background-color:#835FC1;
     }

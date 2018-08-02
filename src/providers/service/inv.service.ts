@@ -189,8 +189,6 @@ export class InvService {
  */
   private dateCompare(timeStart: Date, timeFinish: Date) {
     if (timeStart == null || timeFinish == null) {
-      //有毛病
-      alert("解析日期出错");
       return -2;
     }
     var start = timeStart.getTime();
@@ -214,8 +212,6 @@ export class InvService {
  */
   private isDateBetween(timeNow: Date, timeStart: Date, timeFinish: Date) {
     if (timeNow == null || timeStart == null || timeFinish == null) {
-      //有毛病
-      alert("解析日期出错");
       return;
     }
     var flag = false;

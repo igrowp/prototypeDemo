@@ -48,6 +48,8 @@ export class Properties {
   static fileUploadURL="http://11.10.97.76:8080/eaam-app";
   //static fileUploadURL="http://10.88.133.45:8080/eaam-app";
 
+  static untreatedAssetURL="http://11.10.97.76:8080/eaam/common/query/toHandleItem"
+
   static apkDownloadURL="http://11.10.97.76:8080/eaam-app/resources/apk/demo_signed.apk"
 
 }

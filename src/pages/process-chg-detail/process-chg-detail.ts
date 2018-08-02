@@ -38,32 +38,52 @@ export class ProcessChgDetailPage {
     private assetWebProvider: AssetWebProvider,
     private noticeService: NoticeService,
   ) {
-    this.eventType = this.navParams.get("eventType")
-    if (this.eventType == '资产责任人变更') {
-      this.assetChgOwnerBill = this.navParams.get("bill")
-      this.title = "资产责任人变更确认"
-    }else if(this.eventType=='资产状态变更'){
-      this.assetChgPropertyBill = this.navParams.get("bill")
-      this.title = "资产状态变更确认"
-    }
-    this.assetList = this.navParams.get("assetList")
 
 
     //确定申请状态
     let state = this.navParams.get("bill").chgState
-    if (state == PubConstant.CHG_STATE_INAPPROVAL) {
-      //角色为第一审批人  审批
-      this.chgState = "提交申请"
-    } else if (state == PubConstant.CHG_STATE_FIRSTREJECT) {
-      //角色为申请人      可编辑状态，重新提交
-      this.chgState = "初次审核驳回"
-      this.isEdit = true;
-    } else if (state == PubConstant.CHG_STATE_FIRSTPASS) {
-      //角色为第二审批人  审批
-      this.chgState = "初次审核通过"
-    } else if (state == PubConstant.CHG_STATE_LASTREJECT) {
-      this.chgState = "最终审核驳回"
+
+    this.eventType = this.navParams.get("eventType")
+    if (this.eventType == '资产责任人变更') {
+      this.assetChgOwnerBill = this.navParams.get("bill")
+      this.title = "资产责任人变更确认"
+      
+      //确认状态
+      if (state == PubConstant.CHG_STATE_INAPPROVAL) {
+        //角色为第一审批人  审批
+        this.chgState = "原责任人申请"
+      } else if (state == PubConstant.CHG_STATE_FIRSTREJECT) {
+        //角色为申请人      可编辑状态，重新提交
+        this.chgState = "现责任人已驳回"
+        this.isEdit = true;
+      } else if (state == PubConstant.CHG_STATE_FIRSTPASS) {
+        //角色为第二审批人  审批
+        this.chgState = "现责任人已确认"
+      } else if (state == PubConstant.CHG_STATE_LASTREJECT) {
+        this.chgState = "资产管理人员已驳回"
+      }
+
+    }else if(this.eventType=='资产状态变更'){
+      this.assetChgPropertyBill = this.navParams.get("bill")
+      this.title = "资产状态变更确认"
+
+      //确认状态
+      if (state == PubConstant.CHG_STATE_INAPPROVAL) {
+        //角色为第一审批人  审批
+        this.chgState = "责任人申请"
+      } else if (state == PubConstant.CHG_STATE_FIRSTREJECT) {
+        //角色为申请人      可编辑状态，重新提交
+        this.chgState = "技术人员已驳回"
+        this.isEdit = true;
+      } else if (state == PubConstant.CHG_STATE_FIRSTPASS) {
+        //角色为第二审批人  审批
+        this.chgState = "技术人员已确认"
+      } else if (state == PubConstant.CHG_STATE_LASTREJECT) {
+        this.chgState = "资产管理人员已驳回"
+      }
     }
+    this.assetList = this.navParams.get("assetList")
+    
   }
 
   ionViewDidLoad() {

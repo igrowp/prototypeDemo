@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar color="theme">
-      <ion-title class="border-left-white">资产调拨</ion-title>
+      <ion-title class="border-left-white">资产属性状态变更</ion-title>
       <ion-buttons right>
           <button ion-button (click)="handleSubmit()" class="btn-submit" color="light">
               提交
@@ -21,8 +21,8 @@
         <p class="item-body default" item-end>{{bill.applyTime}}</p>
       </ion-item>
       <ion-item (click)='handleSelectPerson()'>
-        <ion-label class="item-head">下一步审批人：</ion-label>
-        <p *ngIf="auditorName==''||!auditorName"  class="item-body default" item-end>选择</p>
+        <ion-label class="item-head">技术人员审批：</ion-label>
+        <p *ngIf="auditorName==''||!auditorName"  class="item-body" item-end>选择</p>
         <p *ngIf="auditorName!=''&&auditorName" class="item-body" item-end>{{auditorName}}</p>
       </ion-item>
       <ion-item>

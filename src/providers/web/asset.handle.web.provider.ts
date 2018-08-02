@@ -88,7 +88,7 @@ export class AssetHandleWebProvider {
    * @param applyId 
    */
   getIdleDeviceAssetListFromServe(applyId:String):Promise<Array<Idle>>{
-    return this.httpService.get(this.getIdleDeviceUrl() + '/asset/bill',{
+    return this.httpService.get(this.getIdleDeviceUrl() + '/asset/list',{
       applyId
     })
   }

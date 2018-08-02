@@ -29,7 +29,7 @@
         </ion-item>
         
         <ion-item *ngIf="nextStep.nextStepApprovers.length>1">
-          <ion-label class="item-head">下一审批人：</ion-label>
+          <ion-label class="item-head">下一步审批人：</ion-label>
           <ion-select class="item-body" placeholder="选择" interface="popover">
             <ion-option *ngFor="let nextStepApprover of nextStep.nextStepApprovers" (ionSelect)="selectOptions(nextStepApprover.processInstanceId,nextStep.nodeId)">{{nextStepApprover.approverName}}</ion-option>
           </ion-select>

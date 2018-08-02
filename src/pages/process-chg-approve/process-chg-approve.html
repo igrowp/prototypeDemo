@@ -20,10 +20,16 @@
       </ion-select>
     </ion-item>
     <div *ngIf="!isHaveNextAuditor">
+        <ion-item>
+            <ion-label class="item-head">上一步骤：</ion-label>
+            <p *ngIf="eventType=='资产责任人变更'"  class="item-body default" item-end>现责任人确认</p>
+            <p *ngIf="eventType=='资产状态变更'"  class="item-body default" item-end>技术人员确认</p>
+          </ion-item>
       <ion-item>
         <ion-label class="item-head">上一步审批人：</ion-label>
         <p class="item-body default" item-end>{{bill.auditorName}}</p>
       </ion-item>
+      
       <ion-item>
         <p class="item-head">上一步审核意见：</p>
         <div>
@@ -32,6 +38,10 @@
       </ion-item>
     </div>
     <div *ngIf="outcome=='同意'&&isHaveNextAuditor">
+        <ion-item>
+            <ion-label class="item-head">下一步骤：</ion-label>
+            <p  class="item-body" item-end>资产管理人员审批</p>
+          </ion-item>
       <ion-item (click)='handleSelectPerson()'>
         <ion-label class="item-head">下一步审批人：</ion-label>
         <p *ngIf="nextAuditorName==''||!nextAuditorName" class="item-body default" item-end>选择</p>

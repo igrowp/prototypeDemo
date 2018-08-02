@@ -317,14 +317,14 @@ export class LoginService {
               this.loginDBProvider.insertToAccount(userAccount).then((data)=>{
                 // console.log("插入成功");
               },(error)=>{
-                alert(error.message);
+                this.noticeService.showIonicAlert(error.message);
               })
             }else{
               //有该人的账号信息，进行更新
               this.loginDBProvider.updateToAccount(userAccount).then((data)=>{
                 // console.log("更新成功!");
               },(error)=>{
-                alert(error.message);
+                this.noticeService.showIonicAlert(error.message);
               })
             }
           })
@@ -344,14 +344,14 @@ export class LoginService {
               this.loginDBProvider.insertToUserInfo(user).then((data)=>{
                 // console.log("插入成功");
               },(error)=>{
-                alert(error.message);
+                this.noticeService.showIonicAlert(error.message);
               })
             }else{
               //有该人的账号信息，进行更新
               this.loginDBProvider.updateToUserInfo(user).then((data)=>{
                 // console.log("更新成功!");
               },(error)=>{
-                alert(error.message);
+                this.noticeService.showIonicAlert(error.message);
               })
             }
           })
@@ -476,6 +476,13 @@ export class LoginService {
    */
   getUserInfoFromServeBySSO(email:string):Promise<User>{
     return this.loginWebProvider.getUserMessageBySSO(email);
+  }
+  /**
+   * 获取待处理资产项数据
+   * @param workerNumber 
+   */
+  getUntreatedAssets(workerNumber:string){
+    return this.loginWebProvider.getUntreatedAssets(workerNumber);
   }
 
 

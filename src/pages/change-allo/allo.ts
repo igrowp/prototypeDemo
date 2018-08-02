@@ -96,7 +96,7 @@ export class AlloPage {
         this.orgInfo = data;
         this.items = data;
       }, (error) => {
-        alert(error);
+        this.noticeService.showIonicAlert(error);
       });
     }
   }

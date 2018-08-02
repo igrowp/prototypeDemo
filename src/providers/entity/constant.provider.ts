@@ -169,7 +169,7 @@ export class PubConstant{
 	/**
 	 * 已完成
 	 */
-	static CVT_NON_NOTICE_STATE_COMPLETED="COMPLETED";
+	static CVT_NON_NOTICE_STATE_COMPLETED="PASS";
 	/**
 	 * 非安转产验收单状态
 	 * 已保存
@@ -209,22 +209,22 @@ export class PubConstant{
 	 * 未提交
 	 * value = 0
 	 */
-	static APPLY_STATE_UNSUBMIT='0';
+	static APPLY_STATE_UNSUBMIT='SAVED';
 	/**
 	 * 已提交
 	 * value = 1
 	 */
-	static APPLY_STATE_SUBMIT='1';
+	static APPLY_STATE_SUBMIT='INAPPROVAL';
 	/**
 	 * 通过
 	 * value = 2
 	 */
-	static APPLY_STATE_ADOPT='2';
+	static APPLY_STATE_ADOPT='PASS';
 	/**
 	 * 驳回
 	 * value = 3
 	 */
-	static APPLY_STATE_REJECT='3';
+	static APPLY_STATE_REJECT='REJECT';
 	/**
 	 * 没有状态
 	 * value = -1

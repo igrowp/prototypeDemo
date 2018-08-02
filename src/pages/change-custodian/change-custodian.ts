@@ -134,7 +134,7 @@ export class ChangeCustodianPage {
     this.cvtService.getUserSimpleList().then((data)=>{
       this.userList=data;
     },(error)=>{
-      alert(error);
+      this.noticeService.showIonicAlert(error);
     });
     
   }

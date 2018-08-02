@@ -131,7 +131,7 @@ export class GrantingBindPage {
     this.cvtService.getUserSimpleList().then((data)=>{
       this.userList=data;
     },(error)=>{
-      alert(error);
+      this.noticeSer.showIonicAlert(error);
     });
     
   }

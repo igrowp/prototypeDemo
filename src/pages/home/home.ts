@@ -1,3 +1,4 @@
+import { LoginWebProvider } from './../../providers/web/login.web.provider';
 import { ChangeWebProvider } from './../../providers/web/change.web.provider';
 import { AttachmentService } from './../../providers/service/attachment.service';
 import { HttpUtils } from './../../providers/utils/httpUtils';
@@ -40,6 +41,7 @@ export class HomePage {
   private workerNumber = "";  //员工编号
   public badgeValueInv;  //徽章，用于记录转产或者清点时的消息提醒
   public badgeValuePro;  //徽章，用于流程审批时的消息提醒
+  public unTreatedAssets; //未处理资产，用于显示为进行发起流程申请的资产    object{"title":"","content":""}
 
 
   public listConvert:Array<CvtNonNotice>;  //需要领用的通知
@@ -452,6 +454,7 @@ export class HomePage {
         this.getCvtNoticeFromServe().then(() => {
           this.getTaskListFromServe().then(()=>{
             resolve();
+            this.getUntreatedAssetFromServe()
           }, error => {
             reject(error);
           })
@@ -463,6 +466,28 @@ export class HomePage {
       })
     })
   }
+
+  /**
+   * 从服务器获取审批任务列表
+   */
+  getUntreatedAssetFromServe() {
+    return new Promise((resolve, reject) => {
+      //获取流程审批数据
+      this.loginService.getUntreatedAssets(this.workerNumber).then((data) => {
+        if(data!=null){
+          this.unTreatedAssets=data
+        }else{
+          this.unTreatedAssets=null
+        }
+        
+      }).catch(error => {
+        alert("访问拒绝")
+        reject(error);
+      })
+    })
+  }
+
+
 
   /**
    * 从服务器获取审批任务列表

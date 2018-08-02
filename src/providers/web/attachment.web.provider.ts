@@ -1,3 +1,4 @@
+import { NoticeService } from './../service/notice.service';
 import { PostRequestResult, AttachmentBase64 } from './../entity/pub.entity';
 import { HttpUtils } from './../utils/httpUtils';
 import { Http } from '@angular/http';
@@ -19,6 +20,7 @@ export class AttachmentWebProvider {
   }
   constructor(private http: Http,
     private photoLibrary: PhotoLibrary,
+    private noticeService:NoticeService,
     private file: File) {
   }
   private getUrl() {
@@ -273,7 +275,7 @@ export class AttachmentWebProvider {
         fail.call(context, error);
       });
     }, error => {
-      alert('文件处理失败' + "<br>");
+      this.noticeService.showIonicAlert('文件处理失败' + "<br>");
     });
   }
 }

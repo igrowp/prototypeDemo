@@ -25,11 +25,15 @@ export class HttpService {
 
 
   get(url:string,params={},timeout:number=30000):Promise<any>{
-      if(url[0]!='/'){
-        url='/'+url
+      if(url.indexOf("http")!=-1){
+        url=url
+      }else if(url[0]!='/'){
+        url=this.baseUrl()+ '/'+url
+      }else{
+        url=this.baseUrl() +url
       }
       return new Promise((resolve,reject)=>{
-        this.http.get(this.baseUrl()+url,{params:params})
+        this.http.get(url,{params:params})
         .timeout(timeout)
         .map(res => res.json())
         .toPromise()
