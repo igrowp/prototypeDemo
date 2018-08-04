@@ -64,8 +64,10 @@ export class LoginWebProvider{
    */
   getUntreatedAssets(workerNumber: string) {
     // return this.http.get("http://11.10.97.76:8080/eaam/common/query/toHandleItem?workerNumber="+workerNumber)
-    // return this.httpService.get("/eaam/common/query/toHandleItem",{
-    return this.httpService.get("http://11.10.97.76:8080/eaam/common/query/toHandleItem",{
+    // .map(res => res.json())
+    // .toPromise()
+    return this.httpService.get("/eaam/common/query/toHandleItem",{
+    // return this.httpService.get("http://11.10.97.76:8080/eaam/common/query/toHandleItem",{
       workerNumber
     })
   }

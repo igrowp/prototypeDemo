@@ -481,7 +481,7 @@ export class HomePage {
         }
         
       }).catch(error => {
-        alert("访问拒绝")
+        this.unTreatedAssets=null
         reject(error);
       })
     })

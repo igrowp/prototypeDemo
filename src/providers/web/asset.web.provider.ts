@@ -77,7 +77,7 @@ export class AssetWebProvider {
    * 从服务器获取简单用户信息
    */
   getUserSimpleFromServe(userId:string):Promise<UserSimple> {
-    return this.httpService.get(this.baseUrl+'/user',{
+    return this.httpService.get(this.baseUrl+'/user/simple',{
       userId
     })
   }

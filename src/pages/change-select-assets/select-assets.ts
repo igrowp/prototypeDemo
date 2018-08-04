@@ -23,6 +23,8 @@ export class SelectAssetsPage {
   @ViewChild(Content) content: Content;
   // public isMultiple = false
 
+  public errorMessage="没有资产数据"
+
   public dataTable: Array<FixedAsset> = new Array<FixedAsset>();
   private workerNumber = "";
   private selectedItems: Array<FixedAsset> = []; //记录点击盘点的资产索引号
@@ -41,69 +43,83 @@ export class SelectAssetsPage {
     this.dataTable = new Array<FixedAsset>();
     this.workerNumber = this.navParams.get("workerNumber");
     this.handleType = this.navParams.get("handleType")
+    let loading=this.noticeService.showIonicLoading("正在获取数据",10000);
+    loading.present();
     this.assetService.queryAssetsFromFixed(this.workerNumber).then((data) => {
+      if (data.length == 0) {
+        //没有资产项
+        this.errorMessage = "没有资产数据"
+      } else {
+        this.errorMessage = "网络连接异常"
+        if (this.handleType == '资产调拨') {
+          this.assetHandleWebProvider.getAlloingListFromServe(this.workerNumber).then((alloing) => {
+            loading.dismiss();
+            for (let i = 0; i < data.length; i++) {
+              let isHave = false;
+              if (alloing.length > 0) {
+                for (let j = 0; j < alloing.length; j++) {
+                  if (data[i].assetId == alloing[j].assetId) {
+                    isHave = true;
+                    break
+                  }
+                }
+              }
+              if (isHave == true) {
+                data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
+              }
+              this.dataTable.push(data[i])
+            }
+          }).catch(error => {
+            loading.dismiss();
+            this.errorMessage = "网络连接异常"
+          })
+        } else if (this.handleType == '资产责任人') {
+          this.changeWebProvider.getCCApplyingListFromServe(this.workerNumber).then((applying) => {
+            loading.dismiss();
+            for (let i = 0; i < data.length; i++) {
+              let isHave = false;
+              if (applying.length > 0) {
+                for (let j = 0; j < applying.length; j++) {
+                  if (data[i].assetId == applying[j].assetId) {
+                    isHave = true;
+                    break
+                  }
+                }
+              }
+              if (isHave == true) {
+                data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
+              }
+              this.dataTable.push(data[i])
+            }
+          }).catch(error => {
+            this.errorMessage = "网络连接异常"
+            loading.dismiss();
+          })
 
-      if (this.handleType == '资产调拨') {
-        this.assetHandleWebProvider.getAlloingListFromServe(this.workerNumber).then((alloing) => {
-          for (let i = 0; i < data.length; i++) {
-            let isHave = false;
-            if (alloing.length > 0) {
-              for (let j = 0; j < alloing.length; j++) {
-                if (data[i].assetId == alloing[j].assetId) {
-                  isHave = true;
-                  break
+        } else if (this.handleType == '资产属性状态') {
+          this.changeWebProvider.getCSApplyingListFromServe(this.workerNumber).then((applying) => {
+            loading.dismiss();
+            for (let i = 0; i < data.length; i++) {
+              let isHave = false;
+              if (applying.length > 0) {
+                for (let j = 0; j < applying.length; j++) {
+                  if (data[i].assetId == applying[j].assetId) {
+                    isHave = true;
+                    break
+                  }
                 }
               }
-            }
-            if (isHave == true) {
-              data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
-            }
-            this.dataTable.push(data[i])
-          }
-        }).catch(error=>{
-          this.noticeService.showToast("网络连接异常")
-        })
-      } else if (this.handleType == '资产责任人') {
-        this.changeWebProvider.getCCApplyingListFromServe(this.workerNumber).then((applying) => {
-          for (let i = 0; i < data.length; i++) {
-            let isHave = false;
-            if (applying.length > 0) {
-              for (let j = 0; j < applying.length; j++) {
-                if (data[i].assetId == applying[j].assetId) {
-                  isHave = true;
-                  break
-                }
+              if (isHave == true) {
+                data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
               }
+              this.dataTable.push(data[i])
             }
-            if (isHave == true) {
-              data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
-            }
-            this.dataTable.push(data[i])
-          }
-        }).catch(error=>{
-          this.noticeService.showToast("网络连接异常")
-        })
+          }).catch(error => {
+            this.errorMessage = "网络连接异常"
+            loading.dismiss();
+          })
 
-      }else if(this.handleType == '资产属性状态'){
-        this.changeWebProvider.getCSApplyingListFromServe(this.workerNumber).then((applying) => {
-          for (let i = 0; i < data.length; i++) {
-            let isHave = false;
-            if (applying.length > 0) {
-              for (let j = 0; j < applying.length; j++) {
-                if (data[i].assetId == applying[j].assetId) {
-                  isHave = true;
-                  break
-                }
-              }
-            }
-            if (isHave == true) {
-              data[i].remark = 'applying';   //临时自定义  applying代表正在进行资产调拨的资产
-            }
-            this.dataTable.push(data[i])
-          }
-        }).catch(error=>{
-          this.noticeService.showToast("网络连接异常")
-        })
+        }
 
       }
     })

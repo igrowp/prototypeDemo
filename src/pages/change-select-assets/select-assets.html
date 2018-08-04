@@ -34,7 +34,7 @@
   </ion-list>
   <div class="no-data center" *ngIf="dataTable.length==null||dataTable.length==0">
       <img class="no-data-img" src="./assets/imgs/cry.png">
-      <h4 style="color:#afb2bd">网络连接异常</h4>
+      <h4 style="color:#afb2bd">{{errorMessage}}</h4>
   </div>
 </ion-content>
 

@@ -111,7 +111,6 @@ export class HttpService {
    * @returns {void|Promise<string>|Promise<T>|any}
    */
   private handleError(error){
-    console.log(error);
     let msg = '请求失败';
     if(error.status==0){
       msg='访问被拒绝';
