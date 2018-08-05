@@ -6,7 +6,6 @@ import { Component, ViewChild } from '@angular/core';
 import { AlertController, InfiniteScroll, IonicPage, NavController, LoadingController, NavParams, Platform, FabContainer } from 'ionic-angular';
 import { Content } from 'ionic-angular/components/content/content';
 import { NoticeService } from '../../providers/service/notice.service';
-declare let ReadRFID: any;
 
 /**
  * 我的资产页面
@@ -62,7 +61,6 @@ export class MyAssetPage {
   //盘点
   navToAssetMessage(item) {
     let id = item.assetId;
-    let code = item.twoDimensionCode;  //应该是扫码获得的ID
     //没有二维码标签，直接进入资产信息页
     this.platform.ready().then(() => {
       this.assetService.queryAssetFromFixedById(id).then((fixedAsset) => {

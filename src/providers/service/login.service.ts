@@ -33,7 +33,7 @@ export class LoginService {
   /**
    * 设置服务器的地址和端口
    */
-  settingHttpAddressAndPort(){
+  settingHttpAddressAndPort(successCallBack?){
     var address=HttpUtils.getUrlAddressFromProperties();
     var port=HttpUtils.getUrlPortFromProperties();
     this.alertCtrl.create({
@@ -73,6 +73,9 @@ export class LoginService {
               this.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_ADDRESS, data.address);
               this.setInStorage(PubConstant.LOCAL_STORAGE_KEY_URL_PORT, data.port);
               this.noticeService.showToast("设置成功");
+            }
+            if(successCallBack){
+              successCallBack();
             }
           }
         }

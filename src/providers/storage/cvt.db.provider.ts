@@ -1,4 +1,3 @@
-import { SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
 import { DBService } from './db.service';
 import { CvtNonNotice, CvtNonNoticeSub, CvtNonReceive } from '../entity/cvt.entity.provider';

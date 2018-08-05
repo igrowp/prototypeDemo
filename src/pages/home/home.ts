@@ -1,4 +1,3 @@
-import { LoginWebProvider } from './../../providers/web/login.web.provider';
 import { ChangeWebProvider } from './../../providers/web/change.web.provider';
 import { AttachmentService } from './../../providers/service/attachment.service';
 import { HttpUtils } from './../../providers/utils/httpUtils';
@@ -23,7 +22,6 @@ import { AppVersion } from '@ionic-native/app-version';
 import { FileOpener } from '@ionic-native/file-opener';
 import { PubWebProvider } from '../../providers/web/pub.web.provider';
 import { ConvertUtil } from '../../providers/utils/convertUtil';
-declare let ReadRFID: any;
 
 /**
  * 首页
@@ -562,7 +560,6 @@ export class HomePage {
           this.listConvert = new Array<CvtNonNotice>();
           this.listGranting = new Array<CvtNonNotice>();
           this.cvtNoticeList = noticeList;
-          let lastNoticeId=noticeList[noticeList.length-1].noticeId;
           for (let i = 0; i < noticeList.length; i++) {
             let notice = noticeList[i];
             if (notice != null && notice.noticeState == "ISSUED") {

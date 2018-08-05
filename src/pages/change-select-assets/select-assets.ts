@@ -3,12 +3,10 @@ import { AssetHandleWebProvider } from './../../providers/web/asset.handle.web.p
 import { Checkbox } from 'ionic-angular/components/checkbox/checkbox';
 import { AssetService } from './../../providers/service/asset.service';
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, InfiniteScroll } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { Content } from 'ionic-angular/components/content/content';
 import { FixedAsset } from '../../providers/entity/entity.provider';
 import { NoticeService } from '../../providers/service/notice.service';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { ModalController } from 'ionic-angular/components/modal/modal-controller';
 
 /**
  * 资产调拨，责任人变更，资产属性变更资产选择页面
@@ -34,12 +32,10 @@ export class SelectAssetsPage {
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private noticeService: NoticeService,
-    private barcodeScanner: BarcodeScanner,
     private assetHandleWebProvider: AssetHandleWebProvider,
     private loadingCtrl: LoadingController,
     private changeWebProvider:ChangeWebProvider,
-    private assetService: AssetService,
-    private modalCtrl: ModalController) {
+    private assetService: AssetService) {
     this.dataTable = new Array<FixedAsset>();
     this.workerNumber = this.navParams.get("workerNumber");
     this.handleType = this.navParams.get("handleType")

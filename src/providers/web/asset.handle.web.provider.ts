@@ -2,7 +2,6 @@ import { HttpUtils } from './../utils/httpUtils';
 import { PubConstant } from './../entity/constant.provider';
 import { Idle, PostRequestResult, Scrap, AllocateBill, Asset, IdleBill, ScrapBill, HandleBill } from './../entity/pub.entity';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { HttpService } from '../utils/http/http.service';
 
 @Injectable()
@@ -108,7 +107,6 @@ export class AssetHandleWebProvider {
    * 将本地闲置资产数据同步到服务器
    */
   synchroIdleUnDeviceToServe(idle: Idle):Promise<PostRequestResult> {
-    let options = HttpUtils.getRequestOptions();
     var json = JSON.stringify(idle);
     return this.httpService.post(this.getIdleUnDeviceUrl() + "/synchro",{
       idle:json
@@ -152,7 +150,6 @@ export class AssetHandleWebProvider {
    * 将本地报废资产数据同步到服务器
    */
   synchroScrapFixToServe(scrap: Scrap):Promise<PostRequestResult> {
-    let options = HttpUtils.getRequestOptions();
     var json = JSON.stringify(scrap);
     return this.httpService.post(this.getScrapFixUrl() + "/synchro",{
       scrap:json
@@ -242,10 +239,6 @@ export class AssetHandleWebProvider {
    */
   submitAllocateToServe(allocate: AllocateBill,assetList:Array<string>):Promise<PostRequestResult> {
     var json = JSON.stringify(allocate);
-    let obj: any = {
-      allocate: json,
-      assetList:JSON.stringify(assetList)
-    }
     return this.httpService.post(this.getAlloUrl() + "/synchro",{
       allocate: json,
       assetList:JSON.stringify(assetList)

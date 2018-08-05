@@ -1,6 +1,5 @@
 import { ConvertUtil } from './../utils/convertUtil';
 import { Dict, DictDetail, Attachment } from './../entity/pub.entity';
-import { SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
 import { DBService } from './db.service';
 import { OrgInfo, ChangeRecord, FixedAsset } from '../entity/entity.provider';

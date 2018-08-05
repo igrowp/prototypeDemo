@@ -7,7 +7,6 @@ import { Component, ViewChild } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { AlertController, Platform, InfiniteScroll, ModalController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
 import { Content } from 'ionic-angular/components/content/content';
-declare let ReadRFID: any;
 
 /**
  * 资产盘点页面

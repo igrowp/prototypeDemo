@@ -1,5 +1,4 @@
 import { InvAsset } from './../entity/entity.provider';
-import { SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
 import { DBService } from './db.service';
 import { InvNotice } from '../entity/entity.provider';

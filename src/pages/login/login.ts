@@ -1,4 +1,3 @@
-import { HttpService } from './../../providers/utils/http/http.service';
 import { PubConstant } from './../../providers/entity/constant.provider';
 import { Properties } from './../../providers/properties/properties';
 import { AssetService } from './../../providers/service/asset.service';
@@ -38,7 +37,6 @@ export class LoginPage {
     private assetService: AssetService,
     private backButtonService: BackButtonService,
     private platform: Platform,
-    private httpService:HttpService,
     private loadingCtrl: LoadingController) {
     this.platform.ready().then(() => {
       this.backButtonService.registerBackButtonAction(null);

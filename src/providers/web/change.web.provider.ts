@@ -1,8 +1,7 @@
 import { HttpService } from './../utils/http/http.service';
 import { PubConstant } from './../entity/constant.provider';
-import { PostRequestResult, AssetChgPropertyBill, AssetChgOwnerBill ,Asset } from './../entity/pub.entity';
+import { AssetChgPropertyBill, AssetChgOwnerBill ,Asset } from './../entity/pub.entity';
 import { Injectable } from '@angular/core';
-import { FixedAsset, OrgInfo, UserSimple } from '../entity/entity.provider';
 
 @Injectable()
 export class ChangeWebProvider {

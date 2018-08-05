@@ -1,7 +1,7 @@
 import { PubConstant } from './../entity/constant.provider';
 import { UserAccount, User } from './../entity/entity.provider';
 import { Injectable } from '@angular/core';
-import {Http, Headers,RequestOptions}   from '@angular/http';
+import {Http}   from '@angular/http';
 import { HttpService } from '../utils/http/http.service';
 /**
  * 与登录有关的服务器数据请求
@@ -9,8 +9,7 @@ import { HttpService } from '../utils/http/http.service';
 
 @Injectable()
 export class LoginWebProvider{
-    constructor(private httpService:HttpService,
-              private http:Http) {
+    constructor(private httpService:HttpService) {
   }
   private baseUrl="/login"
 
@@ -63,11 +62,8 @@ export class LoginWebProvider{
    * @param workerNumber 
    */
   getUntreatedAssets(workerNumber: string) {
-    // return this.http.get("http://11.10.97.76:8080/eaam/common/query/toHandleItem?workerNumber="+workerNumber)
-    // .map(res => res.json())
-    // .toPromise()
-    return this.httpService.get("/eaam/common/query/toHandleItem",{
-    // return this.httpService.get("http://11.10.97.76:8080/eaam/common/query/toHandleItem",{
+    // return this.httpService.get("/eaam/common/query/toHandleItem",{
+    return this.httpService.get("http://11.10.97.76:8080/eaam/common/query/toHandleItem",{
       workerNumber
     })
   }

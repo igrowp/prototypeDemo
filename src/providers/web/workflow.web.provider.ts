@@ -1,6 +1,5 @@
 import { TodoEvent, WorkflowBean, PostRequestResult, NextStepInfo} from './../entity/pub.entity';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { HttpService } from '../utils/http/http.service';
 /**
  * 与流程审批有关的服务器数据请求

@@ -90,7 +90,7 @@ export class CvtWebProvider {
   }
 
   updateStateToCvtNotice(state: string, noticeId: string) {
-    return this.httpService.get(this.baseUrl+'/fixed/list/sub',{
+    return this.httpService.get(this.baseUrl+'/notice/update',{
       noticeState:state,
       noticeId
     })

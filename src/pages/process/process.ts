@@ -1,7 +1,7 @@
 import { AssetHandleService } from './../../providers/service/asset.handle.service';
 import { CvtWebProvider } from './../../providers/web/cvt.web.provider';
 import { WorkflowWebProvider } from './../../providers/web/workflow.web.provider';
-import { TodoEvent, ScrapBill, IdleBill, AssetChgOwnerBill, AssetChgPropertyBill } from './../../providers/entity/pub.entity';
+import { TodoEvent, AssetChgOwnerBill, AssetChgPropertyBill } from './../../providers/entity/pub.entity';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { NoticeService } from '../../providers/service/notice.service';
